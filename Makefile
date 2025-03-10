@@ -36,7 +36,7 @@ $(OBJ_DIR)%.o : $(SRC_DIR)%.cpp
 
 clean:
 			@printf "  👾 \033[1;4;38;5;240m$(NAME)$(RESET)   \n  $(COLOR_3)└──> 🗑️    $(COLOR_4).o and .d $(COLOR_5)have been deleted$(RESET)\n"
-			$(RM) $(OBJS) $(DEPS) $(OBJ_DIR)
+			$(RM) $(BUILD_DIR)
 
 fclean: clean
 			@printf "  $(COLOR_3)└──> 🗑️    $(COLOR_4)$(NAME) binary $(COLOR_5)has been deleted$(RESET)\n\n"	
