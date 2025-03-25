@@ -13,7 +13,7 @@ CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g -MMD -MP
 RM			= 	@rm -rf
 MK			=   mkdir -p
 
-SRC_DIR		= 	src/
+SRC_DIR		= 	srcs/
 BUILD_DIR   = 	.build
 OBJ_DIR     = 	$(BUILD_DIR)/obj
 DEP_DIR     = 	$(BUILD_DIR)/dep
