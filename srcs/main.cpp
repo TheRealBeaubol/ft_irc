@@ -29,6 +29,48 @@ int setNonBlocking(int fd) {
     return 0;
 }
 
+void	handle_receive_message(int	c_soc)
+{
+	char	buffer[1024];
+
+	memset(buffer, 0, sizeof(buffer));
+	int bytesRead = recv(c_soc, buffer, sizeof(buffer), 0);
+	if (bytesRead <= 0)
+	{
+		std::cout << "error in message reception" << std::endl;
+		return ;
+	}
+
+	std::cout << "message receive: " << buffer << std::endl;
+}
+
+int	handle_new_connection(int server_fd, std::vector<struct pollfd> poll_fds)
+{	
+	//std::vector<Client *> clientsVector;
+
+	struct sockaddr_in client_addr;
+	socklen_t client_len = sizeof(client_addr);
+	int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
+
+	if (client_fd >= 0) 
+	{
+		if (setNonBlocking(client_fd) == 0) 
+		{
+			struct pollfd client_pollfd = initPollfd(client_fd);
+            poll_fds.push_back(client_pollfd);
+            std::cout << "Accepted new client: " << client_fd << std::endl;
+            //clientsVector.push_back(new Client(client_fd));
+			send(client_fd, "Weclome to our IRC Server!\n", 27, 0);
+		} 
+		else 
+		{
+			close(client_fd);
+			return (-1);
+		}
+	}
+	return (0);
+}
+
 int	main(int ac, char **av)
 {
 	if (ac != 3)
@@ -70,11 +112,19 @@ int	main(int ac, char **av)
     //std::vector<Client *> clientsVector;
 	while (true)
 	{
-		int clientSocket = accept(server_fd, NULL, NULL);
+		int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
+        if (poll_count < 0) {
+            std::cerr << "poll failed" << ": " << strerror(errno) << std::endl;
+            break;
+        }
+
+		if (poll_fds[0].revents & POLLIN && handle_new_connection(server_fd, poll_fds) == -1)
+			continue;
 		//verif_client()
-		send(clientSocket, "Weclome to our IRC Server!\n", 27, 0);
+		//while (true)
+		//handle_receive_message(clientSocket);
 		//handle_command();
-		close(clientSocket);
+		//close(client_fd);
 	}
 	close(server_fd);
 	return (0);
