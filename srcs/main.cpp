@@ -35,22 +35,20 @@ void	handle_receive_message(int	c_soc)
 
 	memset(buffer, 0, sizeof(buffer));
 	int bytesRead = recv(c_soc, buffer, sizeof(buffer), 0);
+	std::string s_buffer = std::string(buffer);
+	s_buffer.erase(std::remove(s_buffer.begin(), s_buffer.end(), '\r'), s_buffer.end());
 	if (bytesRead <= 0)
 	{
 		std::cout << "error in message reception" << std::endl;
 		return ;
 	}
-
 	std::cout << "message receive: " << buffer << std::endl;
 }
 
-int	handle_new_connection(int server_fd, std::vector<struct pollfd> poll_fds)
+int	handle_new_connection(int client_fd, std::vector<struct pollfd> poll_fds)
 {	
 	//std::vector<Client *> clientsVector;
 
-	struct sockaddr_in client_addr;
-	socklen_t client_len = sizeof(client_addr);
-	int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
 
 	if (client_fd >= 0) 
 	{
@@ -118,11 +116,22 @@ int	main(int ac, char **av)
             break;
         }
 
-		if (poll_fds[0].revents & POLLIN && handle_new_connection(server_fd, poll_fds) == -1)
+		struct sockaddr_in client_addr;
+		socklen_t client_len = sizeof(client_addr);
+		int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
+
+		if (poll_fds[0].revents & POLLIN && handle_new_connection(client_fd, poll_fds) == -1)
 			continue;
+
+		for (size_t i = 0/*ou 1 mais jsp prq ca marche pas*/; i < poll_fds.size(); ++i)
+		{
+			if (poll_fds[i].revents & POLLIN)
+			{
+				handle_receive_message(client_fd);
+			}
+		}
 		//verif_client()
 		//while (true)
-		//handle_receive_message(clientSocket);
 		//handle_command();
 		//close(client_fd);
 	}

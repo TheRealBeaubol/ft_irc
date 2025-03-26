@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <poll.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -14,5 +15,11 @@
 #include <fcntl.h>
 #include <vector>
 #include "Client.hpp"
+
+
+#include <vector>
+#include <sstream>
+
+#include <algorithm>
 
 #endif
