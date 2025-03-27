@@ -20,9 +20,9 @@ OBJ_DIR     = 	$(BUILD_DIR)/obj
 DEP_DIR     = 	$(BUILD_DIR)/dep
 
 SRC 		= 	main.cpp \
-				error_draw.cpp \
-				Client.cpp \
-				ParseMessage.cpp
+				errorDraw.cpp \
+				Server.cpp \
+				Client.cpp
  
 OBJS 		:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 DEPS 		:= $(patsubst %.cpp,$(DEP_DIR)/%.d,$(SRC))

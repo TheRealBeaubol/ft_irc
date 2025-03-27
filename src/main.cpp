@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 19:18:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/15 00:51:26 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/03/27 23:39:53 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,115 +18,164 @@ int stoi(const char *str) {
     return result;
 }
 
-int setNonBlocking(int fd) {
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1) { 
-        return -1; 
-    }
-    flags |= O_NONBLOCK;
-    if (fcntl(fd, F_SETFL, flags) == -1) {
-        return -1;
-    }
-    return 0;
+void send_message(int clientSocket, const char *msg) { send(clientSocket, msg, strlen(msg), 0); }
+
+std::vector<std::string> split(const std::string& str, char delimiter) {
+
+	std::vector<std::string> result;
+	std::stringstream ss(str);
+	std::string item;
+
+	// Utilisation de getline pour séparer la chaîne au niveau du délimiteur
+	while (getline(ss, item, delimiter)) {
+		result.push_back(item);
+	}
+
+	return result;
 }
 
-int checkFailure(int ret, const char *msg) {
-    if (ret == -1) {
-        std::cerr << msg << ": " << strerror(errno) << std::endl;
-        return 1;
-    }
-    return 0;
+std::vector<std::vector<std::string> > tokenize(std::string buffer) {
+
+	std::vector<std::vector<std::string> > res;
+
+	std::vector<std::string> commands = split(buffer, '\n');
+	for (size_t i = 0; i < commands.size(); i++) {
+		res.push_back(split(commands[i], ' '));
+	}
+	
+	return res;
 }
 
-struct pollfd initPollfd(int fd) { return (struct pollfd) {fd, POLLIN, 0}; }
+void execute_command(std::vector<std::string> command, int clientSocket) {
+
+	if (command[0] == "PASS") {
+		std::cout << "PASS command " ;
+
+		if (command[1] == PASSWORD)	
+		{
+			std::cout << "(Mot de passe correct)" << std::endl;
+			// Client is allowed to talk on the server
+		}
+		else
+		{
+			std::cout << "(Mot de passe incorrect)" << std::endl ;
+			// Got to close this socket
+		}
+	}
+
+	else if (command[0] == "NICK") {
+		std::cout << "NICK command" << std::endl;
+		std::string response = ":eplouzen NICK " + command[1] + "\r\n";
+		send_message(clientSocket, response.c_str());
+	}
+
+	else if (command[0] == "USER")
+	{
+		std::cout << "USER command" << std::endl;
+	}
+
+	else if (command[0] == "JOIN")
+	{
+		std::cout << "JOIN command" << std::endl;
+	}
+
+	else if (command[0] == "PRIVMSG")
+	{
+		std::cout << "PRIVMSG command" << std::endl;
+	}
+
+	else if (command[0] == "QUIT")
+	{
+		std::cout << "QUIT command" << std::endl;
+	}
+
+	else
+	{
+		std::cout << "Commande inconnue (" << command[0] << ")" << std::endl;
+	}
+}
+
+int handle_message(std::string buffer, int clientSocket) {
+
+	std::cout << "Message reçu de " << clientSocket << std::endl << buffer << std::endl;
+
+	std::vector<std::vector<std::string> > commands = tokenize(buffer);
+
+	for (size_t i = 0; i < commands.size(); i++) {
+		execute_command(commands[i], clientSocket);
+	}
+	std::cout << std::endl;
+
+	// Répondre avec un message IRC simple
+	send_message(clientSocket, "Message reçu!\r\n");
+
+	return 0;
+}
 
 int main(int ac, char **av) {
     
-    if (ac != 3) {
+    if (ac != 3)
+	{
         drawBox(50, "Usage: ./ircserv [port] [password]");
         return 1;
     }
-    
-    int port = stoi(av[1]);
-    int server_fd;
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (checkFailure(server_fd, "socket")) { return 1; }
-    std::cout << BOLD BLUE << "Port: " << port << std::endl << GREEN << "Socket created !" << std::endl << "Server fd: " << server_fd << std::endl;
-    
-    int opt = 1;
-    if (checkFailure(setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)), "setsockopt")) { return 1;}  
-    std::cout << GREEN << "Socket options set !" << std::endl;
 
-    sockaddr_in address = {AF_INET, htons(port), {INADDR_ANY}, {0}};
-    
-    if (checkFailure(bind(server_fd, (sockaddr *)&address, sizeof(address)), "bind")) { return 1; }
-    std::cout << GREEN << "Socket binded !" << std::endl;
-    
-    if (checkFailure(listen(server_fd, SOMAXCONN), "listen")) { return 1; }
-    std::cout << GREEN << "Server listening !" << std::endl;
+    Server server(stoi(av[1]));
 
-    if (checkFailure(setNonBlocking(server_fd), "setNonBlocking")) { return 1; }
-    std::cout << GREEN << "Server set to non-blocking !" << std::endl;
-
-    std::vector<struct pollfd> poll_fds;
-    struct pollfd server_pollfd = initPollfd(server_fd);
-    poll_fds.push_back(server_pollfd);
-    
-    std::cout << GREEN << "Server listening on port : " << port << std::endl;
-    
-    std::vector<Client *> clientsVector;
     while (true) {
+	
+		std::vector<struct pollfd> poll_fds = server.getPollFds();
+
         int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
-        if (poll_count < 0) {
+        if (poll_count < 0) 
+		{
             std::cerr << "poll failed" << ": " << strerror(errno) << std::endl;
             break;
         }
-        if (poll_fds[0].revents & POLLIN) {
-            struct sockaddr_in client_addr;
-            socklen_t client_len = sizeof(client_addr);
-            int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
-            if (client_fd >= 0) {
-                if (setNonBlocking(client_fd) == 0) {
-                    struct pollfd client_pollfd = initPollfd(client_fd);
-                    poll_fds.push_back(client_pollfd);
-                    std::cout << "Accepted new client: " << client_fd << std::endl;
-                    clientsVector.push_back(new Client(client_fd));
-                } else {
-                    close(client_fd);
-                }
-            }
+
+        if (poll_fds[0].revents & POLLIN && server.handleNewConnection() == -1)
+		{
+			std::cerr << "handleNewConnection failed" << ": " << strerror(errno) << std::endl;
+            continue;
         }
-        for (size_t i = 1; i < poll_fds.size(); ++i) {
-            if (poll_fds[i].revents & POLLIN) {
+
+        for (size_t i = 1; i < poll_fds.size(); ++i)
+		{
+            if (poll_fds[i].revents & POLLIN)
+			{
                 char buffer[BUFFER_SIZE];
                 int bytes_read = recv(poll_fds[i].fd, buffer, BUFFER_SIZE, 0);
-                if (bytes_read > 0) {
-                    buffer[bytes_read] = '\0';
-                    Client *client = NULL;
-                    for (size_t j = 0; j < clientsVector.size(); ++j) {
-                        if (clientsVector[j]->getSocketFd() == poll_fds[i].fd) {
-                            client = clientsVector[j];
-                            break;
-                        }
-                    }
-                    if (client) {
-                        std::string bufferString(buffer);
-                        client->appendToRecvBuffer(bufferString);
-                        processClientBuffer(client);
-                    } else {
-                        std::cerr << "No client found for this socket" << std::endl;
-                    }
-                } else {
-                    std::cout << "Client " << poll_fds[i].fd << " disconnected." << std::endl;
-                    close(poll_fds[i].fd);
-                    poll_fds.erase(poll_fds.begin() + i);
-                    clientsVector.erase(clientsVector.begin() + i);
-                    --i;
-                }
+                std::string s_buffer = std::string(buffer);
+                s_buffer.erase(std::remove(s_buffer.begin(), s_buffer.end(), '\r'), s_buffer.end());
+
+                if (bytes_read > 0)
+				{
+					Client *client = server.getClients()[i];
+
+                    if (client)
+					{
+						std::cout << GREEN << client->getClientSocket() << " is clients[" << i << "]" << std::endl;
+						handle_message(s_buffer, client->getClientSocket ());
+					}
+	
+					else
+					{
+						std::cout << "No client at index : " << i << std::endl;
+					}
+				}
+
+				else
+				{
+					std::cout << "Client " << poll_fds[i].fd << " disconnected." << std::endl;
+					std::cout << "i = " << i << std::endl;
+					close(poll_fds[i].fd);
+					server.removePollFd(poll_fds[i]);
+					server.removeClient(server.getClients()[i]);
+				}
             }
         }
     }
-    for (size_t i = 0; i < poll_fds.size(); ++i) { close(poll_fds[i].fd); }
+	// for (size_t i = 0; i < poll_fds.size(); ++i) { close(poll_fds[i].fd); }
     return 0;
 }
 

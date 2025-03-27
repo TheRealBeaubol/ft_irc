@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error_draw.cpp                                     :+:      :+:    :+:   */
+/*   errorDraw.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:35 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/13 19:01:56 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/03/27 23:36:44 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "error_draw.hpp"
+#include "includes.hpp"
 
 std::string repeatChar(int n, const std::string& s) {
+    
     std::string result;
     result.reserve(n * s.size());
     for (int i = 0; i < n; ++i) {
