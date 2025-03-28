@@ -55,12 +55,12 @@ void	command_nick(Client *client, std::vector<std::string> commands)
 	send(client->get_clientSocket(), msg.c_str() , strlen(msg.c_str()), 0);
 }
 
-void	handle_receive_message(int	c_soc, int i, Serveur serveur)
+void	handle_receive_message(std::vector<struct pollfd> poll_fds, int i, Serveur serveur)
 {
 	char	buffer[1024];
 
 	memset(buffer, 0, sizeof(buffer));
-	int bytesRead = recv(c_soc, buffer, sizeof(buffer), 0);
+	int bytesRead = recv(poll_fds[i].fd, buffer, sizeof(buffer), 0);
 	std::string s_buffer = std::string(buffer);
 	s_buffer.erase(std::remove(s_buffer.begin(), s_buffer.end(), '\r'), s_buffer.end());
 	if (bytesRead > 0)
@@ -73,6 +73,15 @@ void	handle_receive_message(int	c_soc, int i, Serveur serveur)
 		if (commands[0] == "NICK")
 			command_nick(client, commands);
 		return ;
+	}
+	else
+	{
+		std::cout << "Client " << poll_fds[i].fd << " disconnected." << std::endl;
+		std::cout << "i = " << i << std::endl;
+		close(poll_fds[i].fd);
+		serveur.remove_poll_fd(poll_fds[i]);
+		serveur.remove_client(serveur.get_clients()[i]);
+		// --i;
 	}
 	std::cout << "error in message reception" << std::endl;
 }
@@ -109,7 +118,7 @@ int	main(int ac, char **av)
 		std::cout << "error: wrong number of argument" << std::endl;
 		return (1);
 	}
-
+	Salon	salon;
 	Serveur serveur;
 
 	while (true)
@@ -131,7 +140,7 @@ int	main(int ac, char **av)
 		{
 			if (poll_fds[i].revents & POLLIN)
 			{
-				handle_receive_message(poll_fds[i].fd, i, serveur);
+				handle_receive_message(poll_fds, i, serveur);
 			}
 		}
 		//verif_client()

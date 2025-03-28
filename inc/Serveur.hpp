@@ -150,7 +150,7 @@ std::vector<struct pollfd> Serveur::get_poll_fds()
 	return this->poll_fds;
 }
 
-int Serveur::handdle_new_conexion()
+int Serveur::handdle_new_connexion()
 {
 	struct sockaddr_in client_addr;
 	socklen_t client_len = sizeof(client_addr);
