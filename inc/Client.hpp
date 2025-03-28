@@ -1,40 +1,44 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/14 23:59:03 by lboiteux         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
+#include "includes.hpp"
 
-#include <iostream>
-#include <vector>
+class Client
+{
+	public:
+		Client();
+		Client(int clientSocket);
+		~Client();
 
-class Client {
-    private:
-        int _socket_fd;
-        bool _authenticated;
-        std::string _username;
-        std::string _nickname;
-        std::vector<std::string> _channels;
-        std::string _recvBuffer;
-    public:
-        Client(int socket_fd);
-        ~Client();
-        int getSocketFd() const;
-        void setAuthenticated(bool authenticated);
-        bool getAuthenticated() const;
-        void setUsername(std::string username);
-        std::string getUsername() const;
-        void setNickname(std::string nickname);
-        std::string getNickname() const;
-        void addChannel(std::string channel);
-        void removeChannel(std::string channel);
-        void appendToRecvBuffer(std::string buffer);
-        std::string getRecvBuffer() const;
+		void set_clientSocket(int clientSocket);
+		int get_clientSocket();
+
+		void set_nick_name(std::string nick_name);
+		std::string get_nick_name();
+
+		void set_real_name(std::string real_name);
+		std::string get_real_name();
+
+	private:
+
+		int clientSocket;
+
+		std::string nick_name;
+		std::string real_name;
 };
+
+Client::Client(){}
+Client::Client(int clientSocket)
+{
+	std::cout << "Client been created with " << clientSocket << " as clientSocket" << std::endl;
+	this->clientSocket = clientSocket;
+	this->set_nick_name("mhervoch");
+}
+Client::~Client(){}
+
+void Client::set_clientSocket(int clientSocket){this->clientSocket = clientSocket;}
+int Client::get_clientSocket(){return this->clientSocket;}
+
+void Client::set_nick_name(std::string nick_name){this->nick_name = nick_name;}
+std::string Client::get_nick_name(){return this->nick_name;}
+
+void Client::set_real_name(std::string real_name){this->real_name = real_name;}
+std::string Client::get_real_name(){return this->real_name;}

@@ -1,7 +1,10 @@
 #include "../inc/includes.hpp"
+#include "../inc/Client.hpp"
+#include "../inc/Serveur.hpp"
+#include "../inc/Salon.hpp"
 #include <sys/socket.h>
 
-struct pollfd initPollfd(int fd) { return (struct pollfd) {fd, POLLIN, 0}; }
+//struct pollfd initPollfd(int fd) { return (struct pollfd) {fd, POLLIN, 0}; }
 
 int stoi(const char *str) {
     int result = 0;
@@ -17,7 +20,7 @@ int checkFailure(int ret, const char *msg) {
     return 0;
 }
 
-int setNonBlocking(int fd) {
+/*int setNonBlocking(int fd) {
     int flags = fcntl(fd, F_GETFL, 0);
     if (flags == -1) { 
         return -1; 
@@ -27,9 +30,32 @@ int setNonBlocking(int fd) {
         return -1;
     }
     return 0;
+}*/
+
+std::vector<std::string> split(const std::string& str, char delimiter)
+{
+	std::vector<std::string> result;
+	std::stringstream ss(str);
+	std::string item;
+
+	// Utilisation de getline pour séparer la chaîne au niveau du délimiteur
+	while (getline(ss, item, delimiter)) {
+		result.push_back(item);
+	}
+
+	return result;
 }
 
-void	handle_receive_message(int	c_soc)
+void	command_nick(Client *client, std::vector<std::string> commands)
+{
+	std::cout << "NICK command call" << std::endl;
+	client->set_nick_name(commands[1]);
+	std::cout << "nickname: " << client->get_nick_name() << std::endl;
+	std::string msg = ":" + client->get_nick_name() + " NICK " + commands[1] + "\r\n";
+	send(client->get_clientSocket(), msg.c_str() , strlen(msg.c_str()), 0);
+}
+
+void	handle_receive_message(int	c_soc, int i, Serveur serveur)
 {
 	char	buffer[1024];
 
@@ -37,12 +63,18 @@ void	handle_receive_message(int	c_soc)
 	int bytesRead = recv(c_soc, buffer, sizeof(buffer), 0);
 	std::string s_buffer = std::string(buffer);
 	s_buffer.erase(std::remove(s_buffer.begin(), s_buffer.end(), '\r'), s_buffer.end());
-	if (bytesRead <= 0)
+	if (bytesRead > 0)
 	{
-		std::cout << "error in message reception" << std::endl;
+		Client *client = serveur.get_clients()[i];
+		if (client)
+			std::cout << "message receive: " << buffer << std::endl;
+		std::vector<std::string> commands = split(buffer, ' ');
+		std::cout << "command :" << commands[0] << std::endl;
+		if (commands[0] == "NICK")
+			command_nick(client, commands);
 		return ;
 	}
-	std::cout << "message receive: " << buffer << std::endl;
+	std::cout << "error in message reception" << std::endl;
 }
 
 int	handle_new_connection(int client_fd, std::vector<struct pollfd> poll_fds)
@@ -71,63 +103,35 @@ int	handle_new_connection(int client_fd, std::vector<struct pollfd> poll_fds)
 
 int	main(int ac, char **av)
 {
+	(void) av;
 	if (ac != 3)
 	{
 		std::cout << "error: wrong number of argument" << std::endl;
 		return (1);
 	}
 
-	int	server_fd;
-	int	port = stoi(av[1]);	
-	(void) ac;
-	
-	server_fd = socket(AF_INET, SOCK_STREAM, 0);
+	Serveur serveur;
 
-	if (checkFailure(server_fd, "socket")) { return 1; }
-    std::cout << "Port: " << port << std::endl << "Socket created !" << std::endl << "Server fd: " << server_fd << std::endl;
-    
-    int opt = 1;
-    if (checkFailure(setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)), "setsockopt")) { return 1;}  
-    std::cout << "Socket options set !" << std::endl;
-
-    sockaddr_in address = {AF_INET, htons(port), {INADDR_ANY}, {0}};
-    
-    if (checkFailure(bind(server_fd, (sockaddr *)&address, sizeof(address)), "bind")) { return 1; }
-    std::cout << "Socket binded !" << std::endl;
-    
-    if (checkFailure(listen(server_fd, SOMAXCONN), "listen")) { return 1; }
-    std::cout << "Server listening !" << std::endl;
-
-    if (checkFailure(setNonBlocking(server_fd), "setNonBlocking")) { return 1; }
-    std::cout << "Server set to non-blocking !" << std::endl;
-
-	std::vector<struct pollfd> poll_fds;
-    struct pollfd server_pollfd = initPollfd(server_fd);
-    poll_fds.push_back(server_pollfd);
-	
-	std::cout << "Server listening on port : " << port << std::endl;
-
-    //std::vector<Client *> clientsVector;
 	while (true)
 	{
+		std::vector<struct pollfd> poll_fds = serveur.get_poll_fds();
+
 		int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
-        if (poll_count < 0) {
-            std::cerr << "poll failed" << ": " << strerror(errno) << std::endl;
-            break;
-        }
+		if (poll_count < 0)
+		{
+			std::cout << "poll failed" << ": " << strerror(errno) << std::endl;
+			break;
+		}
 
-		struct sockaddr_in client_addr;
-		socklen_t client_len = sizeof(client_addr);
-		int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
-
-		if (poll_fds[0].revents & POLLIN && handle_new_connection(client_fd, poll_fds) == -1)
+		// Check if there is activity on serveur_fd, which mean that there is a new connection
+		if (poll_fds[0].revents & POLLIN && serveur.handdle_new_connexion() == -1)
 			continue;
 
-		for (size_t i = 0/*ou 1 mais jsp prq ca marche pas*/; i < poll_fds.size(); ++i)
+		for (size_t i = 1/*ou 1 mais jsp prq ca marche pas*/; i < poll_fds.size(); ++i)
 		{
 			if (poll_fds[i].revents & POLLIN)
 			{
-				handle_receive_message(client_fd);
+				handle_receive_message(poll_fds[i].fd, i, serveur);
 			}
 		}
 		//verif_client()
@@ -135,6 +139,6 @@ int	main(int ac, char **av)
 		//handle_command();
 		//close(client_fd);
 	}
-	close(server_fd);
+	for (size_t i = 0; i < serveur.get_poll_fds().size(); ++i) { close(serveur.get_poll_fds()[i].fd); }
 	return (0);
 }
