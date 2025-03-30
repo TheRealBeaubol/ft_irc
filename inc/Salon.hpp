@@ -39,7 +39,7 @@ void	Salon::addClient(Client *newClient){
 void	Salon::showClient(){
 	
 	std::cout << "show client command call!" << std::endl;
-	std::cout << "Size of Client for Salon " << _name << " :" << _clients.size() << std::endl;
+	std::cout << "Size of Client for Salon " << _name << ": " << _clients.size() << std::endl;
 	for (IRC_AUTO it = _clients.begin(); it != _clients.end(); ++it) {
 		if (it->second == 1)
 	    	std::cout << "Client : " << it->first->get_nick_name() << ", he's an operator!" << std::endl;

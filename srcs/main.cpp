@@ -59,14 +59,17 @@ void	command_join(Serveur *serveur, Client *client, std::vector<std::string> com
 {
 	std::cout << "JOIN command call" << std::endl;
 	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\n'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
+	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\r'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
 	std::cout << "command param: " << commands[1] << std::endl;
 	for (size_t i = 0; i < serveur->get_salon().size(); i++)
 	{
 		std::cout << "Salon name: " << serveur->get_salon()[i]->getSalonName() << std::endl;
+		std::string	msg = ":" + client->get_nick_name() + " JOIN :#" + commands[1] + "\r\n";
 		if ( serveur->get_salon()[i]->getSalonName() == commands[1])
 		{
 			serveur->get_salon()[i]->addClient(client);
 			serveur->get_salon()[i]->showClient();
+			serveur->send_message(client->get_clientSocket(), msg.c_str());
 		}
 		else if (i == serveur->get_salon().size() - 1)
 		{
@@ -77,6 +80,7 @@ void	command_join(Serveur *serveur, Client *client, std::vector<std::string> com
 			serveur->get_salon()[i]->addClient(client);
 			//serveur->get_salon()[i]->
 			serveur->get_salon()[i]->showClient();
+			serveur->send_message(client->get_clientSocket(), msg.c_str());
 		}
 	}
 }
