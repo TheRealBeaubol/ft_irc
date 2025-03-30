@@ -10,9 +10,11 @@ class Salon
 		Salon(std::string name);
 		~Salon();
 
-		void	addClient(std::map<Client *, int> _clients, Client* newClient);
-		void	eraseClient(std::map<Client *, int> _clients, Client* indClient);
-		void	showClient(std::map<Client *, int> _clients);
+		void	addClient(Client* newClient);
+		void	eraseClient(Client* indClient);
+		void	showClient();
+		
+		std::string	getSalonName() const;
 	private:
 		std::string	_name;
 		std::map<Client *, int> _clients;
@@ -24,7 +26,7 @@ Salon::Salon(std::string name): _name(name) {}
 
 Salon::~Salon(){}
 
-void	Salon::addClient(std::map<Client *, int> _clients, Client *newClient){
+void	Salon::addClient(Client *newClient){
 
 	if (_clients.size() == 0)
 		_clients[newClient] = 1;
@@ -32,17 +34,23 @@ void	Salon::addClient(std::map<Client *, int> _clients, Client *newClient){
 		_clients[newClient] = 0;
 }
 
-void	Salon::showClient(std::map<Client *, int> _clients){
+#define IRC_AUTO	__auto_type
+
+void	Salon::showClient(){
 	
-	for (const auto& pair : _clients) {
-		if (pair.second == 1)
-	    	std::cout << "Client : " << pair.first->get_nick_name() << ", he's an operator!" << std::endl;
+	std::cout << "show client command call!" << std::endl;
+	std::cout << "Size of Client for Salon " << _name << " :" << _clients.size() << std::endl;
+	for (IRC_AUTO it = _clients.begin(); it != _clients.end(); ++it) {
+		if (it->second == 1)
+	    	std::cout << "Client : " << it->first->get_nick_name() << ", he's an operator!" << std::endl;
 		else
-			std::cout << "Client : " << pair.first->get_nick_name() << ", he's a simple user!" << std::endl;
+			std::cout << "Client : " << it->first->get_nick_name() << ", he's a simple user!" << std::endl;
 	}
 }
 
-void	Salon::eraseClient(std::map<Client *, int> _clients, Client *indClient){
+void	Salon::eraseClient(Client *indClient){
 
 	_clients.erase(indClient);
 }
+
+std::string	Salon::getSalonName() const{ return(_name); }

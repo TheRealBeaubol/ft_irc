@@ -52,7 +52,23 @@ void	command_nick(Client *client, std::vector<std::string> commands)
 	client->set_nick_name(commands[1]);
 	std::cout << "nickname: " << client->get_nick_name() << std::endl;
 	std::string msg = ":" + client->get_nick_name() + " NICK " + commands[1] + "\r\n";
-	send(client->get_clientSocket(), msg.c_str() , strlen(msg.c_str()), 0);
+	send(client->get_clientSocket(), msg.c_str() , msg.length(), 0);
+}
+
+void	command_join(Serveur serveur, Client *client, std::vector<std::string> commands)
+{
+	std::cout << "JOIN command call" << std::endl;
+	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\n'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
+	std::cout << "command param: " << commands[1] << std::endl;
+	std::cout << "Salon name: " << serveur.get_salon()[0]->getSalonName() << std::endl;
+	for (size_t i = 0; i < serveur.get_salon().size(); i++)
+	{
+		if ( serveur.get_salon()[i]->getSalonName() == commands[1])
+		{
+			serveur.get_salon()[i]->addClient(client);
+			serveur.get_salon()[i]->showClient();
+		}
+	}
 }
 
 void	handle_receive_message(std::vector<struct pollfd> poll_fds, int i, Serveur serveur)
@@ -72,6 +88,8 @@ void	handle_receive_message(std::vector<struct pollfd> poll_fds, int i, Serveur 
 		std::cout << "command :" << commands[0] << std::endl;
 		if (commands[0] == "NICK")
 			command_nick(client, commands);
+		else if (commands[0] == "JOIN")
+			command_join(serveur, client, commands);
 		return ;
 	}
 	else
@@ -118,9 +136,14 @@ int	main(int ac, char **av)
 		std::cout << "error: wrong number of argument" << std::endl;
 		return (1);
 	}
-	Salon	salon;
+	Salon	*salooncaca = new Salon("CACA");
+	Salon	*saloonpipi = new Salon("PIPI");
+	Salon	*saloon = new Salon("CHANEL");
 	Serveur serveur;
-
+		
+	serveur.add_salon(salooncaca);
+	serveur.add_salon(saloonpipi);
+	serveur.add_salon(saloon);
 	while (true)
 	{
 		std::vector<struct pollfd> poll_fds = serveur.get_poll_fds();

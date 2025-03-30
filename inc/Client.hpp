@@ -9,13 +9,13 @@ class Client
 		~Client();
 
 		void set_clientSocket(int clientSocket);
-		int get_clientSocket();
+		int get_clientSocket() const;
 
 		void set_nick_name(std::string nick_name);
-		std::string get_nick_name();
+		std::string get_nick_name() const;
 
 		void set_real_name(std::string real_name);
-		std::string get_real_name();
+		std::string get_real_name() const;
 
 	private:
 
@@ -35,10 +35,10 @@ Client::Client(int clientSocket)
 Client::~Client(){}
 
 void Client::set_clientSocket(int clientSocket){this->clientSocket = clientSocket;}
-int Client::get_clientSocket(){return this->clientSocket;}
+int Client::get_clientSocket() const{return this->clientSocket;}
 
 void Client::set_nick_name(std::string nick_name){this->nick_name = nick_name;}
-std::string Client::get_nick_name(){return this->nick_name;}
+std::string Client::get_nick_name() const{return this->nick_name;}
 
 void Client::set_real_name(std::string real_name){this->real_name = real_name;}
-std::string Client::get_real_name(){return this->real_name;}
+std::string Client::get_real_name() const{return this->real_name;}

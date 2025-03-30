@@ -22,6 +22,10 @@ class Serveur
 		void remove_poll_fd(struct pollfd poll_fd);
 		std::vector<struct pollfd> get_poll_fds();
 
+		void add_salon(Salon *salon);
+		void remove_salon(Salon *salon);
+		std::vector<Salon *> get_salon();
+
 	private:
 
 		// std::string serveur_name;
@@ -126,6 +130,26 @@ std::vector<Client *> Serveur::get_clients()
 {
 	return this->clients;
 }
+
+void	Serveur::add_salon(Salon *salon)
+{
+	std::cout << "Adding " << salon->getSalonName() << " to serveur.salon " << std::endl;
+	this->salons.push_back(salon);
+}
+
+void	Serveur::remove_salon(Salon *salon){
+	
+	for (size_t i = 0; i < this->salons.size(); i++)
+	{
+		if ( (this->salons[i]->getSalonName() == salon->getSalonName()) && (i < this->salons.size()) )
+		{
+			std::cout << "Removing " << salon->getSalonName() << " from serveur.salons " << std::endl;
+			this->salons.erase(this->salons.begin() + i);
+		}
+	}
+}
+
+std::vector<Salon *> Serveur::get_salon(){ return(this->salons); }
 
 void Serveur::add_poll_fd(struct pollfd poll_fd)
 {
