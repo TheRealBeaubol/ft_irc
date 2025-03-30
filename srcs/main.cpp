@@ -55,23 +55,33 @@ void	command_nick(Client *client, std::vector<std::string> commands)
 	send(client->get_clientSocket(), msg.c_str() , msg.length(), 0);
 }
 
-void	command_join(Serveur serveur, Client *client, std::vector<std::string> commands)
+void	command_join(Serveur *serveur, Client *client, std::vector<std::string> commands)
 {
 	std::cout << "JOIN command call" << std::endl;
 	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\n'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
 	std::cout << "command param: " << commands[1] << std::endl;
-	std::cout << "Salon name: " << serveur.get_salon()[0]->getSalonName() << std::endl;
-	for (size_t i = 0; i < serveur.get_salon().size(); i++)
+	for (size_t i = 0; i < serveur->get_salon().size(); i++)
 	{
-		if ( serveur.get_salon()[i]->getSalonName() == commands[1])
+		std::cout << "Salon name: " << serveur->get_salon()[i]->getSalonName() << std::endl;
+		if ( serveur->get_salon()[i]->getSalonName() == commands[1])
 		{
-			serveur.get_salon()[i]->addClient(client);
-			serveur.get_salon()[i]->showClient();
+			serveur->get_salon()[i]->addClient(client);
+			serveur->get_salon()[i]->showClient();
+		}
+		else if (i == serveur->get_salon().size() - 1)
+		{
+			std::cout << "Salon actually doesn't exist we going to create it" << std::endl;
+			Salon *salon = new Salon(commands[1]);
+			serveur->add_salon(salon);
+			i++;
+			serveur->get_salon()[i]->addClient(client);
+			//serveur->get_salon()[i]->
+			serveur->get_salon()[i]->showClient();
 		}
 	}
 }
 
-void	handle_receive_message(std::vector<struct pollfd> poll_fds, int i, Serveur serveur)
+void	handle_receive_message(std::vector<struct pollfd> poll_fds, int i, Serveur *serveur)
 {
 	char	buffer[1024];
 
@@ -81,7 +91,7 @@ void	handle_receive_message(std::vector<struct pollfd> poll_fds, int i, Serveur 
 	s_buffer.erase(std::remove(s_buffer.begin(), s_buffer.end(), '\r'), s_buffer.end());
 	if (bytesRead > 0)
 	{
-		Client *client = serveur.get_clients()[i];
+		Client *client = serveur->get_clients()[i];
 		if (client)
 			std::cout << "message receive: " << buffer << std::endl;
 		std::vector<std::string> commands = split(buffer, ' ');
@@ -97,8 +107,8 @@ void	handle_receive_message(std::vector<struct pollfd> poll_fds, int i, Serveur 
 		std::cout << "Client " << poll_fds[i].fd << " disconnected." << std::endl;
 		std::cout << "i = " << i << std::endl;
 		close(poll_fds[i].fd);
-		serveur.remove_poll_fd(poll_fds[i]);
-		serveur.remove_client(serveur.get_clients()[i]);
+		serveur->remove_poll_fd(poll_fds[i]);
+		serveur->remove_client(serveur->get_clients()[i]);
 		// --i;
 	}
 	std::cout << "error in message reception" << std::endl;
@@ -139,14 +149,14 @@ int	main(int ac, char **av)
 	Salon	*salooncaca = new Salon("CACA");
 	Salon	*saloonpipi = new Salon("PIPI");
 	Salon	*saloon = new Salon("CHANEL");
-	Serveur serveur;
+	Serveur *serveur = new Serveur;
 		
-	serveur.add_salon(salooncaca);
-	serveur.add_salon(saloonpipi);
-	serveur.add_salon(saloon);
+	serveur->add_salon(salooncaca);
+	serveur->add_salon(saloonpipi);
+	serveur->add_salon(saloon);
 	while (true)
 	{
-		std::vector<struct pollfd> poll_fds = serveur.get_poll_fds();
+		std::vector<struct pollfd> poll_fds = serveur->get_poll_fds();
 
 		int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
 		if (poll_count < 0)
@@ -156,7 +166,7 @@ int	main(int ac, char **av)
 		}
 
 		// Check if there is activity on serveur_fd, which mean that there is a new connection
-		if (poll_fds[0].revents & POLLIN && serveur.handdle_new_connexion() == -1)
+		if (poll_fds[0].revents & POLLIN && serveur->handdle_new_connexion() == -1)
 			continue;
 
 		for (size_t i = 1/*ou 1 mais jsp prq ca marche pas*/; i < poll_fds.size(); ++i)
@@ -171,6 +181,6 @@ int	main(int ac, char **av)
 		//handle_command();
 		//close(client_fd);
 	}
-	for (size_t i = 0; i < serveur.get_poll_fds().size(); ++i) { close(serveur.get_poll_fds()[i].fd); }
+	for (size_t i = 0; i < serveur->get_poll_fds().size(); ++i) { close(serveur->get_poll_fds()[i].fd); }
 	return (0);
 }
