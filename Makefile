@@ -19,9 +19,14 @@ BUILD_DIR   = 	.build
 OBJ_DIR     = 	$(BUILD_DIR)/obj
 DEP_DIR     = 	$(BUILD_DIR)/dep
 
-SRC			=	main.cpp
-OBJS        := $(patsubst $(SRC_DIR)%.cpp,$(OBJ_DIR)/%.o,$(SRC_DIR)$(SRC))
-DEPS        := $(patsubst $(SRC_DIR)%.cpp,$(DEP_DIR)/%.d,$(SRC_DIR)$(SRC))
+SRC 		= 	main.cpp \
+				errorDraw.cpp \
+				Server.cpp \
+				Client.cpp \
+				Channel.cpp
+ 
+OBJS 		:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
+DEPS 		:= $(patsubst %.cpp,$(DEP_DIR)/%.d,$(SRC))
 
 all: $(NAME)
 
@@ -30,7 +35,7 @@ $(NAME): $(OBJS)
 			@printf "  ✅ $(COLOR_2)$(NAME) successfully compiled$(RESET)\n"
 			@printf "  🔄 $(COLOR_3)$(NAME) is ready to run$(RESET) \n\n"
 
-$(OBJ_DIR)%.o : $(SRC_DIR)%.cpp
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 			@mkdir -p $(@D)
 			$(CXX) $(CXXFLAGS) $(IFLAGS) -c $< -o $@
 
