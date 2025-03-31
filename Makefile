@@ -22,7 +22,8 @@ DEP_DIR     = 	$(BUILD_DIR)/dep
 SRC 		= 	main.cpp \
 				errorDraw.cpp \
 				Server.cpp \
-				Client.cpp
+				Client.cpp \
+				Channel.cpp
  
 OBJS 		:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 DEPS 		:= $(patsubst %.cpp,$(DEP_DIR)/%.d,$(SRC))

@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 19:18:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/27 23:39:53 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/03/31 21:27:11 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,27 +46,64 @@ std::vector<std::vector<std::string> > tokenize(std::string buffer) {
 	return res;
 }
 
-void execute_command(std::vector<std::string> command, int clientSocket) {
+
+void	joinCommand(Server *server, Client *client, std::vector<std::string> commands)
+{
+	std::cout << BOLD GREEN << "User used the JOIN command with : [ " << commands[1] << " ]" << RESET << std::endl;
+	
+	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\n'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
+	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\r'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
+	
+	std::vector<Channel *> channelList = server->getChannel();
+	size_t 	channelSize = channelList.size();
+
+	for (size_t i = 0; i < channelSize + 1; i++)
+	{
+		std::string	msg = ":" + client->getNickName() + " JOIN :#" + commands[1] + "\r\n";
+	
+		if ( i < channelSize)
+		{
+			std::cout << GREEN << "Channel [ " << channelList[i]->getChannelName() << " ] exists, user joined it" << RESET << std::endl;
+			if ( channelList[i]->getChannelName() == commands[1])
+			{
+				channelList[i]->addClient(client);
+				channelList[i]->showClient();
+				server->sendMessage(client->getClientSocket(), msg.c_str());
+			}
+		}
+		else if (i == channelSize)
+		{
+			std::cout << BOLD GREEN << "The [ " << commands[1] << " ] channel doesn't exists, it will be created" << std::endl;
+			Channel *channel = new Channel(commands[1]);
+			server->addChannel(channel);
+			channelList[i]->addClient(client);
+			std::cout << "NIGGER2" << std::endl;
+			channelList[i]->showClient();
+			server->sendMessage(client->getClientSocket(), msg.c_str());
+			return;
+		}
+	}
+}
+
+void execute_command(Server *server, Client *client, std::vector<std::string> command) {
 
 	if (command[0] == "PASS") {
 		std::cout << "PASS command " ;
 
 		if (command[1] == PASSWORD)	
 		{
-			std::cout << "(Mot de passe correct)" << std::endl;
+			std::cout << "(Correct password)" << std::endl;
 			// Client is allowed to talk on the server
 		}
 		else
 		{
-			std::cout << "(Mot de passe incorrect)" << std::endl ;
+			std::cout << "(Incorrect password)" << std::endl ;
 			// Got to close this socket
 		}
 	}
 
 	else if (command[0] == "NICK") {
 		std::cout << "NICK command" << std::endl;
-		std::string response = ":eplouzen NICK " + command[1] + "\r\n";
-		send_message(clientSocket, response.c_str());
 	}
 
 	else if (command[0] == "USER")
@@ -76,7 +113,7 @@ void execute_command(std::vector<std::string> command, int clientSocket) {
 
 	else if (command[0] == "JOIN")
 	{
-		std::cout << "JOIN command" << std::endl;
+		joinCommand(server, client, command);
 	}
 
 	else if (command[0] == "PRIVMSG")
@@ -95,19 +132,19 @@ void execute_command(std::vector<std::string> command, int clientSocket) {
 	}
 }
 
-int handle_message(std::string buffer, int clientSocket) {
+int handle_message(Server *server, Client *client, std::string buffer) {
 
-	std::cout << "Message reçu de " << clientSocket << std::endl << buffer << std::endl;
+	std::cout << std::endl << BOLD CYAN << "Message receive from [" << client->getNickName() << "] : {"<< buffer << "}" RESET << std::endl;
 
 	std::vector<std::vector<std::string> > commands = tokenize(buffer);
 
 	for (size_t i = 0; i < commands.size(); i++) {
-		execute_command(commands[i], clientSocket);
+		execute_command(server, client, commands[i]);
 	}
 	std::cout << std::endl;
 
 	// Répondre avec un message IRC simple
-	send_message(clientSocket, "Message reçu!\r\n");
+	send_message(client->getClientSocket(), "Message reçu!\r\n");
 
 	return 0;
 }
@@ -120,11 +157,11 @@ int main(int ac, char **av) {
         return 1;
     }
 
-    Server server(stoi(av[1]));
+    Server *server = new Server(stoi(av[1]));
 
     while (true) {
 	
-		std::vector<struct pollfd> poll_fds = server.getPollFds();
+		std::vector<struct pollfd> poll_fds = server->getPollFds();
 
         int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
         if (poll_count < 0) 
@@ -133,7 +170,7 @@ int main(int ac, char **av) {
             break;
         }
 
-        if (poll_fds[0].revents & POLLIN && server.handleNewConnection() == -1)
+        if (poll_fds[0].revents & POLLIN && server->handleNewConnection() == -1)
 		{
 			std::cerr << "handleNewConnection failed" << ": " << strerror(errno) << std::endl;
             continue;
@@ -144,18 +181,19 @@ int main(int ac, char **av) {
             if (poll_fds[i].revents & POLLIN)
 			{
                 char buffer[BUFFER_SIZE];
+				memset(buffer, 0, BUFFER_SIZE);
                 int bytes_read = recv(poll_fds[i].fd, buffer, BUFFER_SIZE, 0);
                 std::string s_buffer = std::string(buffer);
                 s_buffer.erase(std::remove(s_buffer.begin(), s_buffer.end(), '\r'), s_buffer.end());
 
                 if (bytes_read > 0)
 				{
-					Client *client = server.getClients()[i];
+					Client *client = server->getClients()[i];
 
                     if (client)
 					{
 						std::cout << GREEN << client->getClientSocket() << " is clients[" << i << "]" << std::endl;
-						handle_message(s_buffer, client->getClientSocket ());
+						handle_message(server, client, s_buffer);
 					}
 	
 					else
@@ -169,8 +207,8 @@ int main(int ac, char **av) {
 					std::cout << "Client " << poll_fds[i].fd << " disconnected." << std::endl;
 					std::cout << "i = " << i << std::endl;
 					close(poll_fds[i].fd);
-					server.removePollFd(poll_fds[i]);
-					server.removeClient(server.getClients()[i]);
+					server->removePollFd(poll_fds[i]);
+					server->removeClient(server->getClients()[i]);
 				}
             }
         }

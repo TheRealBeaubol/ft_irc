@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/27 23:25:18 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/03/31 20:21:44 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,11 @@
 int setNonBlocking(int fd) {
 	
     int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1) { 
-        return -1; 
-    }
+    if (flags == -1) { return -1; }
+	
     flags |= O_NONBLOCK;
-    if (fcntl(fd, F_SETFL, flags) == -1) {
-        return -1;
-    }
+    
+	if (fcntl(fd, F_SETFL, flags) == -1) { return -1; }
     return 0;
 }
 
@@ -118,5 +116,15 @@ void Server::removeClient(Client* client)
 	}
 }
 
+void Server::addChannel(Channel *channel) { 
+	std::cout << "Adding a channel to server.channels" << std::endl;
+	_channels.push_back(channel);
+}
+
+void Server::removeChannel(Channel *channel) { 
+	_channels.erase(std::remove(_channels.begin(), _channels.end(), channel), _channels.end());
+}
+
+std::vector<Channel *> Server::getChannel() { return _channels; }
 std::vector<struct pollfd> Server::getPollFds() { return _pollFds; }
 std::vector<Client *> Server::getClients() { return _clients; }
