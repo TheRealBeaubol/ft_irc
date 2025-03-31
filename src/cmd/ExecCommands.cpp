@@ -40,14 +40,10 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 	}
 
 	else if (command[0] == "USER")
-	{
-		std::cout << "USER command" << std::endl;
-	}
+		userCommand(client, command);
 
 	else if (command[0] == "JOIN")
-	{
 		joinCommand(server, client, command);
-	}
 
 	else if (command[0] == "PRIVMSG")
 	{

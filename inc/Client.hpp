@@ -26,6 +26,9 @@ class Client {
 		void setNickName(std::string nick_name);
 		std::string getNickName() const;
 
+		void setUSerName(std::string user_name);
+		std::string getUSerName() const;
+
 		void setRealName(std::string real_name);
 		std::string getRealName() const;
 
@@ -33,5 +36,7 @@ class Client {
 		int _clientSocket;
 
 		std::string _nickName;
+		std::string _userName;
 		std::string _realName;
+
 };

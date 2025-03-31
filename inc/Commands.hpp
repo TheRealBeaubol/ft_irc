@@ -16,6 +16,7 @@
 #include "Server.hpp"
 #include "Client.hpp"
 
-void    execute_command(Server *server, Client *client, std::vector<std::string> command);
+void	execute_command(Server *server, Client *client, std::vector<std::string> command);
 
-void	joinCommand(Server *server, Client *client, std::vector<std::string> commands);
+void	joinCommand(Server *server, Client *client, std::vector<std::string> command);
+void	userCommand(Client *client, std::vector<std::string> command);
