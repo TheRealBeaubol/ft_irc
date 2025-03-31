@@ -1,37 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
+/*   define.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 20:06:03 by lboiteux         ###   ########.fr       */
+/*   Created: 2025/03/13 18:59:49 by lboiteux          #+#    #+#             */
+/*   Updated: 2025/03/27 23:24:40 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "includes.hpp"
-
-class Client {
-	public:
-		Client();
-		Client(int clientSocket);
-		~Client();
-
-		void setClientSocket(int clientSocket);
-		int getClientSocket() const;
-
-		void setNickName(std::string nick_name);
-		std::string getNickName() const;
-
-		void setRealName(std::string real_name);
-		std::string getRealName() const;
-
-	private:
-		int _clientSocket;
-
-		std::string _nickName;
-		std::string _realName;
-};
+#define BUFFER_SIZE 1024
+#define PASSWORD "password"

@@ -10,32 +10,38 @@ RESET		= \033[0m
 
 CXX			=	c++
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g -MMD -MP
+IFLAGS		=	-I ./inc
 RM			= 	@rm -rf
 MK			=   mkdir -p
 
-SRC_DIR		= 	srcs/
+SRC_DIR		= 	src
 BUILD_DIR   = 	.build
 OBJ_DIR     = 	$(BUILD_DIR)/obj
 DEP_DIR     = 	$(BUILD_DIR)/dep
 
-SRC			=	main.cpp
-OBJS        := $(patsubst $(SRC_DIR)%.cpp,$(OBJ_DIR)/%.o,$(SRC_DIR)$(SRC))
-DEPS        := $(patsubst $(SRC_DIR)%.cpp,$(DEP_DIR)/%.d,$(SRC_DIR)$(SRC))
+SRC 		= 	main.cpp \
+				errorDraw.cpp \
+				Server.cpp \
+				Client.cpp \
+				Channel.cpp
+ 
+OBJS 		:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
+DEPS 		:= $(patsubst %.cpp,$(DEP_DIR)/%.d,$(SRC))
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-			$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME) 
+			$(CXX) $(CXXFLAGS) $(IFLAGS) $(OBJS) -o $(NAME) 
 			@printf "  ✅ $(COLOR_2)$(NAME) successfully compiled$(RESET)\n"
 			@printf "  🔄 $(COLOR_3)$(NAME) is ready to run$(RESET) \n\n"
 
-$(OBJ_DIR)%.o : $(SRC_DIR)%.cpp
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 			@mkdir -p $(@D)
-			$(CXX) $(CXXFLAGS) -c $< -o $@
+			$(CXX) $(CXXFLAGS) $(IFLAGS) -c $< -o $@
 
 clean:
 			@printf "  👾 \033[1;4;38;5;240m$(NAME)$(RESET)   \n  $(COLOR_3)└──> 🗑️    $(COLOR_4).o and .d $(COLOR_5)have been deleted$(RESET)\n"
-			$(RM) $(OBJS) $(DEPS) $(OBJ_DIR)
+			$(RM) $(BUILD_DIR)
 
 fclean: clean
 			@printf "  $(COLOR_3)└──> 🗑️    $(COLOR_4)$(NAME) binary $(COLOR_5)has been deleted$(RESET)\n\n"	

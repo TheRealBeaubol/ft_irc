@@ -1,37 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
+/*   errorDraw.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 20:06:03 by lboiteux         ###   ########.fr       */
+/*   Created: 2025/03/13 19:01:21 by lboiteux          #+#    #+#             */
+/*   Updated: 2025/03/27 23:26:34 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "includes.hpp"
+#include <cstring>
 
-class Client {
-	public:
-		Client();
-		Client(int clientSocket);
-		~Client();
-
-		void setClientSocket(int clientSocket);
-		int getClientSocket() const;
-
-		void setNickName(std::string nick_name);
-		std::string getNickName() const;
-
-		void setRealName(std::string real_name);
-		std::string getRealName() const;
-
-	private:
-		int _clientSocket;
-
-		std::string _nickName;
-		std::string _realName;
-};
+std::string repeatChar(int n, const std::string& s);
+void drawBox(int width, std::string const title);

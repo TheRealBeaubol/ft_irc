@@ -1,25 +1,38 @@
-#ifndef INCLUDES_HPP
-# define INCLUDES_HPP
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   includes.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/13 18:59:50 by lboiteux          #+#    #+#             */
+/*   Updated: 2025/03/31 20:17:42 by lboiteux         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <iostream>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <poll.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <errno.h>
-#include <unistd.h>
+#pragma once
+
 #include <iostream>
 #include <cstring>
-#include <stdio.h> 
-#include <fcntl.h>
-#include <vector>
-#include "Client.hpp"
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
 
 #include <vector>
 #include <sstream>
 
 #include <algorithm>
 
-#endif
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <stdio.h> 
+#include <fcntl.h>
+#include <poll.h>
+
+#include "colors.hpp"
+#include "define.hpp"
+#include "Client.hpp"
+#include "Channel.hpp"
+#include "Server.hpp"
+#include "errorDraw.hpp"
