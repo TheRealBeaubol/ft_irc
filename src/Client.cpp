@@ -6,11 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 21:18:01 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes.hpp"
+#include "Includes.hpp"
 
 Client::Client(){}
 
@@ -18,7 +18,7 @@ Client::~Client(){}
 
 Client::Client(int clientSocket) {
 
-	std::cout << "Client has been created with " << clientSocket << " as clientSocket" << std::endl;
+	std::cout << BOLD YELLOW << "Client has been created with " << clientSocket << " as clientSocket" << std::endl;
 	_clientSocket = clientSocket;
 	setNickName("eplouzen");
 }

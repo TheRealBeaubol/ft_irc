@@ -6,21 +6,21 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:03 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 20:11:11 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Channel.hpp"
-#include "includes.hpp"
+#include "Includes.hpp"
 
 class Server {
 	public:
 		Server(int port);
 		~Server();
 
-		int handleNewConnection();
+		int handleNewConnexion();
 		void sendMessage(int clientSocket, const char *msg);
 		
 		void removePollFd(struct pollfd poll_fd);

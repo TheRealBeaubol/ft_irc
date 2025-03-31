@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errorDraw.cpp                                      :+:      :+:    :+:   */
+/*   ErrorDraw.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:35 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/27 23:36:44 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes.hpp"
+#include "Includes.hpp"
 
 std::string repeatChar(int n, const std::string& s) {
     

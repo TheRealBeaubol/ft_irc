@@ -6,11 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 20:21:44 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes.hpp"
+#include "Includes.hpp"
 
 int setNonBlocking(int fd) {
 	
@@ -26,32 +26,37 @@ int setNonBlocking(int fd) {
 Server::Server(int port)
 {
 
-	std::cout << BOLD BLUE << "Creating default IRC Server" << RESET << std::endl;
+	std::cout << std::endl << BOLD BLUE << "Creating default IRC Server on the "<< port << " port" << RESET << std::endl << std::endl;
 
+	std::cout << BOLD BLUE << "============ SERVER CREATION ============" << RESET << std::endl;
 	_port = port;
 	_serverFd = socket( AF_INET, SOCK_STREAM, 0 );
 	if ( _serverFd == -1 ) { std::cerr << BOLD RED << "Error while creating socket" << RESET << std::endl; }
-	std::cout << "Port: " << port << std::endl << GREEN << "Socket created !" << std::endl << "Server fd: " << _serverFd << std::endl;
+	std::cout << BOLD GREEN << "Socket created !" << std::endl;
    
 	int opt = 1;
 	if ( setsockopt( _serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof( opt ) ) == -1 ) {	std::cerr << BOLD RED << "Error while setting socket options" << RESET << std::endl; }
-    std::cout << GREEN << "Socket options set !" << std::endl;
+    std::cout << "Socket options set !" << std::endl;
 
     sockaddr_in address = {AF_INET, htons( port ), {INADDR_ANY}, {0}};
 
 	if ( bind( _serverFd, ( struct sockaddr* )&address, sizeof( address ) ) == -1 ) { std::cerr << BOLD RED << "Error while binding socket" << RESET << std::endl; }
-	std::cout << GREEN << "Socket binded !" << std::endl;
+	std::cout << "Socket binded !" << std::endl;
 
 	if ( listen( _serverFd, SOMAXCONN ) == -1 ) { std::cerr << BOLD RED << "Error while listening" << RESET << std::endl; }
-    std::cout << GREEN << "Server listening !" << std::endl;
+    std::cout << "Server listening !" << std::endl;
 
 	if ( setNonBlocking( _serverFd ) == -1 ) { std::cerr << BOLD RED << "Error while setting non-blocking" << RESET << std::endl; }
-	std::cout << GREEN << "Server set to non-blocking !" << std::endl;
+	std::cout << "Server set to non-blocking !" << RESET << std::endl;
 
+	std::cout << BOLD ORANGE << "Creating a new client for the server : " << std::endl << "	";
 	_clients.push_back( new Client( _serverFd ) );
+	std::cout << std::endl << RESET ;
+	
 	_pollFds.push_back( ( struct pollfd ) {_serverFd, POLLIN, 0} );
 
-    std::cout << GREEN << "Server listening on port : " << _port << std::endl;
+    std::cout << BOLD GREEN << "Server listening on port : " << _port << std::endl << RESET;
+	std::cout << BOLD BLUE << "=========================================" << std::endl << std::endl << RESET;
 }
 
 Server::~Server(){}
@@ -68,10 +73,10 @@ void Server::removePollFd(struct pollfd poll_fd)
 	}
 }
 
-int Server::handleNewConnection()
+int Server::handleNewConnexion()
 {
 
-	std::cout << "Handling new connection" << std::endl;
+	std::cout << BOLD BLUE << "------------- NEW CONNEXION -------------" << RESET << std::endl;
 
 	struct sockaddr_in client_addr;
 	socklen_t client_len = sizeof(client_addr);
@@ -79,27 +84,25 @@ int Server::handleNewConnection()
 	if (client_fd >= 0)	{
 		if (setNonBlocking(client_fd) == 0)
 		{
-			std::cout << "New connexion accepted: " << client_fd << std::endl;
-
 			Client *client = new Client(client_fd);
-			std::cout << "Adding " << client->getClientSocket() << " to serveur.clients " << _clients.size() << std::endl;
 			_clients.push_back(client);
 			struct pollfd poll_fd = {client_fd, POLLIN, 0};
-			std::cout << "Adding " << poll_fd.fd << " to serveur.poll_fds " << _pollFds.size() << std::endl;
 			_pollFds.push_back(poll_fd);
 		}
 		else
 		{
 			close(client_fd);
+			std::cout << BOLD BLUE << "-----------------------------------------" << std::endl << std::endl << RESET;
 			return -1;
 		}
 	}
+	std::cout << BOLD BLUE << "-----------------------------------------" << std::endl << std::endl << RESET;
 	return 0;
 }
 
 void Server::sendMessage(int clientSocket, const char *msg)
 {
-	std::cout << "Sending message : " << msg << std::endl;
+	std::cout << BOLD LIGHTBLUE << "Sending message : " << RESET LIGHTBLUE << std::endl << "	" << msg << RESET;
 	send(clientSocket, msg, strlen(msg), 0);
 }
 
@@ -117,7 +120,6 @@ void Server::removeClient(Client* client)
 }
 
 void Server::addChannel(Channel *channel) { 
-	std::cout << "Adding a channel to server.channels" << std::endl;
 	_channels.push_back(channel);
 }
 
