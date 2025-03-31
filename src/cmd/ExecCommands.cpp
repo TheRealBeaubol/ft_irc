@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:46:41 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 01:34:15 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 	else if (command[0] == "NICK")
     {
 		std::cout << "NICK command" << std::endl;
+		commandNick(server, client, command);
 	}
 
 	else if (command[0] == "USER")
