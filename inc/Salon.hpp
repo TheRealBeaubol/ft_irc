@@ -40,7 +40,8 @@ void	Salon::showClient(){
 	
 	std::cout << "show client command call!" << std::endl;
 	std::cout << "Size of Client for Salon " << _name << ": " << _clients.size() << std::endl;
-	for (IRC_AUTO it = _clients.begin(); it != _clients.end(); ++it) {
+	// for (IRC_AUTO it = _clients.begin(); it != _clients.end(); ++it) {
+	for (std::map<Client *, int>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
 		if (it->second == 1)
 	    	std::cout << "Client : " << it->first->get_nick_name() << ", he's an operator!" << std::endl;
 		else
