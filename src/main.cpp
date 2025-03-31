@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 19:18:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 21:27:11 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/03/31 21:33:58 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\n'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
 	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\r'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
 	
-	std::vector<Channel *> channelList = server->getChannel();
-	size_t 	channelSize = channelList.size();
+	size_t 	channelSize = server->getChannel().size();
 
 	for (size_t i = 0; i < channelSize + 1; i++)
 	{
@@ -63,11 +62,11 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 	
 		if ( i < channelSize)
 		{
-			std::cout << GREEN << "Channel [ " << channelList[i]->getChannelName() << " ] exists, user joined it" << RESET << std::endl;
-			if ( channelList[i]->getChannelName() == commands[1])
+			std::cout << GREEN << "Channel [ " << server->getChannel()[i]->getChannelName() << " ] exists, user joined it" << RESET << std::endl;
+			if ( server->getChannel()[i]->getChannelName() == commands[1])
 			{
-				channelList[i]->addClient(client);
-				channelList[i]->showClient();
+				server->getChannel()[i]->addClient(client);
+				server->getChannel()[i]->showClient();
 				server->sendMessage(client->getClientSocket(), msg.c_str());
 			}
 		}
@@ -76,9 +75,8 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 			std::cout << BOLD GREEN << "The [ " << commands[1] << " ] channel doesn't exists, it will be created" << std::endl;
 			Channel *channel = new Channel(commands[1]);
 			server->addChannel(channel);
-			channelList[i]->addClient(client);
-			std::cout << "NIGGER2" << std::endl;
-			channelList[i]->showClient();
+			server->getChannel()[i]->addClient(client);
+			server->getChannel()[i]->showClient();
 			server->sendMessage(client->getClientSocket(), msg.c_str());
 			return;
 		}
