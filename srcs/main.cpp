@@ -61,26 +61,31 @@ void	command_join(Serveur *serveur, Client *client, std::vector<std::string> com
 	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\n'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
 	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\r'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
 	std::cout << "command param: " << commands[1] << std::endl;
-	for (size_t i = 0; i < serveur->get_salon().size(); i++)
+	for (size_t i = 0; i < serveur->get_salon().size() + 1; i++)
 	{
-		std::cout << "Salon name: " << serveur->get_salon()[i]->getSalonName() << std::endl;
+		std::cout << i << std::endl;
 		std::string	msg = ":" + client->get_nick_name() + " JOIN :#" + commands[1] + "\r\n";
-		if ( serveur->get_salon()[i]->getSalonName() == commands[1])
+		if ( i < serveur->get_salon().size() )
 		{
-			serveur->get_salon()[i]->addClient(client);
-			serveur->get_salon()[i]->showClient();
-			serveur->send_message(client->get_clientSocket(), msg.c_str());
+			if (serveur->get_salon()[i]->getSalonName() == commands[1])
+			{
+				serveur->get_salon()[i]->addClient(client);
+				serveur->get_salon()[i]->showClient();
+				serveur->send_message(client->get_clientSocket(), msg.c_str());
+			}
 		}
-		else if (i == serveur->get_salon().size() - 1)
+		else if (i == serveur->get_salon().size())
 		{
 			std::cout << "Salon actually doesn't exist we going to create it" << std::endl;
 			Salon *salon = new Salon(commands[1]);
 			serveur->add_salon(salon);
-			i++;
+			if (i != 0)
+				i++;
 			serveur->get_salon()[i]->addClient(client);
 			//serveur->get_salon()[i]->
 			serveur->get_salon()[i]->showClient();
 			serveur->send_message(client->get_clientSocket(), msg.c_str());
+			return ;
 		}
 	}
 }
@@ -150,14 +155,14 @@ int	main(int ac, char **av)
 		std::cout << "error: wrong number of argument" << std::endl;
 		return (1);
 	}
-	Salon	*salooncaca = new Salon("CACA");
+	Serveur *serveur = new Serveur;
+	/*Salon	*salooncaca = new Salon("CACA");
 	Salon	*saloonpipi = new Salon("PIPI");
 	Salon	*saloon = new Salon("CHANEL");
-	Serveur *serveur = new Serveur;
 		
 	serveur->add_salon(salooncaca);
 	serveur->add_salon(saloonpipi);
-	serveur->add_salon(saloon);
+	serveur->add_salon(saloon);*/
 	while (true)
 	{
 		std::vector<struct pollfd> poll_fds = serveur->get_poll_fds();
