@@ -6,11 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 21:28:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes.hpp"
+#include "Includes.hpp"
 
 Channel::Channel(){}
 
@@ -30,7 +30,6 @@ void	Channel::addClient(Client *newClient){
 
 void	Channel::showClient(){
 	
-	std::cout << "show client command call!" << std::endl;
 	std::cout << "Size of Client for Channel " << _name << ": " << _clients.size() << std::endl;
 	// for (IRC_AUTO it = _clients.begin(); it != _clients.end(); ++it) {
 	for (std::map<Client *, int>::iterator it = _clients.begin(); it != _clients.end(); ++it) {

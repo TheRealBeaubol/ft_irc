@@ -19,11 +19,22 @@ BUILD_DIR   = 	.build
 OBJ_DIR     = 	$(BUILD_DIR)/obj
 DEP_DIR     = 	$(BUILD_DIR)/dep
 
-SRC 		= 	main.cpp \
-				errorDraw.cpp \
-				Server.cpp \
+SRC 		= 	cmd/ExecCommands.cpp \
+				cmd/Invite.cpp \
+				cmd/Join.cpp \
+				cmd/Kick.cpp \
+				cmd/Mode.cpp \
+				cmd/Nick.cpp \
+				cmd/Pass.cpp \
+				cmd/Privmsg.cpp \
+				cmd/Quit.cpp \
+				cmd/Topic.cpp \
+				cmd/User.cpp \
+				Channel.cpp \
 				Client.cpp \
-				Channel.cpp
+				ErrorDraw.cpp \
+				main.cpp \
+				Server.cpp
  
 OBJS 		:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 DEPS 		:= $(patsubst %.cpp,$(DEP_DIR)/%.d,$(SRC))
