@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 20:17:42 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:42:10 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,7 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Server.hpp"
+#include "errorCode.hpp"
 #include "errorDraw.hpp"
+#include "Command.hpp"
+

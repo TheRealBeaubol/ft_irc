@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 19:18:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 21:33:58 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:29:02 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 				server->getChannel()[i]->addClient(client);
 				server->getChannel()[i]->showClient();
 				server->sendMessage(client->getClientSocket(), msg.c_str());
+				return ;
 			}
 		}
 		else if (i == channelSize)
@@ -102,6 +103,7 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 
 	else if (command[0] == "NICK") {
 		std::cout << "NICK command" << std::endl;
+		commandNick(server, client, command);
 	}
 
 	else if (command[0] == "USER")

@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 21:18:01 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:52:35 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ Client::Client(int clientSocket) {
 
 	std::cout << "Client has been created with " << clientSocket << " as clientSocket" << std::endl;
 	_clientSocket = clientSocket;
-	setNickName("eplouzen");
 }
 
 void Client::setClientSocket( int clientSocket ) { _clientSocket = clientSocket; }

@@ -23,7 +23,8 @@ SRC 		= 	main.cpp \
 				errorDraw.cpp \
 				Server.cpp \
 				Client.cpp \
-				Channel.cpp
+				Channel.cpp \
+				Nick.cpp
  
 OBJS 		:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 DEPS 		:= $(patsubst %.cpp,$(DEP_DIR)/%.d,$(SRC))
