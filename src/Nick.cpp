@@ -13,14 +13,14 @@ bool	verifNickname(Server *server, std::vector<std::string> commands){
 	return (1);
 }
 
-oid    commandNick(Server *server, Client *client, std::vector<std::string> commands)
+void    commandNick(Server *server, Client *client, std::vector<std::string> commands)
 {
     std::cout << "NICK command call" << std::endl;
 
 	std::string	old_nickname = client->getNickName();
 
-	if (commands.size() < 2)
-		throw IrcError(client->getNickname(), ERR_NONICKNAMEGIVEN);
+	//if (commands.size() < 2)
+		//throw IrcError(client->getNickName(), ERR_NONICKNAMEGIVEN);
 
 	if (verifNickname(server, commands))
 	{
