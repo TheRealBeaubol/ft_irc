@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 15:26:06 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,3 +44,4 @@ void	Channel::showClient(){
 
 void	Channel::eraseClient(Client *indClient) { _clients.erase(indClient); }
 std::string	Channel::getChannelName() const{ return(_name); }
+std::map<Client *, int>	Channel::getClients() const { return(_clients); }

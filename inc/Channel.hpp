@@ -12,6 +12,8 @@ class Channel
 
 		void	addClient(Client* newClient);
 		void	eraseClient(Client* indClient);
+		std::map<Client *, int>	getClients() const;
+
 		void	showClient();
 		
 		std::string	getChannelName() const;

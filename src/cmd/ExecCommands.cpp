@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 02:58:52 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 16:20:01 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,10 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 		{
 			joinCommand(server, client, command);
 		}
-
+		else if (command[0] == "KICK")
+		{
+			commandKick(server, client, command);
+		}
 		else if (command[0] == "PRIVMSG")
 		{
 			std::cout << "PRIVMSG command" << std::endl;
