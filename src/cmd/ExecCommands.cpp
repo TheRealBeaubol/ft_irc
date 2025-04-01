@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 02:58:52 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 15:38:00 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,43 +21,38 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 	std::cout << std::endl << RESET;
 	std::cout << std::endl << BOLD BLUE << "_____________ " << command[0] << " COMMAND _____________" << RESET << std::endl << std::endl;
 
-	if (client->getIsAuth() == true){
+	if (client->getIsAuth() == true && (command[0] != "PASS" && command[0] != "NICK" && command[0] != "USER")) {
 		if (command[0] == "JOIN")
-		{
 			joinCommand(server, client, command);
-		}
-
+		
+		else if (command[0] == "TOPIC")
+			topicCommand(server, client, command);
+		
 		else if (command[0] == "PRIVMSG")
-		{
 			std::cout << "PRIVMSG command" << std::endl;
-		}
 
 		else if (command[0] == "QUIT")
-		{
 			std::cout << "QUIT command" << std::endl;
-		}
+
+		else
+			std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;
+
+		std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl  << std::endl << RESET;
+		return;
 	}
 
 	if (command[0] == "PASS")
-	{
 		passCommand(server, client, command);
-	}
 
 	else if (command[0] == "NICK")
-    {
 		commandNick(server, client, command);
-	}
 
 	else if (command[0] == "USER")
-	{
 		userCommand(client, command);
-	}
 
 	else
-	{
 		std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;
-	}
-	std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl << RESET;
-	std::cout << std::endl;
+
+	std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl << std::endl << RESET;
 }
 
