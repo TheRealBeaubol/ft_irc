@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:03 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 01:47:09 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 class Server {
 	public:
-		Server(int port);
+		Server(int port, std::string password);
 		~Server();
 
 		int handleNewConnexion();
@@ -33,9 +33,12 @@ class Server {
 		void removeChannel(Channel *channel);
 		std::vector<Channel *> getChannel();
 
+		std::string getPassword() const;
+
 	private:
 		int _serverFd;
 		int _port;
+		std::string _password;
 		
 		std::vector<struct pollfd> _pollFds;
 		std::vector<Client *> _clients;

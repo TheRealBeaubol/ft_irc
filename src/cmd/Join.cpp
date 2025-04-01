@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:43:10 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 02:19:51 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 void	joinCommand(Server *server, Client *client, std::vector<std::string> commands) {
 		
-	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\n'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
-	commands[1].erase(std::remove(commands[1].begin(), commands[1].end(), '\r'), commands[1].end()); //faut vraiment remplacer cette ligne ptdrrrrr
-	
 	size_t 	channelSize = server->getChannel().size();
 
 	for (size_t i = 0; i < channelSize + 1; i++)

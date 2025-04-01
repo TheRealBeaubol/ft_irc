@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 02:12:27 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,13 @@ class Client {
 		void setRealName(std::string real_name);
 		std::string getRealName() const;
 
+		void setIsAuth(bool isAuth);
+		bool getIsAuth() const;
+
 	private:
 		int _clientSocket;
 
+		bool _isAuth;
 		std::string _nickName;
 		std::string _realName;
 };

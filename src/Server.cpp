@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 02:31:16 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,16 @@ int setNonBlocking(int fd) {
     return 0;
 }
 
-Server::Server(int port)
+Server::Server(int port, std::string password)
 {
 
 	std::cout << std::endl << BOLD BLUE << "Creating default IRC Server on the "<< port << " port" << RESET << std::endl << std::endl;
 
 	std::cout << BOLD BLUE << "============ SERVER CREATION ============" << RESET << std::endl;
+	
 	_port = port;
+	_password = password;
+	
 	_serverFd = socket( AF_INET, SOCK_STREAM, 0 );
 	if ( _serverFd == -1 ) { std::cerr << BOLD RED << "Error while creating socket" << RESET << std::endl; }
 	std::cout << BOLD GREEN << "Socket created !" << std::endl;
@@ -50,7 +53,10 @@ Server::Server(int port)
 	std::cout << "Server set to non-blocking !" << RESET << std::endl;
 
 	std::cout << BOLD ORANGE << "Creating a new client for the server : " << std::endl << "	";
-	_clients.push_back( new Client( _serverFd ) );
+	Client *client = new Client( _serverFd );
+	client->setIsAuth(true);
+	std::cout << "getIsAuth() : " << client->getIsAuth() << std::endl;
+	_clients.push_back( client );
 	std::cout << std::endl << RESET ;
 	
 	_pollFds.push_back( ( struct pollfd ) {_serverFd, POLLIN, 0} );
@@ -88,6 +94,7 @@ int Server::handleNewConnexion()
 			_clients.push_back(client);
 			struct pollfd poll_fd = {client_fd, POLLIN, 0};
 			_pollFds.push_back(poll_fd);
+			send(client->getClientSocket(), "Welcome to the IRC server !\n", 28, 0);
 		}
 		else
 		{
@@ -130,3 +137,4 @@ void Server::removeChannel(Channel *channel) {
 std::vector<Channel *> Server::getChannel() { return _channels; }
 std::vector<struct pollfd> Server::getPollFds() { return _pollFds; }
 std::vector<Client *> Server::getClients() { return _clients; }
+std::string Server::getPassword() const { return _password; }
