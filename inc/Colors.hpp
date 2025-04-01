@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:46 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/13 18:59:47 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:31:04 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@
 #define MAGENTA "\033[35m"
 #define CYAN "\033[36m"
 #define WHITE "\033[37m"
+#define ORANGE "\033[38;5;208m"
+#define LIGHTMAGENTA "\033[38;5;13m"
+#define LIGHTBLUE "\033[38;5;27m"
 
 #define BGBLACK "\033[40m"
 #define BGRED "\033[41m"

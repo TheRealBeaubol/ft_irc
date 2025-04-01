@@ -6,21 +6,21 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:03 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/03/31 20:11:11 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 02:57:04 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Channel.hpp"
-#include "includes.hpp"
+#include "Includes.hpp"
 
 class Server {
 	public:
-		Server(int port);
+		Server(int port, std::string password);
 		~Server();
 
-		int handleNewConnection();
+		int handleNewConnexion();
 		void sendMessage(int clientSocket, const char *msg);
 		
 		void removePollFd(struct pollfd poll_fd);
@@ -33,9 +33,12 @@ class Server {
 		void removeChannel(Channel *channel);
 		std::vector<Channel *> getChannel();
 
+		std::string getPassword() const;
+
 	private:
 		int _serverFd;
 		int _port;
+		std::string _password;
 		
 		std::vector<struct pollfd> _pollFds;
 		std::vector<Client *> _clients;

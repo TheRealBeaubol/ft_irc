@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   includes.hpp                                       :+:      :+:    :+:   */
+/*   Includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:42:10 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,11 @@
 #include <fcntl.h>
 #include <poll.h>
 
-#include "colors.hpp"
-#include "define.hpp"
-#include "Client.hpp"
 #include "Channel.hpp"
+#include "Client.hpp"
+#include "Colors.hpp"
+#include "Commands.hpp"
+#include "Define.hpp"
+#include "ErrorCode.hpp"
+#include "ErrorDraw.hpp"
 #include "Server.hpp"
-#include "errorCode.hpp"
-#include "errorDraw.hpp"
-#include "Command.hpp"
-
