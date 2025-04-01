@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 01:34:15 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/01 02:58:52 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,39 +21,36 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 	std::cout << std::endl << RESET;
 	std::cout << std::endl << BOLD BLUE << "_____________ " << command[0] << " COMMAND _____________" << RESET << std::endl << std::endl;
 
-	if (command[0] == "PASS") {
-		std::cout << "PASS command " ;
+	if (client->getIsAuth() == true){
+		if (command[0] == "JOIN")
+		{
+			joinCommand(server, client, command);
+		}
 
-		if (command[1] == PASSWORD)	
+		else if (command[0] == "PRIVMSG")
 		{
-			std::cout << "(Correct password)" << std::endl;
+			std::cout << "PRIVMSG command" << std::endl;
 		}
-		else
+
+		else if (command[0] == "QUIT")
 		{
-			std::cout << "(Incorrect password)" << std::endl ;
+			std::cout << "QUIT command" << std::endl;
 		}
+	}
+
+	if (command[0] == "PASS")
+	{
+		passCommand(server, client, command);
 	}
 
 	else if (command[0] == "NICK")
     {
-		std::cout << "NICK command" << std::endl;
 		commandNick(server, client, command);
 	}
 
 	else if (command[0] == "USER")
+	{
 		userCommand(client, command);
-
-	else if (command[0] == "JOIN")
-		joinCommand(server, client, command);
-
-	else if (command[0] == "PRIVMSG")
-	{
-		std::cout << "PRIVMSG command" << std::endl;
-	}
-
-	else if (command[0] == "QUIT")
-	{
-		std::cout << "QUIT command" << std::endl;
 	}
 
 	else

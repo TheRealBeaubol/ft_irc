@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 03:00:56 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ Client::Client(int clientSocket) {
 
 	std::cout << BOLD YELLOW << "Client has been created with " << clientSocket << " as clientSocket" << std::endl;
 	_clientSocket = clientSocket;
+	_isAuth = false;
 	setNickName("");
 	setRealName("");
 }
@@ -35,3 +36,6 @@ std::string Client::getUSerName() const { return _userName; }
 
 void Client::setRealName( std::string real_name ) { _realName = real_name; }
 std::string Client::getRealName() const { return _realName; }
+
+void Client::setIsAuth( bool isAuth ) { _isAuth = isAuth; }
+bool Client::getIsAuth() const { return _isAuth; }
