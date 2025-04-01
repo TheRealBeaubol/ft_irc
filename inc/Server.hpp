@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:03 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 15:09:25 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 22:21:29 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class Server {
 		std::vector<Channel *> getChannel();
 
 		Channel *findChannel(std::string channelName);
+		Client *findClient(std::string ClientName);
 
 		std::string getPassword() const;
 

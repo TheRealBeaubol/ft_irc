@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 19:18:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 03:01:59 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 20:44:10 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int handle_message(Server *server, Client *client, std::string buffer) {
 		execute_command(server, client, commands[i]);
 	}
 
-	// send(client->getClientSocket(), "Message reçu!\r\n", 15, 0);
+		// send(client->getClientSocket(), "Message reçu!\r\n", 15, 0);
 	return 0;
 }
 

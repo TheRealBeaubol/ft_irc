@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:43:22 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 17:08:55 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/01 22:32:13 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "Includes.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
+
+void	inviteCommand(Server *server, Client *client, std::vector<std::string> command);
 
 void    execute_command(Server *server, Client *client, std::vector<std::string> command);
 
