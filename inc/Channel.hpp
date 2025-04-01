@@ -2,6 +2,7 @@
 
 #include "Client.hpp"
 #include <map>
+#include <string>
 
 class Channel
 {
@@ -16,7 +17,13 @@ class Channel
 		
 		std::string	getChannelName() const;
 
+		std::string	getTopic() const;
+		void		setTopic(std::string topic);
+
+		void		broadcastMessage(std::string message, Client *sender);
+
 	private:
 		std::string	_name;
+		std::string	_topic;
 		std::map<Client *, int> _clients;
 };

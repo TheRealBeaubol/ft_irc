@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:43:22 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 03:05:13 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 14:02:42 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,4 +24,7 @@ void    commandNick(Server *server, Client *client, std::vector<std::string> com
 
 void	passCommand(Server *server, Client *client, std::vector<std::string> commands);
 
-void userCommand(Client *client, std::vector<std::string> command);
+void    topicCommand(Server *server, Client *client, std::vector<std::string> command);
+
+void    userCommand(Client *client, std::vector<std::string> command);
+

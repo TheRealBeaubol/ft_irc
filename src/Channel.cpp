@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 15:55:39 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Channel::Channel(){}
 
-Channel::Channel(std::string name): _name(name) {}
+Channel::Channel(std::string name): _name(name), _topic("") {}
 
 Channel::~Channel(){}
 
@@ -42,5 +42,17 @@ void	Channel::showClient(){
     }
 }
 
+void	Channel::broadcastMessage(std::string message, Client *sender){
+	
+	for (std::map<Client *, int>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+		if (it->first != sender)
+			send(it->first->getClientSocket(), message.c_str(), message.size(), 0);
+	}
+}
+
 void	Channel::eraseClient(Client *indClient) { _clients.erase(indClient); }
+
 std::string	Channel::getChannelName() const{ return(_name); }
+
+std::string Channel::getTopic() const { return(_topic); }
+void	Channel::setTopic(std::string topic) { _topic = topic; }
