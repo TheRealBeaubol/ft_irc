@@ -6,14 +6,14 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:38 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 03:00:20 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 03:04:56 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-void userCommand(Client *client, std::vector<std::string> command)
-{
+void userCommand(Client *client, std::vector<std::string> command) {
+
 	// std::cout << "USER command" << std::endl;
 
 	size_t 	commandSize = command.size();
