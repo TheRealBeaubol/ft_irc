@@ -6,11 +6,12 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 03:02:38 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 15:39:47 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
+#include <iostream>
 
 int setNonBlocking(int fd) {
 	
@@ -138,3 +139,14 @@ std::vector<Channel *> Server::getChannel() { return _channels; }
 std::vector<struct pollfd> Server::getPollFds() { return _pollFds; }
 std::vector<Client *> Server::getClients() { return _clients; }
 std::string Server::getPassword() const { return _password; }
+
+Channel *Server::findChannel(std::string channelName)
+{
+	std::vector<Channel *> channel = Server::getChannel();
+	for (size_t i = 0; i < channel.size(); i++)
+	{
+		if ("#" + channel[i]->getChannelName() == channelName)
+			return channel[i];
+	}
+	return NULL;
+}
