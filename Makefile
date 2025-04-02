@@ -27,7 +27,6 @@ SRC 		= 	cmd/ExecCommands.cpp \
 				cmd/Nick.cpp \
 				cmd/Pass.cpp \
 				cmd/Privmsg.cpp \
-				cmd/Quit.cpp \
 				cmd/Topic.cpp \
 				cmd/User.cpp \
 				Channel.cpp \
