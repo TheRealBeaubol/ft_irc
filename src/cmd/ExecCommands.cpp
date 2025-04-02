@@ -27,6 +27,9 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 		
 		else if (command[0] == "TOPIC")
 			topicCommand(server, client, command);
+
+		else if (command[0] == "MODE")
+			modeCommand(server, client, command);
 		
 		else if (command[0] == "PRIVMSG")
 			std::cout << "PRIVMSG command" << std::endl;
@@ -56,3 +59,23 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 	std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl << std::endl << RESET;
 }
 
+/*
+	if (! logged && )
+		if commande == pass
+			command_pass
+
+	else if (nick == "")
+		if (commande == nick)
+			command_nick
+	
+	else if (user_name == "")
+		if (commande == user)
+			command_user
+
+	else if (command == JOIN || PRIVMSG || ...)
+		do_cmd
+
+	else
+		cout unknown command;
+
+*/

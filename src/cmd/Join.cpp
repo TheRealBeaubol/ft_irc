@@ -36,6 +36,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 			server->addChannel(channel);
 			server->getChannel()[i]->addClient(client);
 			server->sendMessage(client->getClientSocket(), msg.c_str());
+			server->getChannel()[i]->showClient();
 			return;
 		}
 	}

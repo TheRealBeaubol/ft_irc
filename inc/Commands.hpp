@@ -16,15 +16,17 @@
 #include "Server.hpp"
 #include "Client.hpp"
 
-void    execute_command(Server *server, Client *client, std::vector<std::string> command);
+void	execute_command(Server *server, Client *client, std::vector<std::string> command);
 
 void	joinCommand(Server *server, Client *client, std::vector<std::string> commands);
 
-void    commandNick(Server *server, Client *client, std::vector<std::string> commands);
+void	modeCommand(Server *server, Client *client, std::vector<std::string> command);
+
+void	commandNick(Server *server, Client *client, std::vector<std::string> commands);
 
 void	passCommand(Server *server, Client *client, std::vector<std::string> commands);
 
-void    topicCommand(Server *server, Client *client, std::vector<std::string> command);
+void	topicCommand(Server *server, Client *client, std::vector<std::string> command);
 
-void    userCommand(Client *client, std::vector<std::string> command);
+void	userCommand(Client *client, std::vector<std::string> command);
 
