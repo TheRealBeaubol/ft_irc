@@ -146,7 +146,7 @@ Channel *Server::findChannel(std::string channelName)
 	std::vector<Channel *> channel = Server::getChannel();
 	for (size_t i = 0; i < channel.size(); i++)
 	{
-		if ("#" + channel[i]->getChannelName() == channelName)
+		if ("#" + channel[i]->getName() == channelName)
 			return channel[i];
 	}
 	return NULL;

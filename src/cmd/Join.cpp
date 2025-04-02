@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:11:46 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:32:56 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 	
 		if ( i < channelSize)
 		{
-			std::cout << LIGHTMAGENTA << "Channel [ " << server->getChannel()[i]->getChannelName() << " ] exists, user joined it" << RESET << std::endl;
-			if ( server->getChannel()[i]->getChannelName() == commands[1])
+			std::cout << LIGHTMAGENTA << "Channel [ " << server->getChannel()[i]->getName() << " ] exists, user joined it" << RESET << std::endl;
+			if ( server->getChannel()[i]->getName() == commands[1])
 			{
 				client->addChannel(server->getChannel()[i]);
 				server->getChannel()[i]->addClient(client);
