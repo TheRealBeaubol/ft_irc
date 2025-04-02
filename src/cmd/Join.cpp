@@ -13,7 +13,7 @@
 #include "Commands.hpp"
 
 void	joinCommand(Server *server, Client *client, std::vector<std::string> commands) {
-		
+
 	size_t 	channelSize = server->getChannel().size();
 
 	for (size_t i = 0; i < channelSize + 1; i++)
@@ -22,8 +22,8 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 	
 		if ( i < channelSize)
 		{
-			std::cout << LIGHTMAGENTA << "Channel [ " << server->getChannel()[i]->getChannelName() << " ] exists, user joined it" << RESET << std::endl;
-			if ( server->getChannel()[i]->getChannelName() == commands[1])
+			std::cout << LIGHTMAGENTA << "Channel [ " << server->getChannel()[i]->getName() << " ] exists, user joined it" << RESET << std::endl;
+			if ( server->getChannel()[i]->getName() == commands[1])
 			{
 				server->getChannel()[i]->addClient(client);
 				server->sendMessage(client->getClientSocket(), msg.c_str());
