@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:43:22 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 02:50:10 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 03:28:48 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 void	inviteCommand(Server *server, Client *client, std::vector<std::string> command);
 
-void    execute_command(Server *server, Client *client, std::vector<std::string> command);
+void    executeCommand(Server *server, Client *client, std::vector<std::string> command);
 
 void	joinCommand(Server *server, Client *client, std::vector<std::string> commands);
 

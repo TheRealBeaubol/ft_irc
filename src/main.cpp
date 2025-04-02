@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 19:18:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 02:55:48 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 03:28:48 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int handle_message(Server *server, Client *client, std::string buffer) {
 
 	std::vector<std::vector<std::string> > commands = tokenize(buffer);
 	for (size_t i = 0; i < commands.size(); i++) {
-		execute_command(server, client, commands[i]);
+		executeCommand(server, client, commands[i]);
 	}
 
 	// send(client->getClientSocket(), "Message reçu!\r\n", 15, 0);
