@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:33:50 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 15:43:17 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,6 @@ bool*	Channel::getClientParam(Client* client)
 	return NULL;
 }
 
-void	Channel::eraseClient(Client *indClient) { _clients.erase(indClient); }
-
 void	Channel::showClient(){
 	
 	std::cout << "Size of Client for Channel " << _name << ": " << _clients.size() << std::endl;
@@ -82,18 +80,11 @@ void	Channel::showClient(){
 
 void	Channel::broadcastChannel(std::string message, Client *sender){
 	
-	for (std::map<Client *, int>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+	for (std::map<Client *, bool *>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
 		if (it->first != sender)
 			send(it->first->getClientSocket(), message.c_str(), message.size(), 0);
 	}
 }
-
-void	Channel::eraseClient(Client *indClient) { _clients.erase(indClient); }
-
-std::string	Channel::getChannelName() const{ return(_name); }
-
-void	Channel::setTopic(std::string topic) { _topic = topic; }
-std::string Channel::getTopic() const { return(_topic); }
 
 void	Channel::eraseClient(Client *indClient) { _clients.erase(indClient); }
 
@@ -104,4 +95,4 @@ void	Channel::setTopic(std::string topic) { _topic = topic; }
 
 std::string Channel::getTopicAuthor() const { return(_topicAuthor); }
 void	Channel::setTopicAuthor(std::string topicAuthor) { _topicAuthor = topicAuthor; }
-std::map<Client *, int>	Channel::getClients() const { return(_clients); }
+std::map<Client *, bool *>	Channel::getClients() const { return(_clients); }

@@ -20,7 +20,7 @@ class Channel
 		void		showClient();
 		
 		std::string	getChannelName() const;
-		std::map<Client *, int>	getClients() const;
+		std::map<Client *, bool *>	getClients() const;
 
 		std::string	getTopic() const;
 		void		setTopic(std::string topic);

@@ -6,13 +6,13 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:38:05 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 15:43:37 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-void execute_command(Server *server, Client *client, std::vector<std::string> command) {
+void executeCommand(Server *server, Client *client, std::vector<std::string> command) {
 
 	std::cout << BOLD CYAN << "Message receive from [" << client->getNickName() << "] :" << std::endl << RESET << "	";
 	for (size_t i = 0; i < command.size(); i++) {
