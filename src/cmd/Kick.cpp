@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 03:03:01 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 03:08:13 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,5 +50,5 @@ void	commandKick(Server *server, Client *client, std::vector<std::string> comman
 
 	std::string msg = ":" + client->getNickName() + " KICK " + command[1] + " " + command[2] + "\r\n";	
 	//std::cout << "message que je send: " << msg << std::endl << "nombre total client: " << server->getClients().size() <<std::endl;
-	tmpChannel->broadcastMessage(msg, NULL);
+	tmpChannel->broadcastChannel(msg, NULL);
 }

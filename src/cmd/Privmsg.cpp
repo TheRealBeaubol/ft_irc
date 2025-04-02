@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:20 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 03:03:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 03:20:15 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,11 @@ void	msgChannel(Server *server, Client *client, std::vector<std::string> command
 		return ;
 	}
 	std::string	msg = ":" + client->getNickName() + " PRIVMSG #" + tmpChannel->getChannelName() + " :" + command[2] + "\r\n"; 
-	tmpChannel->broadcastMessage(msg, client);
+	tmpChannel->broadcastChannel(msg, NULL);
 }
 
 void	msgUser(Server *server, Client *client, std::vector<std::string> command){
+
 	Client *tmpClient = server->findClient(command[1]);
 	if (!tmpClient)
 	{
@@ -50,10 +51,11 @@ void	msgUser(Server *server, Client *client, std::vector<std::string> command){
 		std::cout << "the user is not found!" << std::endl;
 		return ;
 	}
-	std::string	msg = ":" + client->getNickName() + " PRIVMSG #" + tmpClient->getNickName() + " :" + command[2] + "\r\n"; 
+	std::string	msg = ":" + client->getNickName() + " PRIVMSG " + tmpClient->getNickName() + " :" + command[2] + "\r\n"; 
 	send(tmpClient->getClientSocket(), msg.c_str(), msg.length(), 0);
 }
 void	prvmsgCommand(Server *server, Client *client, std::vector<std::string>	command){
+
 	if (command[1][0] == '#')
 		msgChannel(server, client, command);
 	else

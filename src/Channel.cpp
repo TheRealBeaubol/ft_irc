@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 02:54:30 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 03:07:44 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,3 +59,4 @@ void	Channel::setTopic(std::string topic) { _topic = topic; }
 
 std::string Channel::getTopicAuthor() const { return(_topicAuthor); }
 void	Channel::setTopicAuthor(std::string topicAuthor) { _topicAuthor = topicAuthor; }
+std::map<Client *, int>	Channel::getClients() const { return(_clients); }
