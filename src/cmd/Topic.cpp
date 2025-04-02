@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:35 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:20:03 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:45:19 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void topicCommand(Server *server, Client *client, std::vector<std::string> comma
         std::cout << BOLD RED << msg << RESET;
         return ;
     }
-    if (channel->getTopicUserAccess() == true && channel->getClientParam(client)[2] == false) {
+    if (channel->getTopicUserAccess() == false && channel->getClientParam(client)[2] == false) {
         msg = ":" + serverName + " 482 " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n";
         send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
         std::cout << BOLD RED << msg << RESET; 

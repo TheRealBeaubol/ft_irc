@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:36:12 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:41:36 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ std::string Channel::getPassword() const{ return _password; }
 void Channel::setTopic(std::string topic) { _topic = topic; }
 std::string Channel::getTopic() const { return _topic; }
 
+void	Channel::setTopicAuthor(std::string topicAuthor) { _topicAuthor = topicAuthor; }
+std::string Channel::getTopicAuthor() const { return(_topicAuthor); }
+
 void Channel::setTopicUserAccess(bool topicUserAccess){ _topicUserAccess = topicUserAccess; }
 bool Channel::getTopicUserAccess() const{ return _topicUserAccess; }
 
@@ -35,6 +38,10 @@ bool Channel::getInviteOnly() const{ return _inviteOnly; }
 
 void Channel::setClientLimit(int clientLimit){ _clientLimit = clientLimit; }
 int Channel::getClientLimit() const{ return _clientLimit; }
+
+std::string	Channel::getChannelName() const{ return(_name); }
+
+std::map<Client *, bool *>	Channel::getClients() const { return(_clients); }
 
 //*******************************************************************************
 
@@ -117,14 +124,3 @@ void Channel::broadcastChannel(std::string message, Client *sender)
 }
 
 void	Channel::eraseClient(Client *indClient) { _clients.erase(indClient); }
-
-std::string	Channel::getChannelName() const{ return(_name); }
-
-std::string Channel::getTopic() const { return(_topic); }
-void	Channel::setTopic(std::string topic) { _topic = topic; }
-
-std::string Channel::getTopicAuthor() const { return(_topicAuthor); }
-void	Channel::setTopicAuthor(std::string topicAuthor) { _topicAuthor = topicAuthor; }
-std::map<Client *, bool *>	Channel::getClients() const { return(_clients); }
-
-bool	Channel::getTopicUserAccess() const { return(_topicUserAccess); }

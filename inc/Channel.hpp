@@ -21,6 +21,9 @@ class Channel
 		void		setTopic(std::string topic);
 		std::string	getTopic() const;
 
+		std::string getTopicAuthor() const;
+		void		setTopicAuthor(std::string topicAuthor);
+
 		void		setTopicUserAccess(bool topicUserAccess);
 		bool		getTopicUserAccess() const;
 
@@ -40,15 +43,7 @@ class Channel
 		std::string	getChannelName() const;
 		std::map<Client *, bool *>	getClients() const;
 
-		std::string	getTopic() const;
-		void		setTopic(std::string topic);
-
-		std::string getTopicAuthor() const;
-		void		setTopicAuthor(std::string topicAuthor);
-
 		void		broadcastChannel(std::string message, Client *sender);
-
-		bool		getTopicUserAccess() const;
 
 	private:
 
