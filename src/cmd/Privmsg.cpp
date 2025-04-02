@@ -6,21 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:20 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:49:18 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:19:04 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
-
-bool	checkInChannel(Channel *channel, Client *client){
-
-	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
-
-		if (it->first->getClientSocket() == client->getClientSocket())
-			return (1);
-	}		
-	return (0);
-}
 
 void	msgChannel(Server *server, Client *client, std::vector<std::string> command){
 	Channel *tmpChannel = server->findChannel(command[1]);
@@ -29,7 +19,7 @@ void	msgChannel(Server *server, Client *client, std::vector<std::string> command
 		std::cout << "channel doesn't exist!" << std::endl;
 		return ;
 	}
-	if (!checkInChannel(tmpChannel, client))
+	if (!tmpChannel->getClientByName(client->getNickName()))
 	{
 		std::cout << "Senter is not in the Channel!" << std::cout;
 		return ;
