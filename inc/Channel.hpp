@@ -30,6 +30,8 @@ class Channel
 
 		void		broadcastChannel(std::string message, Client *sender);
 
+		bool		getTopicUserAccess() const;
+
 	private:
 
 		std::string	_name;

@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 03:02:25 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 18:30:49 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 			std::cout << LIGHTMAGENTA << "Channel [ " << server->getChannel()[i]->getChannelName() << " ] exists, user joined it" << RESET << std::endl;
 			if ( server->getChannel()[i]->getChannelName() == commands[1])
 			{
+				client->addChannel(server->getChannel()[i]);
 				server->getChannel()[i]->addClient(client);
 				server->sendMessage(client->getClientSocket(), msg.c_str());
 				return ;			
@@ -35,6 +36,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 			std::cout << LIGHTMAGENTA << "The [ " << commands[1] << " ] channel doesn't exists, it will be created" << std::endl;
 			Channel *channel = new Channel(commands[1]);
 			server->addChannel(channel);
+			client->addChannel(server->getChannel()[i]);
 			server->getChannel()[i]->addClient(client);
 			server->sendMessage(client->getClientSocket(), msg.c_str());
 			server->getChannel()[i]->showClient();

@@ -6,13 +6,16 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 02:49:28 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 18:59:56 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Includes.hpp"
+#include "Channel.hpp"
+
+class Channel;
 
 class Client {
 	public:
@@ -29,17 +32,21 @@ class Client {
 		void setUserName(std::string user_name);
 		std::string getUserName() const;
 
-		void setRealName(std::string real_name);
-		std::string getRealName() const;
+		void setIsLog(bool isLog);
+		bool getIsLog() const;
 
 		void setIsAuth(bool isAuth);
 		bool getIsAuth() const;
 
+		void addChannel(Channel *channel);
+		void removeChannel(Channel *channel);
+		std::vector<Channel *> getChannels() const;
 	private:
 		int _clientSocket;
+		std::vector<Channel *>_channels;
 
 		bool _isAuth;
+		bool _isLog;
 		std::string _nickName;
 		std::string _userName;
-		std::string _realName;
 };

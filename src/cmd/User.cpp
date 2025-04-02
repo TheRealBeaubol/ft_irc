@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:38 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 03:04:21 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 19:01:48 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,30 @@
 
 void userCommand(Client *client, std::vector<std::string> command) {
 
-	if (client->getRealName() != "")
-		std::cout << "Already logged (need to send : ERR_ALREADYREGISTRED (462))" << std::endl;
-	else if (command.size() < 2)
-		std::cout << "Too few parameter (need to send ERR_NEEDMOREPARAMS (461))" << std::endl;
+	std::string serverName = std::string(SERVER_NAME);
+	std::string msg;
+
+	if (client->getIsLog() == true)
+	{
+		msg = ":" + serverName + " 462 " + client->getNickName() + " :You may not reregister\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+		std::cout << BOLD RED << msg << RESET;
+	}
+	else if (command.size() < 2) 
+	{
+		msg = ":" + serverName + " 461 " + client->getNickName() + " USER :Not enough parameters\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+		std::cout << BOLD RED << msg << RESET;
+	}	
 	else
 	{
 		client->setUserName(command[1]);
-
-		std::string realName;
-		for (size_t i = 4; i < command.size(); i++)
+		if (client->getNickName() != "")
 		{
-			realName += command[i];
-			if (i < command.size() - 1)
-				realName += " ";
+			client->setIsLog(true);
+			msg = ":" + serverName + " 001 " + client->getNickName() + " :Welcome to the Internet Relay Chat Network " + client->getNickName() + "!" + client->getUserName() + "@" + serverName + "\r\n";
+			send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+			std::cout << BOLD GREEN << msg << RESET;
 		}
-		client->setRealName(realName);
 	}
 }
