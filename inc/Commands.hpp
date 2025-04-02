@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:43:22 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 22:32:13 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/02 02:41:40 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 void    commandNick(Server *server, Client *client, std::vector<std::string> commands);
 
 void	passCommand(Server *server, Client *client, std::vector<std::string> commands);
+
+void	prvmsgCommand(Server *server, Client *client, std::vector<std::string>	command);
 
 void    topicCommand(Server *server, Client *client, std::vector<std::string> command);
 

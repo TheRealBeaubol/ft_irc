@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:32 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 23:43:59 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/02 00:12:20 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,12 @@ void	inviteCommand(Server *server, Client *client, std::vector<std::string> comm
 	/*if (inviteIsInChannel(tmpChannel, command[1]))
 	{
 		std::cout << "The user u want to invite is already in the Channel!" << std::endl;
+		return ;
+	}*/
+
+	/*if (verif connection via getAut)
+	{
+		std::cout << "the user isn't connected" << std::endl;
 		return ;
 	}*/
 	
