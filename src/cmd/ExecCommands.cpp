@@ -6,13 +6,13 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 03:28:48 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 15:22:33 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-void executeCommand(Server *server, Client *client, std::vector<std::string> command) {
+void execute_command(Server *server, Client *client, std::vector<std::string> command) {
 
 	std::cout << BOLD CYAN << "Message receive from [" << client->getNickName() << "] :" << std::endl << RESET << "	";
 	for (size_t i = 0; i < command.size(); i++) {
@@ -38,6 +38,9 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 		else if (command[0] == "PRIVMSG")
 			prvmsgCommand(server, client, command);
 
+		else
+			std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;
+
 		std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl  << std::endl << RESET;
 		return;
 	}
@@ -50,6 +53,9 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 
 	else if (command[0] == "USER")
 		userCommand(client, command);
+
+	else
+		std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;
 
 	std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl << std::endl << RESET;
 }
