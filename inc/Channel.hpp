@@ -7,13 +7,17 @@
 class Channel
 {
 	public:
+
 		Channel();
 		Channel(std::string name);
 		~Channel();
 
-		void	addClient(Client* newClient);
-		void	eraseClient(Client* indClient);
-		void	showClient();
+		void		addClient(Client* newClient);
+		Client*		getClientByName(std::string name);
+		void		setClientParam(Client* client, bool *param);
+		bool*		getClientParam(Client* client);
+		void		eraseClient(Client* indClient);
+		void		showClient();
 		
 		std::string	getChannelName() const;
 		std::map<Client *, int>	getClients() const;
@@ -27,8 +31,14 @@ class Channel
 		void		broadcastChannel(std::string message, Client *sender);
 
 	private:
+
 		std::string	_name;
+		std::string _password;	// /MODE +k
 		std::string	_topic;
 		std::string _topicAuthor;
-		std::map<Client *, int> _clients;
+		bool _topicUserAccess;	// /MODE +t
+		bool _inviteOnly;		// /MODE +i
+		int _clientLimit;		///MODE +l
+
+		std::map<Client *,  bool*> _clients; //bool[3] = {invited, logged, operator}
 };

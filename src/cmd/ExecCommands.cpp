@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:22:33 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 15:38:05 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 		else if (command[0] == "INVITE")
 			inviteCommand(server, client, command);
 
+		else if (command[0] == "MODE")
+			modeCommand(server, client, command);
+
 		else if (command[0] == "PRIVMSG")
 			prvmsgCommand(server, client, command);
 
@@ -60,3 +63,23 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 	std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl << std::endl << RESET;
 }
 
+/*
+	if (! logged && )
+		if commande == pass
+			command_pass
+
+	else if (nick == "")
+		if (commande == nick)
+			command_nick
+	
+	else if (user_name == "")
+		if (commande == user)
+			command_user
+
+	else if (command == JOIN || PRIVMSG || ...)
+		do_cmd
+
+	else
+		cout unknown command;
+
+*/
