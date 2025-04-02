@@ -20,10 +20,14 @@ class Channel
 		std::string	getTopic() const;
 		void		setTopic(std::string topic);
 
-		void		broadcastMessage(std::string message, Client *sender);
+		std::string getTopicAuthor() const;
+		void		setTopicAuthor(std::string topicAuthor);
+
+		void		broadcastChannel(std::string message, Client *sender);
 
 	private:
 		std::string	_name;
 		std::string	_topic;
+		std::string _topicAuthor;
 		std::map<Client *, int> _clients;
 };

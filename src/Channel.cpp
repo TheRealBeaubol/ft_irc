@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 15:55:39 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 00:30:58 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	Channel::showClient(){
     }
 }
 
-void	Channel::broadcastMessage(std::string message, Client *sender){
+void	Channel::broadcastChannel(std::string message, Client *sender){
 	
 	for (std::map<Client *, int>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
 		if (it->first != sender)
@@ -56,3 +56,6 @@ std::string	Channel::getChannelName() const{ return(_name); }
 
 std::string Channel::getTopic() const { return(_topic); }
 void	Channel::setTopic(std::string topic) { _topic = topic; }
+
+std::string Channel::getTopicAuthor() const { return(_topicAuthor); }
+void	Channel::setTopicAuthor(std::string topicAuthor) { _topicAuthor = topicAuthor; }

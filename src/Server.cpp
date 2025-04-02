@@ -6,11 +6,12 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 15:39:47 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 02:38:44 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
+#include <cstddef>
 #include <iostream>
 
 int setNonBlocking(int fd) {

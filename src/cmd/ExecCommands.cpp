@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 15:38:00 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/01 22:03:25 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 		else if (command[0] == "QUIT")
 			std::cout << "QUIT command" << std::endl;
 
-		else
+		else {
+			std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;	
 			std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;
+		}
 
 		std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl  << std::endl << RESET;
 		return;
