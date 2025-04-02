@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 22:03:25 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 02:59:05 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,22 +22,27 @@ void execute_command(Server *server, Client *client, std::vector<std::string> co
 	std::cout << std::endl << BOLD BLUE << "_____________ " << command[0] << " COMMAND _____________" << RESET << std::endl << std::endl;
 
 	if (client->getIsAuth() == true && (command[0] != "PASS" && command[0] != "NICK" && command[0] != "USER")) {
+
 		if (command[0] == "JOIN")
 			joinCommand(server, client, command);
 		
 		else if (command[0] == "TOPIC")
 			topicCommand(server, client, command);
 		
+		else if (command[0] == "KICK")
+			commandKick(server, client, command);
+
+		else if (command[0] == "INVITE")
+			inviteCommand(server, client, command);
+
 		else if (command[0] == "PRIVMSG")
-			std::cout << "PRIVMSG command" << std::endl;
+			prvmsgCommand(server, client, command);
 
 		else if (command[0] == "QUIT")
 			std::cout << "QUIT command" << std::endl;
 
-		else {
-			std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;	
+		else
 			std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;
-		}
 
 		std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl  << std::endl << RESET;
 		return;
