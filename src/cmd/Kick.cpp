@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 16:19:23 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/02 21:08:10 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	commandKick(Server *server, Client *client, std::vector<std::string> comman
 		std::cout << "KICK error: channel doesn't exist!" << std::endl;
 		return ;
 	}
-
+	//if (!server->findClients)
 	if (!verifPriv(client, tmpChannel)){
 
 		std::cout << client->getNickName() << "is not an operator he can't use KICK!" << std::endl;
@@ -48,7 +48,10 @@ void	commandKick(Server *server, Client *client, std::vector<std::string> comman
 
 	command[2].erase(std::remove(command[2].begin(), command[2].end(), ':'), command[2].end());
 	tmpChannel->eraseClient(server->findClient(command[2]));
-	std::string msg = ":" + client->getNickName() + " KICK " + command[1] + " " + command[2] + "\r\n";	
-	//std::cout << "message que je send: " << msg << std::endl << "nombre total client: " << server->getClients().size() <<std::endl;
+	std::string msg = ":" + client->getNickName() + " KICK " + command[1] + " " + command[2];	
+	//if (command[3][0])
+	//	msg += " :" + command[3];
+	msg += "\r\n";
+	std::cout << "message que je send: " << msg << std::endl << "nombre total client: " << server->getClients().size() <<std::endl;
 	tmpChannel->broadcastChannel(msg, NULL);
 }
