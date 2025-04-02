@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:20 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 03:20:15 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 15:49:18 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 bool	checkInChannel(Channel *channel, Client *client){
 
-	for (std::map<Client *, int>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
+	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
 
 		if (it->first->getClientSocket() == client->getClientSocket())
 			return (1);

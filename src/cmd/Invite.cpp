@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:32 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 03:01:30 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 15:52:47 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@
 
 bool	checkSenter(Channel *channel, Client *client){
 
-	for (std::map<Client *, int>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
+	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
 
 		if (it->first->getClientSocket() == client->getClientSocket()){
 
-			if (it->second != 1)
+			if (it->second[3] != 1)
 				return (0);
 			return (1);
 		}
