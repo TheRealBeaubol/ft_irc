@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:20 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:19:04 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:28:49 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	msgChannel(Server *server, Client *client, std::vector<std::string> command
 		return ;
 	}
 	std::string	msg = ":" + client->getNickName() + " PRIVMSG #" + tmpChannel->getChannelName() + " :" + command[2] + "\r\n"; 
-	tmpChannel->broadcastChannel(msg, NULL);
+	tmpChannel->broadcastChannel(msg, client);
 }
 
 void	msgUser(Server *server, Client *client, std::vector<std::string> command){
