@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 20:38:38 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/02 03:02:25 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 			server->addChannel(channel);
 			server->getChannel()[i]->addClient(client);
 			server->sendMessage(client->getClientSocket(), msg.c_str());
+			server->getChannel()[i]->showClient();
 			return;
 		}
 	}

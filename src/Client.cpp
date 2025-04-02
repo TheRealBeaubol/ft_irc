@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 03:00:56 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 02:55:13 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ int Client::getClientSocket() const { return _clientSocket; }
 void Client::setNickName( std::string nick_name ) { _nickName = nick_name; }
 std::string Client::getNickName() const { return _nickName; }
 
-void Client::setUSerName(std::string user_name) { _userName = user_name; }
-std::string Client::getUSerName() const { return _userName; }
+void Client::setUserName(std::string user_name) { _userName = user_name; }
+std::string Client::getUserName() const { return _userName; }
 
 void Client::setRealName( std::string real_name ) { _realName = real_name; }
 std::string Client::getRealName() const { return _realName; }

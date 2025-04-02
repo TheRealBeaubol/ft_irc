@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 02:56:44 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 02:49:28 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ class Client {
 		void setNickName(std::string nick_name);
 		std::string getNickName() const;
 
-		void setUSerName(std::string user_name);
-		std::string getUSerName() const;
+		void setUserName(std::string user_name);
+		std::string getUserName() const;
 
 		void setRealName(std::string real_name);
 		std::string getRealName() const;

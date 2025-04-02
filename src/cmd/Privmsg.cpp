@@ -6,21 +6,21 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:20 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 02:43:54 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/02 16:21:37 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-bool	checkInChannel(Channel *channel, Client *client){
+/*bool	checkInChannel(Channel *channel, Client *client){
 
-	for (std::map<Client *, int>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
+	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
 
 		if (it->first->getClientSocket() == client->getClientSocket())
 			return (1);
 	}		
 	return (0);
-}
+}*/
 
 void	msgChannel(Server *server, Client *client, std::vector<std::string> command){
 	Channel *tmpChannel = server->findChannel(command[1]);
@@ -29,16 +29,17 @@ void	msgChannel(Server *server, Client *client, std::vector<std::string> command
 		std::cout << "channel doesn't exist!" << std::endl;
 		return ;
 	}
-	if (!checkInChannel(tmpChannel, client))
+	if (!tmpChannel->getClientByName(client->getNickName()))
 	{
 		std::cout << "Senter is not in the Channel!" << std::cout;
 		return ;
 	}
 	std::string	msg = ":" + client->getNickName() + " PRIVMSG #" + tmpChannel->getChannelName() + " :" + command[2] + "\r\n"; 
-	tmpChannel->broadcastMessage(msg, client);
+	tmpChannel->broadcastChannel(msg, NULL);
 }
 
 void	msgUser(Server *server, Client *client, std::vector<std::string> command){
+
 	Client *tmpClient = server->findClient(command[1]);
 	if (!tmpClient)
 	{
@@ -50,10 +51,11 @@ void	msgUser(Server *server, Client *client, std::vector<std::string> command){
 		std::cout << "the user is not found!" << std::endl;
 		return ;
 	}
-	std::string	msg = ":" + client->getNickName() + " PRIVMSG #" + tmpClient->getNickName() + " :" + command[2] + "\r\n"; 
+	std::string	msg = ":" + client->getNickName() + " PRIVMSG " + tmpClient->getNickName() + " :" + command[2] + "\r\n"; 
 	send(tmpClient->getClientSocket(), msg.c_str(), msg.length(), 0);
 }
 void	prvmsgCommand(Server *server, Client *client, std::vector<std::string>	command){
+
 	if (command[1][0] == '#')
 		msgChannel(server, client, command);
 	else

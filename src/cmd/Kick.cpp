@@ -6,18 +6,18 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 23:26:14 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/02 16:19:23 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
 bool	verifPriv(Client *client, Channel *channel){
-	for (std::map<Client *, int>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
+	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
 
 		if (it->first->getClientSocket() == client->getClientSocket())
 		{
-			if (it->second != 1)
+			if (it->second[2] != 1)
 				return (0);
 			return (1);
 		}
@@ -46,11 +46,9 @@ void	commandKick(Server *server, Client *client, std::vector<std::string> comman
 		return ;
 	}
 
-		std::cout << "ICIIIIIII" << std::endl;
-
 	command[2].erase(std::remove(command[2].begin(), command[2].end(), ':'), command[2].end());
-
+	tmpChannel->eraseClient(server->findClient(command[2]));
 	std::string msg = ":" + client->getNickName() + " KICK " + command[1] + " " + command[2] + "\r\n";	
 	//std::cout << "message que je send: " << msg << std::endl << "nombre total client: " << server->getClients().size() <<std::endl;
-	tmpChannel->broadcastMessage(msg, NULL);
+	tmpChannel->broadcastChannel(msg, NULL);
 }
