@@ -31,29 +31,29 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 
 		else if (client->getIsLog() == true)
 		{
-		if (command[0] == "JOIN")
-			joinCommand(server, client, command);
-		
-		else if (command[0] == "TOPIC")
-			topicCommand(server, client, command);
-		
-		else if (command[0] == "KICK")
-			commandKick(server, client, command);
+			if (command[0] == "JOIN")
+				joinCommand(server, client, command);
+			
+			else if (command[0] == "TOPIC")
+				topicCommand(server, client, command);
+			
+			else if (command[0] == "KICK")
+				commandKick(server, client, command);
 
-		else if (command[0] == "INVITE")
-			inviteCommand(server, client, command);
+			else if (command[0] == "INVITE")
+				inviteCommand(server, client, command);
 
 			else if (command[0] == "MODE")
 				modeCommand(server, client, command);
 
-		else if (command[0] == "PRIVMSG")
-			prvmsgCommand(server, client, command);
-
+			else if (command[0] == "PRIVMSG")
+				prvmsgCommand(server, client, command);
+			
 			else if (command[0] == "PART")
 				partCommand(server, client, command);
 
-		else
-			std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;
+			else
+				std::cout << RED << "Commande inconnue (" << command[0] << ")" << std::endl << RESET;
 		}
 	}
 
