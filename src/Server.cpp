@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:36:01 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:07:35 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ Server::Server(int port, std::string password)
 	std::cout << BOLD ORANGE << "Creating a new client for the server : " << std::endl << "	";
 	Client *client = new Client( _serverFd );
 	client->setIsAuth(true);
+	client->setIsLog(true);
 	std::cout << "getIsAuth() : " << client->getIsAuth() << std::endl;
 	_clients.push_back( client );
 	std::cout << std::endl << RESET ;
@@ -145,7 +146,7 @@ Channel *Server::findChannel(std::string channelName)
 	std::vector<Channel *> channel = Server::getChannel();
 	for (size_t i = 0; i < channel.size(); i++)
 	{
-		if ("#" + channel[i]->getChannelName() == channelName)
+		if ("#" + channel[i]->getName() == channelName)
 			return channel[i];
 	}
 	return NULL;

@@ -12,6 +12,27 @@ class Channel
 		Channel(std::string name);
 		~Channel();
 
+		void		setName(std::string name);
+		std::string	getName() const;
+
+		void		setPassword(std::string password);
+		std::string	getPassword() const;
+		
+		void		setTopic(std::string topic);
+		std::string	getTopic() const;
+
+		std::string getTopicAuthor() const;
+		void		setTopicAuthor(std::string topicAuthor);
+
+		void		setTopicUserAccess(bool topicUserAccess);
+		bool		getTopicUserAccess() const;
+
+		void		setInviteOnly(bool inviteOnly);
+		bool		getInviteOnly() const;
+
+		void		setClientLimit(int clientLimit);
+		int			getClientLimit() const;
+
 		void		addClient(Client* newClient);
 		Client*		getClientByName(std::string name);
 		void		setClientParam(Client* client, bool *param);
@@ -21,12 +42,6 @@ class Channel
 		
 		std::string	getChannelName() const;
 		std::map<Client *, bool *>	getClients() const;
-
-		std::string	getTopic() const;
-		void		setTopic(std::string topic);
-
-		std::string getTopicAuthor() const;
-		void		setTopicAuthor(std::string topicAuthor);
 
 		void		broadcastChannel(std::string message, Client *sender);
 

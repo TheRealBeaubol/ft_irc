@@ -6,24 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:32 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:52:47 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:10:00 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
-
-// bool	inviteIsInChannel(Channel *channel, std::string	nickname){
-// 	std::cout << "Nb de client dans le channel: " << channel->getClients().size() << std::endl;
-// 	for (std::map<Client *, int>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
-	//for (size_t i = 0; i < channel->getClients().size(); ++i){
-		//std::cout << "ICIII" << std::endl;
-		// if (it->first->getNickName() == nickname)
-			// return(1);
-		//std::cout << "ICIII" << std::endl;
-	// }
-	//std::cout << "ICIII" << std::endl;
-	// return (0);
-// }
 
 bool	checkSenter(Channel *channel, Client *client){
 
@@ -31,7 +18,7 @@ bool	checkSenter(Channel *channel, Client *client){
 
 		if (it->first->getClientSocket() == client->getClientSocket()){
 
-			if (it->second[3] != 1)
+			if (it->second[2] != 1)
 				return (0);
 			return (1);
 		}
@@ -58,11 +45,11 @@ void	inviteCommand(Server *server, Client *client, std::vector<std::string> comm
 		return ;
 	}
 
-	/*if (inviteIsInChannel(tmpChannel, command[1]))
+	if (tmpChannel->getClientByName(command[1]))
 	{
 		std::cout << "The user u want to invite is already in the Channel!" << std::endl;
 		return ;
-	}*/
+	}
 
 	/*if (verif connection via getAut)
 	{
