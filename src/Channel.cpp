@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:41:36 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 19:33:46 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int Channel::getClientLimit() const{ return _clientLimit; }
 
 std::string	Channel::getChannelName() const{ return(_name); }
 
-std::map<Client *, bool *>	Channel::getClients() const { return(_clients); }
+std::map<Client *, bool *>	&Channel::getClients() { return (_clients); }
 
 //*******************************************************************************
 
@@ -93,6 +93,15 @@ bool* Channel::getClientParam(Client* client)
 			return it->second;
 	}
 	return NULL;
+}
+
+void	Channel::setOperator(Client *client, bool isOperator)
+{
+	for (std::map<Client *,  bool*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+	{
+		if (it->first == client)
+			it->second[2] = isOperator;
+	}
 }
 
 void Channel::showClient()

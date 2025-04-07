@@ -30,6 +30,8 @@ class Channel
 		void		setInviteOnly(bool inviteOnly);
 		bool		getInviteOnly() const;
 
+		void		setOperator(Client *client, bool isOperator);
+
 		void		setClientLimit(int clientLimit);
 		int			getClientLimit() const;
 
@@ -41,7 +43,7 @@ class Channel
 		void		showClient();
 		
 		std::string	getChannelName() const;
-		std::map<Client *, bool *>	getClients() const;
+		std::map<Client *, bool *>	&getClients();
 
 		void		broadcastChannel(std::string message, Client *sender);
 
