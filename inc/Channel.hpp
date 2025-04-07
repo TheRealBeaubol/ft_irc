@@ -20,7 +20,7 @@ class Channel
 		void		showClient();
 		
 		std::string	getChannelName() const;
-		std::map<Client *, bool *>	getClients() const;
+		std::map<Client *, bool *>	&getClients() const;
 
 		std::string	getTopic() const;
 		void		setTopic(std::string topic);
@@ -30,6 +30,8 @@ class Channel
 
 		void		broadcastChannel(std::string message, Client *sender);
 
+		bool		getInviteMode() const;
+		std::string	getPassword() const;
 	private:
 
 		std::string	_name;
