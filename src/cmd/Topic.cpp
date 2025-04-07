@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:35 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:45:19 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 21:10:03 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,16 @@
 void topicCommand(Server *server, Client *client, std::vector<std::string> command) {
 
     std::string msg;
+    std::string serverName = std::string(SERVER_NAME);
     
     if (command.size() < 2) {
-        std::cout << BOLD RED << "Error: Not enough arguments" << RESET << std::endl;
+        msg = ":" + serverName + " 461 " + client->getNickName() + " TOPIC :Not enough parameters\r\n";
+        send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+        std::cout << BOLD RED << msg << RESET;
         return ;
     }
     
     std::string channelName = command[1];
-    std::string serverName = std::string(SERVER_NAME);
     
     Channel *channel = server->findChannel(channelName);
     if (channel == NULL) {

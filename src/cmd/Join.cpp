@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 20:07:01 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 20:22:05 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,24 @@
 
 void	joinCommand(Server *server, Client *client, std::vector<std::string> commands) {
 	
-	Channel *tmpChannel = server->findChannel(commands[1]);
-	if (tmpChannel->getInviteOnly() == true){
+	// Channel *tmpChannel = server->findChannel(commands[1]);
+	// if (tmpChannel->getInviteOnly() == true){
 
-		std::cout << "The channel you want to join is on Invit-only mode!" << std::endl;
-		return ;
-	}
-	if (tmpChannel->getPassword().empty() == false){
+	// 	std::cout << "The channel you want to join is on Invit-only mode!" << std::endl;
+	// 	return ;
+	// }
+	// if (tmpChannel->getPassword().empty() == false){
 	
-		if (commands.size() < 3){
+	// 	if (commands.size() < 3){
 
-			std::cout << "Need 1 more param: need password to join this channel" << std::endl;
-			return ;
-		}
-		if(tmpChannel->getPassword() != commands[2]){
-			std::cout << "Incorrect passowrd for channel!" << std::endl;
-			return ;
-		}
-	}
+	// 		std::cout << "Need 1 more param: need password to join this channel" << std::endl;
+	// 		return ;
+	// 	}
+	// 	if(tmpChannel->getPassword() != commands[2]){
+	// 		std::cout << "Incorrect passowrd for channel!" << std::endl;
+	// 		return ;
+	// 	}
+	// }
 
 	size_t 	channelSize = server->getChannel().size();
 
@@ -54,6 +54,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 			std::cout << LIGHTMAGENTA << "The [ " << commands[1] << " ] channel doesn't exists, it will be created" << std::endl;
 			Channel *channel = new Channel(commands[1]);
 			server->addChannel(channel);
+			client->addChannel(channel);
 			server->getChannel()[i]->addClient(client);
 			server->sendMessage(client->getClientSocket(), msg.c_str());
 			server->getChannel()[i]->showClient();
