@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 22:15:31 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/07 22:40:19 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 		msg_ERR = serverName + " 461 " + client->getNickName();
 		send(client->getClientSocket(), msg_ERR.c_str(), msg_ERR.size(), 0);
 		std::cout << BOLD RED << msg_ERR << RESET;
+		return ;
 	}
 	size_t 	channelSize = server->getChannel().size();
 	Channel *tmpChannel = server->findChannel("#" + commands[1]);
@@ -35,6 +36,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 			msg_ERR = serverName + " 471 " + client->getNickName();
 			send(client->getClientSocket(), msg_ERR.c_str(), msg_ERR.size(), 0);
 			std::cout << BOLD RED << msg_ERR << RESET;
+			return ;
 		}
 		if (tmpChannel->getClientByName(client->getNickName()) != NULL)
 		{
@@ -42,8 +44,9 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 			msg_ERR = serverName + " 443 " + client->getNickName();
 			send(client->getClientSocket(), msg_ERR.c_str(), msg_ERR.size(), 0);
 			std::cout << BOLD RED << msg_ERR << RESET;
+			return ;
 		}
-		if (tmpChannel->getInviteOnly() == true){
+		if (tmpChannel->getInviteOnly() == true && tmpChannel->getClients()[client][0] == false){
 			std::cout << "The channel you want to join is on Invit-only mode!" << std::endl;
 			msg_ERR = serverName + " 473 " + client->getNickName();
 			send(client->getClientSocket(), msg_ERR.c_str(), msg_ERR.size(), 0);
