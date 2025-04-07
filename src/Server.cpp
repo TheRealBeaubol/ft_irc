@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 20:20:03 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 23:35:12 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ Channel *Server::findChannel(std::string channelName)
 	}
 	return NULL;
 }
+
 Client *Server::findClient(std::string clientName)
 {
 	std::vector<Client *> client = getClients();

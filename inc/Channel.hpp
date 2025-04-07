@@ -37,7 +37,7 @@ class Channel
 
 		void		addClient(Client* newClient);
 		Client*		getClientByName(std::string name);
-		void		setClientParam(Client* client, bool *param);
+		void		setClientParam(Client* client, bool isInvited, bool isLogged, bool isOperator);
 		bool*		getClientParam(Client* client);
 		void		eraseClient(Client* indClient);
 		void		showClient();

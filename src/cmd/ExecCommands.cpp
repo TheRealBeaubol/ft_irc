@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 23:07:54 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 23:40:59 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,6 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 			else {
 				msg = ":" + serverName + " 421 " + client->getNickName() + " " + command[0] + " :Unknown command\r\n";
 				send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-				close(client->getClientSocket());
-				client->setIsAuth(false);
-				client->setIsLog(false);
-				server->removeClient(client);
 			}
 		}
 	}

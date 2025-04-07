@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:32 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 22:31:08 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 23:31:05 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,9 @@ void	inviteCommand(Server *server, Client *client, std::vector<std::string> comm
 		std::cout << BOLD RED << msg << RESET;
 		return ;
 	}
+	
+	channel->addClient(receiver);
+	channel->setClientParam(receiver, true, false, false);
 	
 	msg = ":" + serverName + " 341 " + client->getNickName() + " " + command[1] + " " + channelName + "\r\n";
 	send(client->getClientSocket(), msg.c_str(), msg.length(), 0);

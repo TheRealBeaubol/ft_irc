@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 20:06:47 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 23:30:40 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,13 @@ Client* Channel::getClientByName(std::string name)
 	return NULL;
 }
 
-void Channel::setClientParam(Client* client, bool *param)
+void Channel::setClientParam(Client* client, bool isInvited, bool isLogged, bool isOperator)
 {
-	for ( int i = 0 ; i < 3 ; i++)
-	{
-		if (param[i] == true || param[i] == false)
-			_clients[client][i] = param[i];
-	}
+	if (_clients[client] == NULL)
+		return ;
+	_clients[client][0] = isInvited;
+	_clients[client][1] = isLogged;
+	_clients[client][2] = isOperator;
 }
 
 bool* Channel::getClientParam(Client* client)
@@ -117,8 +117,6 @@ void Channel::showClient()
 			std::cout << "Not define" << std::endl;
 	}
 }
-
-//******************************************************************************
 
 void Channel::broadcastChannel(std::string message, Client *sender)
 {
