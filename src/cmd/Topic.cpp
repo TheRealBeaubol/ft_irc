@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:35 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 21:10:03 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 22:49:43 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 void topicCommand(Server *server, Client *client, std::vector<std::string> command) {
 
-    std::string msg;
     std::string serverName = std::string(SERVER_NAME);
+    std::string msg;
     
     if (command.size() < 2) {
         msg = ":" + serverName + " 461 " + client->getNickName() + " TOPIC :Not enough parameters\r\n";
@@ -26,8 +26,9 @@ void topicCommand(Server *server, Client *client, std::vector<std::string> comma
     }
     
     std::string channelName = command[1];
-    
+    std::string newTopic = command[2];
     Channel *channel = server->findChannel(channelName);
+    
     if (channel == NULL) {
         msg = ":" + serverName + " 403 " + client->getNickName() + " " + channelName + " :No such channel\r\n";
         send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
@@ -48,29 +49,25 @@ void topicCommand(Server *server, Client *client, std::vector<std::string> comma
     }    
     if (command.size() == 2) {
         std::string topic = channel->getTopic();
-        if (topic == "")
-        {
+        if (topic == "") {
             msg = ":" + serverName + " 331 " + client->getNickName() + " " + channelName + " :No topic set\r\n";
             send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
             std::cout << BOLD GREEN << msg << RESET;
+            return ;
         }
-        else
-        {
-            msg = ":" + serverName + " 332 " + client->getNickName() + " " + channelName + " :" + topic + "\r\n";
-            msg += ":" + serverName + " 333 " + client->getNickName() + " " + channelName + " " + channel->getTopicAuthor() + "\r\n";
-            send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-            std::cout << BOLD GREEN << msg << RESET;
-        }
+        msg = ":" + serverName + " 332 " + client->getNickName() + " " + channelName + " :" + topic + "\r\n";
+        msg += ":" + serverName + " 333 " + client->getNickName() + " " + channelName + " " + channel->getTopicAuthor() + "\r\n";
+        send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+        std::cout << BOLD GREEN << msg << RESET;
+        return;
     }
-    else {
-
-        std::string newTopic = command[2];
-        channel->setTopic(newTopic);
-        channel->setTopicAuthor(client->getNickName());
-        
-        msg = ":" + client->getNickName() + "!" + client->getUserName() + "@localhost TOPIC " + channelName + " " + newTopic + "\r\n";
-        channel->broadcastChannel(msg, NULL);
-        
-        std::cout << BOLD GREEN << "Topic set to " << newTopic << RESET << std::endl;
-    }
+   
+    channel->setTopic(newTopic);
+    channel->setTopicAuthor(client->getNickName());
+    
+    msg = ":" + client->getNickName() + "!" + client->getUserName() + "@localhost TOPIC " + channelName + " " + newTopic + "\r\n";
+    channel->broadcastChannel(msg, NULL);
+    
+    std::cout << BOLD GREEN << "Topic set to " << newTopic << RESET << std::endl;
+    
 }
