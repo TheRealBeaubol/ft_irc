@@ -6,14 +6,14 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 19:33:46 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 19:58:28 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
 
 Channel::Channel() {}
-Channel::Channel(std::string name): _name(name), _password(""), _topic(""), _topicUserAccess(0), _inviteOnly(0), _clientLimit(0) {}
+Channel::Channel(std::string name): _name(name), _password(""), _topic(""), _topicAuthor(""), _topicUserAccess(false), _inviteOnly(false), _clientLimit(false) {}
 Channel::~Channel() {}
 
 //******************************************************************************
@@ -34,7 +34,11 @@ void Channel::setTopicUserAccess(bool topicUserAccess){ _topicUserAccess = topic
 bool Channel::getTopicUserAccess() const{ return _topicUserAccess; }
 
 void Channel::setInviteOnly(bool inviteOnly){ _inviteOnly = inviteOnly; }
-bool Channel::getInviteOnly() const{ return _inviteOnly; }
+bool Channel::getInviteOnly() const{
+	std::cout << BOLD RED<< " NEGRO " << RESET << std::endl;
+	std::cout << "getInviteOnly() : " << _inviteOnly << std::endl;
+	std::cout << BOLD RED << " NEGRO" << RESET << std::endl;
+	return _inviteOnly; }
 
 void Channel::setClientLimit(int clientLimit){ _clientLimit = clientLimit; }
 int Channel::getClientLimit() const{ return _clientLimit; }
@@ -56,9 +60,6 @@ void Channel::addClient(Client *newClient)
 	}
 	else
 	{
-		// bool array[3] = {false, false, false};
-		// _clients[newClient] = array;
-
 		_clients[newClient] = new bool[3];  // Allocation dynamique
 		_clients[newClient][0] = false;
 		_clients[newClient][1] = false;

@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 19:17:10 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 20:02:27 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,17 +143,20 @@ std::string Server::getPassword() const { return _password; }
 
 Channel *Server::findChannel(std::string channelName)
 {
-	std::vector<Channel *> channel = Server::getChannel();
+	std::cout << BOLD RED << "findChannel() : " << channelName << RESET << std::endl;
+	std::vector<Channel *> channel = getChannel();
+	std::cout << BOLD RED << "channel.size() : " << channel.size() << RESET << std::endl;
 	for (size_t i = 0; i < channel.size(); i++)
 	{
 		if ("#" + channel[i]->getName() == channelName)
 			return channel[i];
 	}
+	std::cout << BOLD RED << "SALE FILS DE PUTE" << RESET << std::endl;
 	return NULL;
 }
 Client *Server::findClient(std::string clientName)
 {
-	std::vector<Client *> client = Server::getClients();
+	std::vector<Client *> client = getClients();
 	for (size_t i = 0; i < client.size(); i++)
 	{
 		if (client[i]->getNickName() == clientName)
