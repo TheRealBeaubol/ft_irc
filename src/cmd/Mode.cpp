@@ -6,15 +6,49 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:30 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:40:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 19:32:09 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-void modeICommand(Server *server, Client *client, std::vector<std::string> command){(void) server; (void) client; (void) command;}
-void modeTCommand(Server *server, Client *client, std::vector<std::string> command){(void) server; (void) client; (void) command;}
-void modeOCommand(Channel *channel, std::string clientNameToMode, char sign)
+void modeICommand(Channel *channel, char sign)
+{
+	bool inviteOnly = channel->getInviteOnly();
+
+	if (sign == '-' && inviteOnly == true)
+	{
+		channel->setInviteOnly(false);
+		std::cout << "Succes, now cannal is 100%% accessible" << std::endl;
+	}
+	else if (sign == '+' && inviteOnly == false)
+	{
+		channel->setInviteOnly(true);
+		std::cout << "Succes, nnow canal is on invite only mode" << std::endl;
+	}
+	else
+		std::cout << "Nothing to do ???" << std::endl;
+}
+
+void modeTCommand(Channel *channel, char sign)
+{
+	bool topicUserAccess = channel->getTopicUserAccess();
+
+	if (sign == '-' && topicUserAccess == true)
+	{
+		channel->setTopicUserAccess(false);
+		std::cout << "Succes, now topic is no more modifiable by users" << std::endl;
+	}
+	else if (sign == '+' && topicUserAccess == false)
+	{
+		channel->setTopicUserAccess(true);
+		std::cout << "Succes, now topic is modifiable by user" << std::endl;
+	}
+	else
+		std::cout << "Nothing to do ???" << std::endl;
+}
+
+void modeOCommand(Channel *channel, char sign, std::string clientNameToMode)
 {
 	std::cout << "Mode O command" << std::endl;
 
@@ -33,24 +67,52 @@ void modeOCommand(Channel *channel, std::string clientNameToMode, char sign)
 
 	if (sign == '-' && client_param[2] == true)
 	{
-		// client_param[2] = false;
-		bool new_param[3] = {NULL, NULL, false};
-		channel->setClientParam(clientToMode, new_param);
+		channel->setOperator(clientToMode, false);
 		std::cout << "Succes, operator been retrograded (need to send confirmation to client who sended mode command)" << std::endl;
 	}
 	else if (sign == '+' && client_param[2] == false)
 	{
-		// client_param[2] = true;
-		bool new_param[3] = {NULL, NULL, true};
-		channel->setClientParam(clientToMode, new_param);
+		channel->setOperator(clientToMode, true);
 		std::cout << "Succes, operator been promoted (need to send confirmation to client who sended mode command)" << std::endl;
 	}
 	else
 		std::cout << "Nothing to do ???" << std::endl;
 }
 
-void modeKCommand(Server *server, Client *client, std::vector<std::string> command){(void) server; (void) client; (void) command;}
-void modeLCommand(Server *server, Client *client, std::vector<std::string> command){(void) server; (void) client; (void) command;}
+void modeKCommand(Channel *channel, char sign, std::string newPassword)
+{
+	std::string password = channel->getPassword();
+	if (sign == '-' && password != "")
+	{
+		channel->setPassword("");
+		std::cout << "Succes, password removed" << std::endl;
+	}
+	else if (sign == '+' && newPassword != password)
+	{
+		channel->setPassword(newPassword);
+		std::cout << "Succes, password setted to : " << newPassword << std::endl;
+	}
+	else
+		std::cout << "Nothing to do ???" << std::endl;
+}
+
+void modeLCommand(Channel *channel, char sign, int newClientLimit)
+{
+	int clientLimit = channel->getClientLimit();
+
+	if (sign == '-' && clientLimit != 0)
+	{
+		channel->setClientLimit(0);
+		std::cout << "Succes, ClientLimit removed" << std::endl;
+	}
+	else if (sign == '+' && newClientLimit >= 0 && newClientLimit != clientLimit)
+	{
+		channel->setClientLimit(newClientLimit);
+		std::cout << "Succes, ClientLimit setted to : " << newClientLimit << std::endl;
+	}
+	else
+		std::cout << "Nothing to do ???" << std::endl;
+}
 
 void modeCommand(Server *server, Client *client, std::vector<std::string> command)
 {
@@ -90,15 +152,29 @@ void modeCommand(Server *server, Client *client, std::vector<std::string> comman
 	{
 		std::cout << "Im on " << command[2][i] << std::endl;
 		if (command[2][i] == 'i')
-			modeICommand(server, client, command);
+			modeICommand(channel, command[2][0]);
 		else if (command[2][i] == 't')
-			modeTCommand(server, client, command);
+			modeTCommand(channel, command[2][0]);
 		else if (command[2][i] == 'o')
-			modeOCommand(channel, command[3], command[2][0]);
+			modeOCommand(channel, command[2][0], command[3]);
 		else if (command[2][i] == 'k')
-			modeKCommand(server, client, command);
+		{
+			// modeKCommand(channel, command[2][0], command[3].empty() ? NULL : command[3]);
+
+			if (commandSize >= 4)
+				modeKCommand(channel, command[2][0], command[3]);
+			else
+				modeKCommand(channel, command[2][0], "");
+		}
 		else if (command[2][i] == 'l')
-			modeLCommand(server, client, command);
+		{
+			// modeLCommand(channel, command[2][0], std::atoi(command[3].c_str()));
+			
+			if (commandSize >= 4)
+				modeLCommand(channel, command[2][0], std::atoi(command[3].c_str()));
+			else
+				modeLCommand(channel, command[2][0], 0);
+		}
 		else
 			err++;
 	}

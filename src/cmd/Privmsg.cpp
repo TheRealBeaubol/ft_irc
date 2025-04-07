@@ -6,21 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:20 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 19:14:56 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:28:49 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
-
-/*bool	checkInChannel(Channel *channel, Client *client){
-
-	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
-
-		if (it->first->getClientSocket() == client->getClientSocket())
-			return (1);
-	}		
-	return (0);
-}*/
 
 void	msgChannel(Server *server, Client *client, std::vector<std::string> command){
 	Channel *tmpChannel = server->findChannel(command[1]);
@@ -35,7 +25,7 @@ void	msgChannel(Server *server, Client *client, std::vector<std::string> command
 		return ;
 	}
 	std::string	msg = ":" + client->getNickName() + " PRIVMSG #" + tmpChannel->getChannelName() + " :" + command[2] + "\r\n"; 
-	tmpChannel->broadcastChannel(msg, NULL);
+	tmpChannel->broadcastChannel(msg, client);
 }
 
 void	msgUser(Server *server, Client *client, std::vector<std::string> command){

@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:43:22 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:28:51 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:02:18 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,3 +36,4 @@ void    userCommand(Client *client, std::vector<std::string> command);
 
 void	commandKick(Server *server, Client *client, std::vector<std::string> command);
 
+void	partCommand(Server *server, Client *client, std::vector<std::string> command);

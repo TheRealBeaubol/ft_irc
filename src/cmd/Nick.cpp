@@ -6,11 +6,12 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:27 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:38:30 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:14:52 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
+#include <string>
 //#include "includes.hpp"
 
 bool	verifyNickname(Server *server, std::vector<std::string> commands){
@@ -27,28 +28,47 @@ bool	verifyNickname(Server *server, std::vector<std::string> commands){
 void    commandNick(Server *server, Client *client, std::vector<std::string> commands)
 {
 
-	std::string	old_nickname = client->getNickName();
-
-	if (commands.size() < 2)
-		std::cout << BOLD RED << "Error: Not enough arguments" << RESET << std::endl;
-	// if (!checkNicknameFormat(server, client, commands))
-	// 	std::cout << BOLD RED << "Error: Invalid nickname format" << RESET << std::endl;
-	if (!verifyNickname(server, commands))
-		std::cout << BOLD RED << "Error: Nickname already taken" << RESET << std::endl;
+	std::string	oldNickname = client->getNickName();
+	std::string serverName = std::string(SERVER_NAME);
+	std::string msg;
+	
+	if (commands.size() < 2){
+		msg = ":" + serverName + " 431 " + client->getNickName() + " :No nickname given\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+		std::cout << BOLD RED << msg << RESET;
+		return ;
+	}
+	// if (!checkNicknameFormat(server, client, commands)) {
+		// msg = ":" + serverName + " 432 " + client->getNickName() + " :Erroneous nickname\r\n";
+		// send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+		// std::cout << BOLD RED << msg << RESET;
+		// return ;
+	// }
+	if (!verifyNickname(server, commands)) {
+		msg = ":" + serverName + " 433 " + client->getNickName() + " " + commands[1] + " :Nickname is already in use\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+		std::cout << BOLD RED << msg << RESET;
+		return ;	
+	}
 	
 	client->setNickName(commands[1]);
-	std::string msg;
 
-	if (client->getRealName().empty() == true && client->getUserName().empty() == true)
+	if (client->getIsLog() == false && client->getUserName().empty() == false)
 	{
-		msg = ":localhost 001 " + client->getNickName() + " :Welcome to the IRC server\r\n";
+		client->setIsLog(true);
+		msg = ":" + serverName + " 001 " + client->getNickName() + " :Welcome to the Internet Relay Chat Network " + client->getNickName() + "!" + client->getUserName() + "@" + SERVER_NAME + "\r\n";
 		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
+		std::cout << BOLD GREEN << msg << RESET;
 	} 
 	else
 	{
-		msg = ":" + old_nickname + " NICK " + client->getNickName() + "\r\n";
-		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-
+		msg = ":" + oldNickname + "!" + client->getUserName() + "@localhost NICK " + client->getNickName() + "\r\n";
+		for (size_t i = 0; i < client->getChannels().size(); i++) {
+			std::cout << "Broadcasting to channel " << client->getChannels()[i]->getChannelName() << std::endl;
+			std::cout << " i: " << i << std::endl;
+			client->getChannels()[i]->broadcastChannel(msg, NULL);
+		}
+		
 		std::cout << BOLD GREEN << "Nickname changed to " << client->getNickName() << RESET << std::endl;
 	}
 }

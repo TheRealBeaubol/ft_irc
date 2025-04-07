@@ -6,15 +6,17 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 21:08:10 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/07 19:35:14 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
 bool	verifPriv(Client *client, Channel *channel){
-	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
+	
+	std::map<Client *, bool *> &clients = channel->getClients();
 
+	for (std::map<Client *, bool *>::iterator it = clients.begin(); it != clients.end(); ++it) {
 		if (it->first->getClientSocket() == client->getClientSocket())
 		{
 			if (it->second[2] != 1)

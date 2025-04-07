@@ -6,37 +6,24 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:32 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 19:23:31 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/07 20:02:16 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-// bool	inviteIsInChannel(Channel *channel, std::string	nickname){
-// 	std::cout << "Nb de client dans le channel: " << channel->getClients().size() << std::endl;
-// 	for (std::map<Client *, int>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
-	//for (size_t i = 0; i < channel->getClients().size(); ++i){
-		//std::cout << "ICIII" << std::endl;
-		// if (it->first->getNickName() == nickname)
-			// return(1);
-		//std::cout << "ICIII" << std::endl;
-	// }
-	//std::cout << "ICIII" << std::endl;
-	// return (0);
-// }
+bool	checkSender(Channel *channel, Client *client){
 
-bool	checkSenter(Channel *channel, Client *client){
-
-	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
-
-		if (it->first->getClientSocket() == client->getClientSocket()){
-
+	std::map<Client *, bool *> &clients = channel->getClients();
+	
+	for (std::map<Client *, bool *>::iterator it = clients.begin(); it != clients.end(); ++it) {
+		if (it->first->getClientSocket() == client->getClientSocket()) {
 			if (it->second[2] != 1)
-				return (0);
-			return (1);
+				return 0;
+			return 1;
 		}
 	}
-	return (0);
+	return 0;
 }
 
 bool	checkInviteUser(Server *server, std::string nickname){
@@ -52,7 +39,7 @@ bool	checkInviteUser(Server *server, std::string nickname){
 void	inviteCommand(Server *server, Client *client, std::vector<std::string> command)
 {
 	Channel	*tmpChannel = server->findChannel(command[2]);
-	if (!checkSenter(tmpChannel, client)){
+	if (!checkSender(tmpChannel, client)){
 		
 		std::cout << "client not in channel or dont have permission for this!" << std::endl;
 		return ;

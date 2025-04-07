@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 19:45:15 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/07 20:07:01 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,21 @@
 void	joinCommand(Server *server, Client *client, std::vector<std::string> commands) {
 	
 	Channel *tmpChannel = server->findChannel(commands[1]);
-	if (tmpChannel->getInviteMode() == 1){
+	if (tmpChannel->getInviteOnly() == true){
 
 		std::cout << "The channel you want to join is on Invit-only mode!" << std::endl;
 		return ;
 	}
-	if (tmpChannel->getPassword() != ""){
-		
-		if (commands[2] == ""){
+	if (tmpChannel->getPassword().empty() == false){
+	
+		if (commands.size() < 3){
 
 			std::cout << "Need 1 more param: need password to join this channel" << std::endl;
 			return ;
 		}
 		if(tmpChannel->getPassword() != commands[2]){
-
-				std::cout << "Incorrect passowrd for channel!" << std::endl;
-				return ;
+			std::cout << "Incorrect passowrd for channel!" << std::endl;
+			return ;
 		}
 	}
 

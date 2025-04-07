@@ -29,6 +29,7 @@ SRC 		= 	cmd/ExecCommands.cpp \
 				cmd/Privmsg.cpp \
 				cmd/Topic.cpp \
 				cmd/User.cpp \
+				cmd/Part.cpp \
 				Channel.cpp \
 				Client.cpp \
 				ErrorDraw.cpp \
