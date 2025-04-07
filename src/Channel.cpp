@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 19:58:28 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 20:06:47 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,7 @@ void Channel::setTopicUserAccess(bool topicUserAccess){ _topicUserAccess = topic
 bool Channel::getTopicUserAccess() const{ return _topicUserAccess; }
 
 void Channel::setInviteOnly(bool inviteOnly){ _inviteOnly = inviteOnly; }
-bool Channel::getInviteOnly() const{
-	std::cout << BOLD RED<< " NEGRO " << RESET << std::endl;
-	std::cout << "getInviteOnly() : " << _inviteOnly << std::endl;
-	std::cout << BOLD RED << " NEGRO" << RESET << std::endl;
-	return _inviteOnly; }
+bool Channel::getInviteOnly() const{ return _inviteOnly; }
 
 void Channel::setClientLimit(int clientLimit){ _clientLimit = clientLimit; }
 int Channel::getClientLimit() const{ return _clientLimit; }
