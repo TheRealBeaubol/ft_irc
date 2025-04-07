@@ -6,14 +6,14 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 20:06:47 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 22:15:37 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
 
 Channel::Channel() {}
-Channel::Channel(std::string name): _name(name), _password(""), _topic(""), _topicAuthor(""), _topicUserAccess(false), _inviteOnly(false), _clientLimit(false) {}
+Channel::Channel(std::string name): _name(name), _password(""), _topic(""), _topicAuthor(""), _topicUserAccess(false), _inviteOnly(false), _clientLimit(-1) {}
 Channel::~Channel() {}
 
 //******************************************************************************

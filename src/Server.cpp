@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 20:06:28 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 20:54:54 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,7 @@ Channel *Server::findChannel(std::string channelName)
 	std::vector<Channel *> channel = getChannel();
 	for (size_t i = 0; i < channel.size(); i++)
 	{
+		std::cout << "chanel: " << channel[i]->getName() << std::endl;
 		if ("#" + channel[i]->getName() == channelName)
 			return channel[i];
 	}
