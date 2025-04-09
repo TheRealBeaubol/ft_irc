@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/09 16:42:38 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/09 16:58:05 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,9 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 		else
 			channel->setClientParam(client, true, true, false);
 		server->sendMessage(client->getClientSocket(), msg.c_str());
-		msg = getListOfClient(channel);
+		msg = ":" + serverName + " 353 " + client->getNickName() + " = " + channel->getChannelName() + " :"+ getListOfClient(channel) + "\r\n" ;
+		server->sendMessage(client->getClientSocket(), msg.c_str());
+		msg = ":" + serverName + " 366 " + client->getNickName() + " " + channel->getChannelName() + " :End of /NAMES list.\r\n";
 		server->sendMessage(client->getClientSocket(), msg.c_str());
 		
 	}
