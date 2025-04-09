@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:35 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 22:49:43 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 01:11:28 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,48 +18,31 @@ void topicCommand(Server *server, Client *client, std::vector<std::string> comma
     std::string serverName = std::string(SERVER_NAME);
     std::string msg;
     
-    if (command.size() < 2) {
-        msg = ":" + serverName + " 461 " + client->getNickName() + " TOPIC :Not enough parameters\r\n";
-        send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-        std::cout << BOLD RED << msg << RESET;
-        return ;
-    }
+    if (command.size() < 2)
+        SEND_MESSAGE_AND_RETURN(":" + serverName + " 461 " + client->getNickName() + " TOPIC :Not enough parameters\r\n");
     
     std::string channelName = command[1];
     std::string newTopic = command[2];
     Channel *channel = server->findChannel(channelName);
     
-    if (channel == NULL) {
-        msg = ":" + serverName + " 403 " + client->getNickName() + " " + channelName + " :No such channel\r\n";
-        send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-        std::cout << BOLD RED << msg << RESET;
-        return ;
-    }
-    if (channel->getClientByName(client->getNickName()) == NULL) {
-        msg = ":" + serverName + " 442 " + client->getNickName() + " " + channelName + " :You're not on that channel\r\n";
-        send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-        std::cout << BOLD RED << msg << RESET;
-        return ;
-    }
-    if (channel->getTopicUserAccess() == false && channel->getClientParam(client)[2] == false) {
-        msg = ":" + serverName + " 482 " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n";
-        send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-        std::cout << BOLD RED << msg << RESET; 
-        return ;
-    }    
-    if (command.size() == 2) {
+    if (channel == NULL)
+        SEND_MESSAGE_AND_RETURN(":" + serverName + " 403 " + client->getNickName() + " " + channelName + " :No such channel\r\n");
+
+    if (channel->getClientByName(client->getNickName()) == NULL)
+        SEND_MESSAGE_AND_RETURN(":" + serverName + " 442 " + client->getNickName() + " " + channelName + " :You're not on that channel\r\n");
+
+    if (channel->getTopicUserAccess() == false && channel->getClientParam(client)[2] == false)
+        SEND_MESSAGE_AND_RETURN(":" + serverName + " 482 " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n");
+
+    if (command.size() == 2)
+    {
         std::string topic = channel->getTopic();
-        if (topic == "") {
-            msg = ":" + serverName + " 331 " + client->getNickName() + " " + channelName + " :No topic set\r\n";
-            send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-            std::cout << BOLD GREEN << msg << RESET;
-            return ;
-        }
-        msg = ":" + serverName + " 332 " + client->getNickName() + " " + channelName + " :" + topic + "\r\n";
-        msg += ":" + serverName + " 333 " + client->getNickName() + " " + channelName + " " + channel->getTopicAuthor() + "\r\n";
-        send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-        std::cout << BOLD GREEN << msg << RESET;
-        return;
+    
+        if (topic == "")
+            SEND_MESSAGE_AND_RETURN(":" + serverName + " 331 " + client->getNickName() + " " + channelName + " :No topic set\r\n");
+
+        SEND_MESSAGE_AND_RETURN(":" + serverName + " 332 " + client->getNickName() + " " + channelName + " :" + topic + "\r\n" +
+                               ":" + serverName + " 333 " + client->getNickName() + " " + channelName + " " + channel->getTopicAuthor() + "\r\n");
     }
    
     channel->setTopic(newTopic);
@@ -67,7 +50,4 @@ void topicCommand(Server *server, Client *client, std::vector<std::string> comma
     
     msg = ":" + client->getNickName() + "!" + client->getUserName() + "@localhost TOPIC " + channelName + " " + newTopic + "\r\n";
     channel->broadcastChannel(msg, NULL);
-    
-    std::cout << BOLD GREEN << "Topic set to " << newTopic << RESET << std::endl;
-    
 }

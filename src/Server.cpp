@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 23:35:12 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 01:09:24 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,6 @@ int Server::handleNewConnexion()
 			_clients.push_back(client);
 			struct pollfd poll_fd = {client_fd, POLLIN, 0};
 			_pollFds.push_back(poll_fd);
-			send(client->getClientSocket(), "Welcome to the IRC server !\n", 28, 0);
 		}
 		else
 		{
@@ -109,12 +108,6 @@ int Server::handleNewConnexion()
 	return 0;
 }
 
-void Server::sendMessage(int clientSocket, const char *msg)
-{
-	std::cout << BOLD LIGHTBLUE << "Sending message : " << RESET LIGHTBLUE << std::endl << "	" << msg << RESET;
-	send(clientSocket, msg, strlen(msg), 0);
-}
-
 void Server::removeClient(Client* client)
 {
 	
@@ -122,9 +115,7 @@ void Server::removeClient(Client* client)
 	
 	for (size_t i = 0; i < _clients.size(); i++){
 		if ( (_clients[i] == client) && (i < _clients.size()) )
-		{
 			_clients.erase(_clients.begin() + i);
-		}
 	}
 }
 
@@ -146,7 +137,7 @@ Channel *Server::findChannel(std::string channelName)
 	std::vector<Channel *> channel = getChannel();
 	for (size_t i = 0; i < channel.size(); i++)
 	{
-		if ("#" + channel[i]->getName() == channelName)
+		if (channel[i]->getName() == channelName)
 			return channel[i];
 	}
 	return NULL;

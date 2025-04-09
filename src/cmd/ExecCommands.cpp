@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 23:40:59 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 00:29:27 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,10 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 	std::string msg;
 
 	std::cout << BOLD CYAN << "Message receive from [" << client->getNickName() << "] :" << std::endl << RESET << "	";
-	for (size_t i = 0; i < command.size(); i++) {
+	for (size_t i = 0; i < command.size(); i++)
 		std::cout << CYAN << command[i] << " ";
-	}
-	std::cout << std::endl << RESET;
-	std::cout << std::endl << BOLD BLUE << "_____________ " << command[0] << " COMMAND _____________" << RESET << std::endl << std::endl;
+
+	std::cout << std::endl << RESET << std::endl << BOLD BLUE << "_____________ " << command[0] << " COMMAND _____________" << RESET << std::endl << std::endl;
 
 	if (client->getIsAuth() == true) {
 
@@ -57,12 +56,11 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 	else if (command[0] == "PASS")
 		passCommand(server, client, command);	
 	else if (command[0] != "CAP") {
-        msg = ":" + serverName + " 421 " + client->getNickName() + " " + command[0] + " :Unknown command\r\n";
-		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
 		close(client->getClientSocket());
 		client->setIsAuth(false);
 		client->setIsLog(false);
 		server->removeClient(client);
+		SEND_MESSAGE_AND_RETURN(":" + serverName + " 421 " + client->getNickName() + " " + command[0] + " :Unknown command\r\n");
 	}
 	
 	std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl << std::endl << RESET;

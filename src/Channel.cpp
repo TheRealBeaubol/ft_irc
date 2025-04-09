@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 23:30:40 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 01:05:03 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,23 +98,6 @@ void	Channel::setOperator(Client *client, bool isOperator)
 	{
 		if (it->first == client)
 			it->second[2] = isOperator;
-	}
-}
-
-void Channel::showClient()
-{
-	
-	std::cout << "Size of Client for Channel " << _name << ": " << _clients.size() << std::endl;
-	for (std::map<Client *,  bool*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-		if (it->second[2] == true)
-		{
-			std::cout << "Client : " << it->first->getNickName() << ", he's an operator!" << std::endl;
-		}
-		else if (it->second[2] == false){
-			std::cout << "Client : " << it->first->getNickName() << ", he's a simple user!" << std::endl;
-        }
-		else
-			std::cout << "Not define" << std::endl;
 	}
 }
 

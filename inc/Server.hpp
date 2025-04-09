@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:03 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 20:02:15 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 01:08:38 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ class Server {
 		~Server();
 
 		int handleNewConnexion();
-		void sendMessage(int clientSocket, const char *msg);
 		
 		void removePollFd(struct pollfd poll_fd);
 		std::vector<struct pollfd> getPollFds();

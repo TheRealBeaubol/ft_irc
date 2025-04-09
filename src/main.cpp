@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 19:18:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 03:28:48 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 01:07:28 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,18 +119,13 @@ int main(int ac, char **av) {
 					Client *client = server->getClients()[i];
 
                     if (client) 
-					{
 						handle_message(server, client, s_buffer);
-					}
 					else
-					{
 						std::cout << "No client at index : " << i << std::endl;
-					}
 				}
 				else
 				{
 					std::cout << "Client " << poll_fds[i].fd << " disconnected." << std::endl;
-					std::cout << "i = " << i << std::endl;
 					close(poll_fds[i].fd);
 					server->removePollFd(poll_fds[i]);
 					server->removeClient(server->getClients()[i]);

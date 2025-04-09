@@ -40,7 +40,6 @@ class Channel
 		void		setClientParam(Client* client, bool isInvited, bool isLogged, bool isOperator);
 		bool*		getClientParam(Client* client);
 		void		eraseClient(Client* indClient);
-		void		showClient();
 		
 		std::string	getChannelName() const;
 		std::map<Client *, bool *>	&getClients();
