@@ -6,11 +6,23 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/09 15:51:08 by mhervoch         ###   ########.fr       */
+/*   Updated: 2025/04/09 16:42:38 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
+
+std::string	getListOfClient(Channel* channel){
+	std::string	list;
+	for (std::map<Client *, bool*>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
+		if (it->second[2] == true)
+			list += "@" + it->first->getNickName() + " ";
+		else
+			list += it->first->getNickName() +" ";
+	}
+	std::cout <<"list of client: "<< list << std::endl;
+	return (list);
+}
 
 void	joinCommand(Server *server, Client *client, std::vector<std::string> commands) {
 	
@@ -69,6 +81,8 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 		}
 		else
 			channel->setClientParam(client, true, true, false);
+		server->sendMessage(client->getClientSocket(), msg.c_str());
+		msg = getListOfClient(channel);
 		server->sendMessage(client->getClientSocket(), msg.c_str());
 		
 	}
