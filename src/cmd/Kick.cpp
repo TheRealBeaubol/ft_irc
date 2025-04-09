@@ -6,54 +6,55 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 19:35:14 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 23:32:34 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-bool	verifPriv(Client *client, Channel *channel){
-	
-	std::map<Client *, bool *> &clients = channel->getClients();
-
-	for (std::map<Client *, bool *>::iterator it = clients.begin(); it != clients.end(); ++it) {
-		if (it->first->getClientSocket() == client->getClientSocket())
-		{
-			if (it->second[2] != 1)
-				return (0);
-			return (1);
-		}
-	}
-	return (0);
-}
-
 void	commandKick(Server *server, Client *client, std::vector<std::string> command){
-	
-	if (command.size() < 3){
 
-		std::cout << "KICK error: need at least 2 param for KICK" << std::endl;
+	std::string msg;
+	std::string serverName = std::string(SERVER_NAME);
+
+	if (command.size() < 3)
+	{
+		msg = ":" + serverName + " 461 " + client->getNickName() + " KICK :Not enough parameters\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
 		return ;
 	}
 	
-	Channel *tmpChannel = server->findChannel(command[1]);
-	if (!tmpChannel){
+	std::string channelName = command[1];
+	std::string receiverName = command[2];
+	Channel *channel = server->findChannel(channelName);
 
-		std::cout << "KICK error: channel doesn't exist!" << std::endl;
+	if (!channel)
+	{
+		msg = ":" + serverName + " 403 " + client->getNickName() + " " + channelName + " :No such channel\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
 		return ;
 	}
-	//if (!server->findClients)
-	if (!verifPriv(client, tmpChannel)){
-
-		std::cout << client->getNickName() << "is not an operator he can't use KICK!" << std::endl;
+	if (channel->getClientByName(client->getNickName()) == NULL)
+	{
+		msg = ":" + serverName + " 442 " + client->getNickName() + " " + channelName + " :You're not on that channel\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
 		return ;
 	}
-
-	command[2].erase(std::remove(command[2].begin(), command[2].end(), ':'), command[2].end());
-	tmpChannel->eraseClient(server->findClient(command[2]));
-	std::string msg = ":" + client->getNickName() + " KICK " + command[1] + " " + command[2];	
-	//if (command[3][0])
-	//	msg += " :" + command[3];
-	msg += "\r\n";
-	std::cout << "message que je send: " << msg << std::endl << "nombre total client: " << server->getClients().size() <<std::endl;
-	tmpChannel->broadcastChannel(msg, NULL);
+	if (channel->getClientParam(client)[2] == false)
+	{
+		msg = ":" + serverName + " 482 " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
+		return ;
+	}
+	
+	// Client *receiver = server->findClient(receiverName);
+	
+	
+	msg = ":" + client->getNickName() + " KICK " + channelName + " " + command[2] + "\r\n";
+	std::cout << "Msg sent : " << msg << std::endl << "Total number of clients: " << server->getClients().size() <<std::endl;
+	channel->broadcastChannel(msg, NULL);
 }

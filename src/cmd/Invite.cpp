@@ -6,70 +6,69 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:32 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 20:02:16 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/07 23:31:05 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-bool	checkSender(Channel *channel, Client *client){
-
-	std::map<Client *, bool *> &clients = channel->getClients();
-	
-	for (std::map<Client *, bool *>::iterator it = clients.begin(); it != clients.end(); ++it) {
-		if (it->first->getClientSocket() == client->getClientSocket()) {
-			if (it->second[2] != 1)
-				return 0;
-			return 1;
-		}
-	}
-	return 0;
-}
-
-bool	checkInviteUser(Server *server, std::string nickname){
-
-	for (size_t i = 0; i < server->getClients().size(); ++i){
-
-		if (server->getClients()[i]->getNickName() == nickname)
-			return (1);
-	}		
-	return (0);
-}
-
 void	inviteCommand(Server *server, Client *client, std::vector<std::string> command)
 {
-	Channel	*tmpChannel = server->findChannel(command[2]);
-	if (!checkSender(tmpChannel, client)){
-		
-		std::cout << "client not in channel or dont have permission for this!" << std::endl;
-		return ;
-	}
+	std::string	msg;
+	std::string serverName = std::string(SERVER_NAME);
 
-	if (tmpChannel->getClientByName(command[1]))
+	if (command.size() < 3)
 	{
-		std::cout << "The user u want to invite is already in the Channel!" << std::endl;
+		msg = ":" + serverName + " 461 " + client->getNickName() + " INVITE :Not enough parameters\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
+		return ;
+	}
+	
+	std::string channelName = command[2];
+	std::string receiverName = command[1];
+	Channel	*channel = server->findChannel(channelName);
+
+	if (!channel) {
+		msg = ":" + serverName + " 403 " + client->getNickName() + " " + channelName + " :No such channel\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
+		return ;
+	}
+	if (channel->getClientByName(client->getNickName()) == NULL) {
+		msg = ":" + serverName + " 442 " + client->getNickName() + " " + channelName + " :You're not on that channel\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
+		return ;
+	}
+	if (channel->getClientParam(client)[2] == false) {
+		msg = ":" + serverName + " 482 " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
 		return ;
 	}
 
-	/*if (verif connection via getAut)
-	{
-		std::cout << "the user isn't connected" << std::endl;
-		return ;
-	}*/
-	
-	if (!checkInviteUser(server, command[1])){
+	Client *receiver = server->findClient(command[1]);
 
-		std::cout << "The user you want to invite do not exist!" << std::endl;
+	if (!receiver) {
+		msg = ":" + serverName + " 401 " + client->getNickName() + " " + command[1] + " :No such nick/channel\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
 		return ;
 	}
-
-	if (/*!tmpChannel->invite_mod*/ 1 == 0){
-	
-		std::cout << "The channel is not in 'invite-only'(+i) mode!" << std::endl;
+	if (channel->getClientByName(receiver->getNickName()) != NULL) {
+		msg = ":" + serverName + " 443 " + client->getNickName() + " " + command[1] + " " + channelName + " :is already on channel\r\n";
+		send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+		std::cout << BOLD RED << msg << RESET;
 		return ;
-		}
+	}
 	
-	Client *tmpUser = server->findClient(command[1]);
-	std::string	msg = "You have been invited to join " + tmpChannel->getChannelName() + " by " + client->getNickName() + "\n";
-	send(tmpUser->getClientSocket(), msg.c_str(), msg.length(), 0);
+	channel->addClient(receiver);
+	channel->setClientParam(receiver, true, false, false);
+	
+	msg = ":" + serverName + " 341 " + client->getNickName() + " " + command[1] + " " + channelName + "\r\n";
+	send(client->getClientSocket(), msg.c_str(), msg.length(), 0);
+	
+	msg = ":" + client->getNickName() + " INVITE " + command[1] + " " + channelName + "\r\n";
+	send(receiver->getClientSocket(), msg.c_str(), msg.length(), 0);
 }
