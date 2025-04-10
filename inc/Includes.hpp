@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:31:37 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 23:41:42 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 #include <ostream>
 #include <iostream>
 #include <cstdlib>
+#include <csignal>
 
 #include "Channel.hpp"
 #include "Client.hpp"

@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:00:57 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 23:56:57 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,11 @@
 
 Channel::Channel() {}
 Channel::Channel(std::string name): _name(name), _password(""), _topic(""), _topicAuthor(""), _topicUserAccess(false), _inviteOnly(false), _clientLimit(false) {}
-Channel::~Channel() {}
+Channel::~Channel() {
+	for (std::map<Client *, bool *>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+		delete[] it->second;
+	}
+}
 
 void Channel::addClient(Client *newClient) {
 

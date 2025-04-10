@@ -6,13 +6,25 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:13:26 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 23:59:18 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
+volatile sig_atomic_t server_status = SERVER_RUNNING;
 
-Server::~Server(){}
+Server::~Server() {
+	for (size_t i = 0; i < _clients.size(); i++) {
+		close(_clients[i]->getClientSocket());
+	}
+	for (size_t i = 0; i < _channels.size(); i++) {
+		delete _channels[i];
+	}
+	for (size_t i = 0; i < _clients.size(); i++) {
+		delete _clients[i];
+	}
+	close(_serverFd);
+}
 
 int setNonBlocking(int fd) {
 	
@@ -23,6 +35,14 @@ int setNonBlocking(int fd) {
     
 	if (fcntl(fd, F_SETFL, flags) == -1) { return -1; }
     return 0;
+}
+
+void	handleSigInt(int sig) {
+	
+	if (sig == SIGINT) {
+		std::cout << BOLD RED << "\n\nServer stopped" << RESET << std::endl;
+		server_status = SERVER_STOPPED;
+	}
 }
 
 Server::Server(int port, std::string password)
@@ -60,13 +80,13 @@ Server::Server(int port, std::string password)
 
 int Server::run() {
 
-	while (true) {
+	signal(SIGINT, handleSigInt);
+	while (server_status == SERVER_RUNNING) {
 	
 		std::vector<struct pollfd> poll_fds = getPollFds();
 
         int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
 		if (poll_count < 0) {
-            std::cerr << "poll failed" << ": " << strerror(errno) << std::endl;
             return -1;
         }
 
