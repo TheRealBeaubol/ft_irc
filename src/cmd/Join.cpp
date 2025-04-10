@@ -6,32 +6,24 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 01:13:58 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:16:16 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-std::string	getListOfClient(Channel* channel){
+std::string	getListOfClient(Channel* channel) {
+
 	std::string	list;
+
 	for (std::map<Client *, bool*>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
-		if (it->second[2] == true)
+		if (it->second[OPERATOR] == true)
 			list += "@" + it->first->getNickName() + " ";
 		else
 			list += it->first->getNickName() +" ";
 	}
+
 	return (list);
-}
-
-std::vector<std::string> split(std::string str, char delimiter) {
-	std::vector<std::string> tokens;
-	std::stringstream ss(str);
-	std::string token;
-
-	while (std::getline(ss, token, delimiter)) {
-		tokens.push_back(token);
-	}
-	return tokens;
 }
 
 std::vector<std::pair<std::string, std::string> > fillChannelList(std::vector<std::string> commands) {
@@ -67,7 +59,7 @@ void	createChannel(Server *server, Client *client, std::pair<std::string, std::s
 	newChannel->addClient(client);
 	client->addChannel(newChannel);
 	
-	newChannel->setClientParam(client, false, true, true);
+	newChannel->setClientParam(client, true, true);
 	
 	server->addChannel(newChannel);
 
@@ -82,10 +74,10 @@ void	joinChannel(Channel *channel, Client *client, std::pair<std::string, std::s
 	std::string channelName = joinedChannel.first;
 	std::string channelPassword = joinedChannel.second;
 			
-	if (channel->getInviteOnly() == true && ((channel->getClientByName(client->getNickName()) == NULL) || (channel->getClients()[client][0] == false))) {
+	if (channel->getInviteOnly() == true && ((channel->getClientByName(client->getNickName()) == NULL) || (channel->getClients()[client][LOGGED] == false))) {
 		SEND_MESSAGE(":" + serverName + " 473 " + client->getNickName() + " " + channelName + " :Cannot join channel (+i)\r\n");
 	}
-	else if (channel->getClientByName(client->getNickName()) != NULL && channel->getClients()[client][1] == true) {
+	else if (channel->getClientByName(client->getNickName()) != NULL && channel->getClients()[client][LOGGED] == true) {
 		SEND_MESSAGE(":" + serverName + " 443 " + client->getNickName() + " " + channelName + " :is already on channel\r\n");
 	}
 	else if (channel->getPassword().empty() == false && channel->getPassword() != channelPassword) {
@@ -95,15 +87,14 @@ void	joinChannel(Channel *channel, Client *client, std::pair<std::string, std::s
 		SEND_MESSAGE(":" + serverName + " 471 " + client->getNickName() + " " + channelName + " :Cannot join channel (+l)\r\n");
 	}
 	else {	
-		if (channel->getClientByName(client->getNickName()) == NULL)
-		{
+		if (channel->getClientByName(client->getNickName()) == NULL) {
+		
 			channel->addClient(client);
 			client->addChannel(channel);
-		
-			channel->setClientParam(client, false, true, false);
+			channel->setClientParam(client, true, false);
 		}
 		else
-			channel->setClientParam(client, true, true, false);
+			channel->setClientParam(client, true, false);
 
 		channel->broadcastChannel(":" + client->getNickName() + " JOIN :" + channelName + "\r\n", NULL);
 
@@ -125,7 +116,7 @@ void	joinCommand(Server *server, Client *client, std::vector<std::string> comman
 		std::string channelPassword = channelList[i].second;
 		
 		Channel *channel;
-		channel = server->findChannel(channelName);
+		channel = server->getChannelByName(channelName);
 		
 		if (channel == NULL)
 			createChannel(server, client, channelList[i]);

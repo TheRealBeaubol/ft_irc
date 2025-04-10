@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 00:29:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:23:44 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 	std::string serverName = std::string(SERVER_NAME);
 	std::string msg;
 
-	std::cout << BOLD CYAN << "Message receive from [" << client->getNickName() << "] :" << std::endl << RESET << "	";
 	for (size_t i = 0; i < command.size(); i++)
 		std::cout << CYAN << command[i] << " ";
 

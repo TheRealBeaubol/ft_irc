@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Client.hpp"
-#include <map>
-#include <string>
+#include "Includes.hpp"
+
+class Client;
 
 class Channel
 {
@@ -37,9 +37,9 @@ class Channel
 
 		void		addClient(Client* newClient);
 		Client*		getClientByName(std::string name);
-		void		setClientParam(Client* client, bool isInvited, bool isLogged, bool isOperator);
+		void		setClientParam(Client* client, bool isLogged, bool isOperator);
 		bool*		getClientParam(Client* client);
-		void		eraseClient(Client* indClient);
+		void		removeClient(Client* indClient);
 		
 		std::string	getChannelName() const;
 		std::map<Client *, bool *>	&getClients();
@@ -56,5 +56,5 @@ class Channel
 		bool _inviteOnly;		// /MODE +i
 		int _clientLimit;		///MODE +l
 
-		std::map<Client *,  bool*> _clients; //bool[3] = {invited, logged, operator}
+		std::map<Client *,  bool*> _clients; //bool[2] = {logged, operator}
 };

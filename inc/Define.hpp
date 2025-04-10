@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:49 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 00:37:11 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:24:40 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 #define BUFFER_SIZE 1024
 #define SERVER_NAME "IRCServer"
+#define LOGGED 0
+#define OPERATOR 1
 
 #define SEND_MESSAGE_AND_RETURN(msg) {                              \
     const std::string _msg = msg;                                   \

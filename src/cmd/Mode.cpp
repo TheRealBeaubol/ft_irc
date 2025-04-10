@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:30 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/07 19:32:09 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:25:37 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,12 @@ void modeOCommand(Channel *channel, char sign, std::string clientNameToMode)
 	if (client_param == NULL)
 		std::cout << "NULLLLLLL" << std::endl;
 
-	if (sign == '-' && client_param[2] == true)
+	if (sign == '-' && client_param[OPERATOR] == true)
 	{
 		channel->setOperator(clientToMode, false);
 		std::cout << "Succes, operator been retrograded (need to send confirmation to client who sended mode command)" << std::endl;
 	}
-	else if (sign == '+' && client_param[2] == false)
+	else if (sign == '+' && client_param[OPERATOR] == false)
 	{
 		channel->setOperator(clientToMode, true);
 		std::cout << "Succes, operator been promoted (need to send confirmation to client who sended mode command)" << std::endl;
@@ -129,13 +129,13 @@ void modeCommand(Server *server, Client *client, std::vector<std::string> comman
 		return;
 	}
 
-	Channel *channel = server->findChannel(command[1]);
+	Channel *channel = server->getChannelByName(command[1]);
 	if (channel == NULL)
 	{
 		std::cout << "Error : There is no channel with that name... (need to send error...)" << std::endl;
 		return;
 	}
-	else if (channel->getClientParam(client)[2] == 0)
+	else if (channel->getClientParam(client)[OPERATOR] == false)
 	{
 		std::cout << "You're not operator, you can't use /MODE command... (need to send error...)" << std::endl;
 		return;

@@ -6,12 +6,13 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 01:09:24 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:13:26 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
-#include <iostream>
+
+Server::~Server(){}
 
 int setNonBlocking(int fd) {
 	
@@ -36,41 +37,114 @@ Server::Server(int port, std::string password)
 	
 	_serverFd = socket( AF_INET, SOCK_STREAM, 0 );
 	if ( _serverFd == -1 ) { std::cerr << BOLD RED << "Error while creating socket" << RESET << std::endl; }
-	std::cout << BOLD GREEN << "Socket created !" << std::endl;
    
 	int opt = 1;
 	if ( setsockopt( _serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof( opt ) ) == -1 ) {	std::cerr << BOLD RED << "Error while setting socket options" << RESET << std::endl; }
-    std::cout << "Socket options set !" << std::endl;
 
     sockaddr_in address = {AF_INET, htons( port ), {INADDR_ANY}, {0}};
-
 	if ( bind( _serverFd, ( struct sockaddr* )&address, sizeof( address ) ) == -1 ) { std::cerr << BOLD RED << "Error while binding socket" << RESET << std::endl; }
-	std::cout << "Socket binded !" << std::endl;
 
 	if ( listen( _serverFd, SOMAXCONN ) == -1 ) { std::cerr << BOLD RED << "Error while listening" << RESET << std::endl; }
-    std::cout << "Server listening !" << std::endl;
-
 	if ( setNonBlocking( _serverFd ) == -1 ) { std::cerr << BOLD RED << "Error while setting non-blocking" << RESET << std::endl; }
-	std::cout << "Server set to non-blocking !" << RESET << std::endl;
 
-	std::cout << BOLD ORANGE << "Creating a new client for the server : " << std::endl << "	";
 	Client *client = new Client( _serverFd );
 	client->setIsAuth(true);
 	client->setIsLog(true);
-	std::cout << "getIsAuth() : " << client->getIsAuth() << std::endl;
 	_clients.push_back( client );
 	std::cout << std::endl << RESET ;
 	
 	_pollFds.push_back( ( struct pollfd ) {_serverFd, POLLIN, 0} );
 
-    std::cout << BOLD GREEN << "Server listening on port : " << _port << std::endl << RESET;
 	std::cout << BOLD BLUE << "=========================================" << std::endl << std::endl << RESET;
 }
 
-Server::~Server(){}
+int Server::run() {
 
-void Server::removePollFd(struct pollfd poll_fd)
-{
+	while (true) {
+	
+		std::vector<struct pollfd> poll_fds = getPollFds();
+
+        int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
+		if (poll_count < 0) {
+            std::cerr << "poll failed" << ": " << strerror(errno) << std::endl;
+            return -1;
+        }
+
+        if (poll_fds[0].revents & POLLIN && handleNewConnexion() == -1)	{
+			std::cerr << "handleNewConnexion failed" << ": " << strerror(errno) << std::endl;
+            continue;
+        }
+
+        for (size_t i = 1; i < poll_fds.size(); ++i) {
+		
+            if (poll_fds[i].revents & POLLIN) {
+			
+                char buffer[BUFFER_SIZE];
+				memset(buffer, 0, BUFFER_SIZE);
+                int bytes_read = recv(poll_fds[i].fd, buffer, BUFFER_SIZE, 0);
+
+                if (bytes_read > 0) {
+				
+					Client *client = getClients()[i];
+
+                    if (client) {
+                        std::vector<std::vector<std::string> > commands = tokenize(std::string(buffer));
+                        for (size_t i = 0; i < commands.size(); i++) {
+                            executeCommand(this, client, commands[i]);
+                        }
+                    }
+				}
+				else {
+					std::cout << "Client " << poll_fds[i].fd << " disconnected." << std::endl;
+					close(poll_fds[i].fd);
+					removePollFd(poll_fds[i]);
+					removeClient(getClients()[i]);
+				}
+            }
+        }
+    }
+
+	return 0;
+}
+
+int Server::handleNewConnexion() {
+
+	std::cout << BOLD BLUE << "------------- NEW CONNEXION -------------" << RESET << std::endl;
+
+	struct sockaddr_in client_addr;
+	socklen_t client_len = sizeof(client_addr);
+	int client_fd = accept(_serverFd, (struct sockaddr*)&client_addr, &client_len);
+
+	if (client_fd >= 0)	{
+	
+		if (setNonBlocking(client_fd) == 0)	{
+			Client *client = new Client(client_fd);
+			_clients.push_back(client);
+			struct pollfd poll_fd = {client_fd, POLLIN, 0};
+			_pollFds.push_back(poll_fd);
+		}
+		else {
+			close(client_fd);
+			std::cout << BOLD BLUE << "-----------------------------------------" << std::endl << std::endl << RESET;
+			return -1;
+		}
+	}
+	std::cout << BOLD BLUE << "-----------------------------------------" << std::endl << std::endl << RESET;
+	return 0;
+}
+
+void Server::removeClient(Client* client) {	_clients.erase(std::remove(_clients.begin(), _clients.end(), client), _clients.end()); }
+std::vector<Client *> Server::getClients() { return _clients; }
+
+void Server::addChannel(Channel *channel) { _channels.push_back(channel); }
+void Server::removeChannel(Channel *channel) { _channels.erase(std::remove(_channels.begin(), _channels.end(), channel), _channels.end()); }
+std::vector<Channel *> Server::getChannels() { return _channels; }
+
+std::string Server::getPassword() const { return _password; }
+
+std::vector<struct pollfd> Server::getPollFds() { return _pollFds; }
+
+void Server::removePollFd(struct pollfd poll_fd) {
 	
 	for (size_t i = 0; i < _pollFds.size(); i++) {
 		if ( (_pollFds[i].fd == poll_fd.fd) && (i < _pollFds.size()) )
@@ -81,75 +155,27 @@ void Server::removePollFd(struct pollfd poll_fd)
 	}
 }
 
-int Server::handleNewConnexion()
-{
+Channel *Server::getChannelByName(std::string channelName) {
 
-	std::cout << BOLD BLUE << "------------- NEW CONNEXION -------------" << RESET << std::endl;
+	std::vector<Channel *> channel = getChannels();
 
-	struct sockaddr_in client_addr;
-	socklen_t client_len = sizeof(client_addr);
-	int client_fd = accept(_serverFd, (struct sockaddr*)&client_addr, &client_len);
-	if (client_fd >= 0)	{
-		if (setNonBlocking(client_fd) == 0)
-		{
-			Client *client = new Client(client_fd);
-			_clients.push_back(client);
-			struct pollfd poll_fd = {client_fd, POLLIN, 0};
-			_pollFds.push_back(poll_fd);
-		}
-		else
-		{
-			close(client_fd);
-			std::cout << BOLD BLUE << "-----------------------------------------" << std::endl << std::endl << RESET;
-			return -1;
-		}
-	}
-	std::cout << BOLD BLUE << "-----------------------------------------" << std::endl << std::endl << RESET;
-	return 0;
-}
-
-void Server::removeClient(Client* client)
-{
-	
-	std::cout << "Removing " <<  client->getClientSocket() << " from server.clients " << std::endl;
-	
-	for (size_t i = 0; i < _clients.size(); i++){
-		if ( (_clients[i] == client) && (i < _clients.size()) )
-			_clients.erase(_clients.begin() + i);
-	}
-}
-
-void Server::addChannel(Channel *channel) { 
-	_channels.push_back(channel);
-}
-
-void Server::removeChannel(Channel *channel) { 
-	_channels.erase(std::remove(_channels.begin(), _channels.end(), channel), _channels.end());
-}
-
-std::vector<Channel *> Server::getChannel() { return _channels; }
-std::vector<struct pollfd> Server::getPollFds() { return _pollFds; }
-std::vector<Client *> Server::getClients() { return _clients; }
-std::string Server::getPassword() const { return _password; }
-
-Channel *Server::findChannel(std::string channelName)
-{
-	std::vector<Channel *> channel = getChannel();
-	for (size_t i = 0; i < channel.size(); i++)
-	{
+	for (size_t i = 0; i < channel.size(); i++) {
 		if (channel[i]->getName() == channelName)
 			return channel[i];
 	}
+
 	return NULL;
 }
 
-Client *Server::findClient(std::string clientName)
-{
+Client *Server::getClientByName(std::string clientName) {
+
 	std::vector<Client *> client = getClients();
-	for (size_t i = 0; i < client.size(); i++)
-	{
+
+	for (size_t i = 0; i < client.size(); i++) {
 		if (client[i]->getNickName() == clientName)
 			return client[i];
 	}
+
 	return NULL;
 }
+

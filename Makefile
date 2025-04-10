@@ -32,9 +32,10 @@ SRC 		= 	cmd/ExecCommands.cpp \
 				cmd/Part.cpp \
 				Channel.cpp \
 				Client.cpp \
-				ErrorDraw.cpp \
-				main.cpp \
-				Server.cpp
+				Server.cpp \
+				Parsing.cpp \
+				Utils.cpp \
+				main.cpp
  
 OBJS 		:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 DEPS 		:= $(patsubst %.cpp,$(DEP_DIR)/%.d,$(SRC))

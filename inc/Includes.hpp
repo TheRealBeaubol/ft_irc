@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:58:31 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 20:33:35 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@
 #include <stdio.h> 
 #include <fcntl.h>
 #include <poll.h>
+#include <cstring>
+#include <map>
+#include <string>
 
 #include "Channel.hpp"
 #include "Client.hpp"
@@ -36,5 +39,12 @@
 #include "Commands.hpp"
 #include "Define.hpp"
 #include "ErrorCode.hpp"
-#include "ErrorDraw.hpp"
 #include "Server.hpp"
+
+std::string repeatChar(int n, const std::string& s);
+void drawBoxErrorAndExit(int width, std::string const title);
+std::vector<std::string> split(std::string str, char delimiter);
+
+std::vector<std::string> splitBufferIntoLines(const std::string &buffer);
+std::vector<std::string> tokenizeLine(const std::string &line);
+std::vector<std::vector<std::string> > tokenize(std::string buffer);

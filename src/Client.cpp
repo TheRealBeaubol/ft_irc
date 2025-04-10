@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:06:52 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:01:29 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,11 @@ Client::~Client(){}
 
 Client::Client(int clientSocket) {
 
-	std::cout << BOLD YELLOW << "Client has been created with " << clientSocket << " as clientSocket" << std::endl;
 	_clientSocket = clientSocket;
 	_isAuth = false;
 	_isLog = false;
 	setNickName("");
 	setUserName("");
-	_channels = std::vector<Channel *>();
 }
 
 void Client::setClientSocket( int clientSocket ) { _clientSocket = clientSocket; }
