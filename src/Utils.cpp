@@ -6,11 +6,19 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 18:45:19 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:13:21 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:30:43 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
+
+std::string itoa(int n) {
+
+	std::ostringstream oss;
+	oss << n;
+
+	return oss.str();
+}
 
 std::vector<std::string> split(std::string str, char delimiter) {
 

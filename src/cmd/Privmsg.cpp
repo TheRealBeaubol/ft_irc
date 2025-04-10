@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:20 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:22:17 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:56:43 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	msgChannel(Server *server, Client *client, std::string channelName, std::st
 	}
 	
 	msg = ":" + client->getNickName() + "!" + client->getUserName() + " PRIVMSG " + channelName + " :" + messageSent + "\r\n";
-	receiver->broadcastChannel(msg, NULL);
+	receiver->broadcastChannel(msg, client);
 }
 
 void	msgUser(Server *server, Client *client, std::string receiverName, std::string messageSent) {

@@ -6,12 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:27 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:20:01 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:44:27 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
-#include <string>
 
 bool	isNickNameAvailable(Server *server, std::vector<std::string> commands){
 	

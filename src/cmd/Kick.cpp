@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:20:42 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/10 22:07:19 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	commandKick(Server *server, Client *client, std::vector<std::string> comman
 	if (channel->getClientByName(client->getNickName()) == NULL) {
 		SEND_MESSAGE_AND_RETURN(":" + serverName + " 442 " + client->getNickName() + " " + channelName + " :You're not on that channel\r\n");
 	}
-	if (channel->getClientParam(client)[2] == false) {
+	if (channel->getClientParam(client)[OPERATOR] == false) {
 		SEND_MESSAGE_AND_RETURN(":" + serverName + " 482 " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n");	
 	}
 	
