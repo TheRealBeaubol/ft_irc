@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:23:44 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:49:02 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 		passCommand(server, client, command);	
 	else if (command[0] != "CAP") {
 		close(client->getClientSocket());
-		client->setIsAuth(false);
-		client->setIsLog(false);
 		server->removeClient(client);
 		SEND_MESSAGE_AND_RETURN(":" + serverName + " 421 " + client->getNickName() + " " + command[0] + " :Unknown command\r\n");
 	}

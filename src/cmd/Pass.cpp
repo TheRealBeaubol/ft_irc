@@ -6,12 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:31 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:20:59 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:47:33 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
-#include <string>
 
 void	passCommand(Server *server, Client *client, std::vector<std::string> commands) {
 
@@ -28,11 +27,10 @@ void	passCommand(Server *server, Client *client, std::vector<std::string> comman
 
     if (password != server->getPassword()) {
 
+        SEND_MESSAGE(":" + serverName + " 464 " + client->getNickName() + " :Password incorrect\r\n");
         close(client->getClientSocket());
-        client->setIsAuth(false);
-        client->setIsLog(false);
         server->removeClient(client);
-        SEND_MESSAGE_AND_RETURN(":" + serverName + " 464 " + client->getNickName() + " :Password incorrect\r\n");
+        return;
     }
     
     client->setIsAuth(true);
