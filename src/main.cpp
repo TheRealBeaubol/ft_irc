@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 19:18:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 23:35:04 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:38:26 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,16 @@ int main(int ac, char **av) {
     
     if (ac != 3 || atoi(av[1]) < 1024)
         drawBoxErrorAndExit(50, "Usage: ./ircserv [port > 1024] [password]");
-
-    Server server(atoi(av[1]), av[2]);	    
-    return server.run();
+    
+    try {
+        Server server(atoi(av[1]), av[2]);	 
+        server.run();   
+    }
+    catch (std::exception &e) {
+        std::cerr << BOLD RED << "Error: " << e.what() << RESET << std::endl;
+        return 1;
+    }
+    return 0;
 }
 
 

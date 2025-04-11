@@ -6,12 +6,11 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:35 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:23:03 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:45:49 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
-
 
 void topicCommand(Server *server, Client *client, std::vector<std::string> command) {
 
@@ -23,7 +22,6 @@ void topicCommand(Server *server, Client *client, std::vector<std::string> comma
     }
     
     std::string channelName = command[1];
-    std::string newTopic = command[2];
     Channel *channel = server->getChannelByName(channelName);
     
     if (channel == NULL) {
@@ -46,6 +44,7 @@ void topicCommand(Server *server, Client *client, std::vector<std::string> comma
                                ":" + serverName + " 333 " + client->getNickName() + " " + channelName + " " + channel->getTopicAuthor() + "\r\n");
     }
    
+    std::string newTopic = command[2];
     channel->setTopic(newTopic);
     channel->setTopicAuthor(client->getNickName());
     

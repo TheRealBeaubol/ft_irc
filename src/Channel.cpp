@@ -6,14 +6,14 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 23:56:57 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:49:01 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
 
 Channel::Channel() {}
-Channel::Channel(std::string name): _name(name), _password(""), _topic(""), _topicAuthor(""), _topicUserAccess(false), _inviteOnly(false), _clientLimit(false) {}
+Channel::Channel(std::string name): _name(name), _password(""), _topic(""), _topicAuthor(""), _topicUserAccess(false), _inviteOnly(false), _clientLimit(false), _creationTime(std::time(NULL)) {}
 Channel::~Channel() {
 	for (std::map<Client *, bool *>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
 		delete[] it->second;
@@ -104,3 +104,6 @@ std::string	Channel::getChannelName() const{ return(_name); }
 
 std::map<Client *, bool *>	&Channel::getClients() { return (_clients); }
 void	Channel::removeClient(Client *indClient) { _clients.erase(indClient); }
+
+void Channel::setCreationTime(time_t time) { _creationTime = time; }
+time_t Channel::getCreationTime() const { return _creationTime; }

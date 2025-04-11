@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:30 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:55:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:33:22 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,17 +172,44 @@ void modeCommand(Server *server, Client *client, std::vector<std::string> comman
 	{
 		if (command[1][0] == '#')
 		{
-			// 324 RPL_CHANNELMODEIS, 329 RPL_CREATIONTIME
+			std::string channelMode;
+			Channel *channel = server->getChannelByName(command[1]);
+			std::vector<std::string> argv;
+
+			if (channel == NULL) {
+				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " 403 " + client->getNickName() + " " + command[1] + " :No such channel\r\n");
+			}
+			else {
+
+				if (channel->getInviteOnly() == true)
+					channelMode += "i";
+				if (channel->getPassword() != "")
+					channelMode += "k";
+				if (channel->getClientLimit() != 0)
+				{
+					channelMode += "l";
+					argv.push_back(itoa(channel->getClientLimit()));
+				}
+				if (channel->getTopicUserAccess() == true)
+					channelMode += "t";
+
+				std::string msg;
+				msg = ":" + std::string(SERVER_NAME) + " 324 " + client->getNickName() + " " + channel->getChannelName() + " +" + channelMode;
+				for (size_t i = 0; i < argv.size(); i++)
+					msg += " " + argv[i];
+				msg += "\r\n";
+				SEND_MESSAGE(msg);
+
+				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " 329 " + client->getNickName() + " " + channel->getChannelName() + " " + itoa(channel->getCreationTime()) + "\r\n");
+			}
 		}
 		else
 		{
 			if (command[1] == client->getNickName())
 			{
-				// 221 RPL_UMODEIS
+				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " 221 " + client->getNickName() + " " + command[1] + " :is now known as " + client->getNickName() + "\r\n");
 			}
-			else {
-				SEND_MESSAGE(":" + std::string(SERVER_NAME) + " 502 " + client->getNickName() + " :Cannot change mode for other users\r\n");
-			}
+			SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " 502 " + client->getNickName() + " :Cannot change mode for other users\r\n");
 		}
 		return ;
 	}

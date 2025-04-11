@@ -46,6 +46,9 @@ class Channel
 
 		void		broadcastChannel(std::string message, Client *sender);
 
+		void setCreationTime(time_t time);
+		time_t getCreationTime() const;
+
 	private:
 
 		std::string	_name;
@@ -55,6 +58,7 @@ class Channel
 		bool _topicUserAccess;	// /MODE +t
 		bool _inviteOnly;		// /MODE +i
 		int _clientLimit;		///MODE +l
+		time_t _creationTime;
 
 		std::map<Client *,  bool*> _clients; //bool[2] = {logged, operator}
 };

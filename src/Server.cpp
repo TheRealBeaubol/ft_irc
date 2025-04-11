@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 23:59:18 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:39:14 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,9 @@ Server::Server(int port, std::string password)
 	_password = password;
 	
 	_serverFd = socket( AF_INET, SOCK_STREAM, 0 );
-	if ( _serverFd == -1 ) { std::cerr << BOLD RED << "Error while creating socket" << RESET << std::endl; }
+	if ( _serverFd == -1 ) { 
+		throw std::runtime_error("Error while creating socket");
+	}
    
 	int opt = 1;
 	if ( setsockopt( _serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof( opt ) ) == -1 ) {	std::cerr << BOLD RED << "Error while setting socket options" << RESET << std::endl; }
