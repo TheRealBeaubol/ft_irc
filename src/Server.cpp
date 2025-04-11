@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/11 20:00:50 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:56:46 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,12 @@ void Server::removeClient(Client* client) {
 std::vector<Client *> Server::getClients() { return _clients; }
 
 void Server::addChannel(Channel *channel) { _channels.push_back(channel); }
-void Server::removeChannel(Channel *channel) { _channels.erase(std::remove(_channels.begin(), _channels.end(), channel), _channels.end()); }
+void Server::removeChannel(Channel *channel) {
+	
+	delete channel;
+	_channels.erase(std::remove(_channels.begin(), _channels.end(), channel), _channels.end());
+}
+
 std::vector<Channel *> Server::getChannels() { return _channels; }
 
 std::string Server::getPassword() const { return _password; }

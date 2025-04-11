@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:30 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/11 18:33:22 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:21:39 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void modeLCommand(Channel *channel, int sign, int newClientLimit) {
 		channel->setClientLimit(0);
 		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -l\r\n", NULL);
 	}
-	else if (sign == 1 && newClientLimit >= 0 && newClientLimit != clientLimit)	{
+	else if (sign == 1 && newClientLimit > 0 && newClientLimit != clientLimit)	{
 		channel->setClientLimit(newClientLimit);
 		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +l " + itoa(newClientLimit) + "\r\n", NULL);
 	}
@@ -79,11 +79,11 @@ void modeOCommand(Server *server, Channel *channel, Client *client, int sign, st
 
 	if (sign == -1 && client_param[OPERATOR] == true) {
 		channel->setOperator(clientOnChannel, false);
-		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -o\r\n", NULL);
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -o " + clientOnChannel->getNickName() + "\r\n", NULL);
 	}
 	else if (sign == 1 && client_param[OPERATOR] == false) {
 		channel->setOperator(clientOnChannel, true);
-		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +o\r\n", NULL);
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +o " + clientOnChannel->getNickName() + "\r\n", NULL);
 	}
 }
 
