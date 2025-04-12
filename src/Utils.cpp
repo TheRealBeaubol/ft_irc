@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 18:45:19 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:30:43 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 17:39:04 by mhervoch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ std::string repeatChar(int n, const std::string& s) {
     return result;
 }
 
-void drawBoxErrorAndExit(int width, std::string const title) {
+void drawBoxErrorAndExit(int width, const std::string &title) {
     
     std::string errorText = "ERROR:";
     int leftPadding = (width - errorText.size()) / 2;
@@ -57,6 +57,6 @@ void drawBoxErrorAndExit(int width, std::string const title) {
     std::cout << VERTICAL << repeatChar(leftPadding, " ") << title << repeatChar(rightPadding, " ") << VERTICAL << std::endl;
     std::cout << VERTICAL << repeatChar(width, " ") << VERTICAL << std::endl;
     std::cout << "╚" << repeatChar(width, "═") << "╝" << RESET << std::endl;
-    exit(1);
+	return ;
 }
 
