@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:20:01 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:26:02 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,8 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 				prvmsgCommand(server, client, command);
 			else if (command[0] == "PART")
 				partCommand(server, client, command);
-			else {
+			else
 				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_UNKNOWNCOMMAND + " " + client->getNickName() + " " + command[0] + " :Unknown command\r\n");
-			}
 		}
 	}
 	else if (command[0] == "PASS")

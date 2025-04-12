@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:27 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:18:21 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:29:29 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,17 +52,14 @@ bool checkNicknameFormat(const std::string &nickname) {
 
 void    commandNick(Server *server, Client *client, std::vector<std::string> commands) {
 	
-	if (commands.size() < 2) {
+	if (commands.size() < 2)
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NONICKNAMEGIVEN + " " + client->getNickName() + " :No nickname given\r\n");
-	}
 	std::string newNickname = commands[1];
 
-	if (!checkNicknameFormat(newNickname)) {
+	if (!checkNicknameFormat(newNickname))
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_ERRONEUSNICKNAME + " " + client->getNickName() + " " + newNickname + " :Erroneous nickname\r\n");
-	}
-	if (!isNickNameAvailable(server, commands)) {
+	if (!isNickNameAvailable(server, commands))
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NICKNAMEINUSE + " " + client->getNickName() + " " + newNickname + " :Nickname is already in use\r\n");
-	}
 	
 	std::string	oldNickname = client->getNickName();
 	client->setNickName(newNickname);

@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:30 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:04:45 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:29:17 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,14 +65,12 @@ void modeOCommand(Server *server, Channel *channel, Client *client, int sign, st
 
 	Client *clientOnServer = server->getClientByName(clientNameToMode);
 
-	if (clientOnServer == NULL)	{
+	if (clientOnServer == NULL)
 		SEND_MESSAGE_AND_RETURN("" + std::string(SERVER_NAME) + " " + ERR_NOSUCHNICK + " " + client->getNickName() + " " + clientNameToMode + " :No such nick/channel\r\n");
-	}
 	
 	Client *clientOnChannel = channel->getClientByName(clientNameToMode);
-	if (clientOnChannel == NULL || channel->getClientParam(clientOnChannel)[LOGGED] == false) {
+	if (clientOnChannel == NULL || channel->getClientParam(clientOnChannel)[LOGGED] == false)
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_USERNOTINCHANNEL + " " + client->getNickName() + " " + clientNameToMode + " :They aren't on that channel\r\n");
-	}
 
 	bool* client_param;
 	client_param = channel->getClientParam(clientOnChannel);
@@ -164,9 +162,8 @@ void modeCommand(Server *server, Client *client, std::vector<std::string> comman
 	int argv_counter = 3;
 	size_t commandSize = command.size();
 
-	if (commandSize <= 1) {
+	if (commandSize <= 1)
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NEEDMOREPARAMS + " " + client->getNickName() + " " + command[0] + " :Not enough parameters\r\n");
-	}
 	
 	if (commandSize == 2)
 	{
@@ -176,9 +173,8 @@ void modeCommand(Server *server, Client *client, std::vector<std::string> comman
 			Channel *channel = server->getChannelByName(command[1]);
 			std::vector<std::string> argv;
 
-			if (channel == NULL) {
+			if (channel == NULL)
 				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHCHANNEL + " " + client->getNickName() + " " + command[1] + " :No such channel\r\n");
-			}
 			else {
 
 				if (channel->getInviteOnly() == true)
@@ -206,28 +202,23 @@ void modeCommand(Server *server, Client *client, std::vector<std::string> comman
 		else
 		{
 			if (command[1] == client->getNickName())
-			{
 				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + RPL_UMODEIS + " " + client->getNickName() + " " + command[1] + " :is now known as " + client->getNickName() + "\r\n");
-			}
 			SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_USERSDONTMATCH + " " + client->getNickName() + " :Cannot change mode for other users\r\n");
 		}
 		return ;
 	}
 	
 	Channel *channel = server->getChannelByName(command[1]);
-	if (channel == NULL) {
+	if (channel == NULL)
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHCHANNEL + " " + client->getNickName() + " " + command[1] + " :No such channel\r\n");
-	}
 	else {
 	
 		Client *clientOnChannel = channel->getClientByName(client->getNickName());
 	
-		if (clientOnChannel == NULL || channel->getClientParam(clientOnChannel)[LOGGED] == false) {
+		if (clientOnChannel == NULL || channel->getClientParam(clientOnChannel)[LOGGED] == false)
 			SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOTONCHANNEL + " " + client->getNickName() + " " + command[1] + " :You're not on that channel\r\n");
-		}
-		else if (channel->getClientParam(clientOnChannel)[OPERATOR] == false) {
+		else if (channel->getClientParam(clientOnChannel)[OPERATOR] == false)
 			SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_CHANOPRIVSNEEDED + " " + client->getNickName() + " " + command[1] + " :You're not channel operator\r\n");
-		}
 	}
 
 	int i = 0;
@@ -242,9 +233,8 @@ void modeCommand(Server *server, Client *client, std::vector<std::string> comman
 		else if (std::string("iklot").find(command[2][i]) != std::string::npos && last_sign != 0) {
 			execModeCmd(server, channel, client, command, commandSize, i, last_sign, &argv_counter);
 		}
-		else {
+		else
 			SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_UNKNOWNMODE + " " + client->getNickName() + " " + channel->getChannelName() + " :Unknown mode flag " + command[2][i] + "\r\n");
-		}
 		i++;
 	}
 }

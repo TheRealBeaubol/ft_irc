@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:15:02 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:27:01 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,18 +72,14 @@ void	joinChannel(Channel *channel, Client *client, std::pair<std::string, std::s
 	std::string channelPassword = joinedChannel.second;
 	std::string clientName = client->getNickName();
 	
-	if (channel->getInviteOnly() == true && (channel->getClientByName(clientName) == NULL)) {
+	if (channel->getInviteOnly() == true && (channel->getClientByName(clientName) == NULL))
 		SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_INVITEONLYCHAN + " " + clientName + " " + channelName + " :Cannot join channel (+i)\r\n");
-	}
-	else if (channel->getClientByName(clientName) != NULL && channel->getClientParam(client)[LOGGED] == true) {
+	else if (channel->getClientByName(clientName) != NULL && channel->getClientParam(client)[LOGGED] == true)
 		SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_USERONCHANNEL + " " + clientName + " " + channelName + " :is already on channel\r\n");
-	}
-	else if (channel->getPassword().empty() == false && channel->getPassword() != channelPassword) {
+	else if (channel->getPassword().empty() == false && channel->getPassword() != channelPassword)
 		SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_BADCHANNELKEY + " " + clientName + " " + channelName + " :Cannot join channel (+k)\r\n");
-	}
-	else if (channel->getClients().size() >= (size_t) channel->getClientLimit() && channel->getClientLimit() != 0) {
+	else if (channel->getClients().size() >= (size_t) channel->getClientLimit() && channel->getClientLimit() != 0)
 		SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_CHANNELISFULL + " " + clientName + " " + channelName + " :Cannot join channel (+l)\r\n");
-	}
 	else {	
 		if (channel->getClientByName(clientName) == NULL) {
 		
