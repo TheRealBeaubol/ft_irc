@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:31 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/11 19:47:33 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 21:24:07 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,14 @@ void	passCommand(Server *server, Client *client, std::vector<std::string> comman
     if (password != server->getPassword()) {
 
         SEND_MESSAGE(":" + serverName + " 464 " + client->getNickName() + " :Password incorrect\r\n");
-        close(client->getClientSocket());
-        server->removeClient(client);
+        for (size_t i = 0; i < server->getClients().size(); i++) {
+            if (server->getClients()[i] == client) {
+                server->removePollFd(server->getPollFds()[i]);
+                close(client->getClientSocket());
+                server->removeClient(client);
+                return;
+            }
+        }
         return;
     }
     
