@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:03 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 21:45:10 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 00:41:56 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ class Server {
 		Client *getClientByName(std::string ClientName);
 
 		std::string getPassword() const;
+		
+		Client *getClientByFd(int fd);
 
 	private:
 		int _serverFd;

@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:49 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:27:26 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 00:44:12 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #define BUFFER_SIZE 1024
 #define SERVER_NAME "IRCServer"
+#define MAX_CLIENTS 10000
 
 #define LOGGED 0
 #define OPERATOR 1

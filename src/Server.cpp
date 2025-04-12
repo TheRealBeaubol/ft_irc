@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 23:36:07 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 00:41:29 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,14 @@ bool isClientActive(Client *client, Server *server) {
 	return false;
 }
 
+Client *Server::getClientByFd(int fd) {
+	for (size_t i = 0; i < _clients.size(); i++) {
+		if (_clients[i]->getClientFd() == fd)
+			return _clients[i];
+	}
+	return NULL;
+}
+
 int Server::run() {
 
 	signal(SIGINT, handleSigInt);
@@ -107,7 +115,6 @@ int Server::run() {
 		}
 
 		if (poll_fds[0].revents & POLLIN && handleNewConnexion() == -1)	{
-			std::cerr << "handleNewConnexion failed" << ": " << strerror(errno) << std::endl;
 			continue;
 		}
 
@@ -121,7 +128,7 @@ int Server::run() {
 
 				if (bytes_read > 0) {
 				
-					Client *client = getClients()[i];
+					Client *client = getClientByFd(poll_fds[i].fd);
 
 					if (client) {
 						client->appendToBuffer(std::string(buffer, bytes_read));
@@ -143,7 +150,7 @@ int Server::run() {
 				}
 				else {
 					std::cout << ITALIC << "Client " << poll_fds[i].fd << " disconnected." << RESET << std::endl;
-					Client *client = getClients()[i];
+					Client *client = getClientByFd(poll_fds[i].fd);
 					size_t channelSize = _channels.size();
 					if (client) {
 						for (size_t j = 0; j < channelSize; j++) {
@@ -172,6 +179,11 @@ int Server::handleNewConnexion() {
 	socklen_t client_len = sizeof(client_addr);
 	int client_fd = accept(_serverFd, (struct sockaddr*)&client_addr, &client_len);
 
+	if (_clients.size() >= MAX_CLIENTS) {
+		std::cerr << "Max clients reached" << std::endl;
+		close(client_fd);
+		return -2;
+	}
 	if (client_fd >= 0)	{
 	
 		if (setNonBlocking(client_fd) == 0)	{
@@ -179,7 +191,7 @@ int Server::handleNewConnexion() {
 		}
 		else {
 			close(client_fd);
-			return -1;
+			std::cerr << "handleNewConnexion failed" << ": " << strerror(errno) << std::endl;
 		}
 	}
 	return 0;
