@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Includes.hpp"
+
 volatile sig_atomic_t server_status = SERVER_RUNNING;
 
 Server::~Server() {
@@ -84,15 +85,15 @@ Server::Server(int port, std::string password)
 	std::cout << BOLD GREEN << "	Server created on port " << _port << RESET << std::endl << std::endl;
 }
 
-bool isClientActive(Client *client, Server *server) {
-	std::vector<Client *> clients = server->getClients();
-	for (size_t i = 0; i < clients.size(); i++) {
-		if (clients[i] == client) {
-			return true;
-		}
-	}
-	return false;
-}
+// bool isClientActive(Client *client, Server *server) {
+// 	std::vector<Client *> clients = server->getClients();
+// 	for (size_t i = 0; i < clients.size(); i++) {
+// 		if (clients[i] == client) {
+// 			return true;
+// 		}
+// 	}
+// 	return false;
+// }
 
 int Server::run() {
 
@@ -114,47 +115,30 @@ int Server::run() {
 		for (size_t i = 1; i < poll_fds.size(); ++i) {
 		
 			if (poll_fds[i].revents & POLLIN) {
-			
+
 				char buffer[BUFFER_SIZE];
 				memset(buffer, 0, BUFFER_SIZE);
+
 				int bytes_read = recv(poll_fds[i].fd, buffer, BUFFER_SIZE, 0);
-
 				if (bytes_read > 0) {
-				
-					Client *client = getClients()[i];
-
-					if (client) {
-						std::vector<std::vector<std::string> > commands = tokenize(std::string(buffer));
-						for (size_t i = 0; i < commands.size(); i++) {
-							if (isClientActive(client, this))
-								executeCommand(this, client, commands[i]);
-							else
-								break;
-						}
+					std::vector<std::vector<std::string> > commands = tokenize(std::string(buffer));
+					for (size_t i = 0; i < commands.size(); i++) {
+						if (getClientByFd(poll_fds[i].fd))
+							executeCommand(this, getClientByFd(poll_fds[i].fd), commands[i]);
 					}
 				}
+
 				else {
 					std::cout << ITALIC << "Client " << poll_fds[i].fd << " disconnected." << RESET << std::endl;
-					Client *client = getClients()[i];
-					size_t channelSize = _channels.size();
-					if (client) {
-						for (size_t j = 0; j < channelSize; j++) {
-							Channel *channel = _channels[j];
-							if (channel->getClientByName(client->getNickName()) != NULL) {
-								channel->removeClient(client);
-								if (channel->getClients().size() == 0) {
-									removeChannel(channel);
-								}
-							}
-							
-						}
-						removeClient(client);
+					
+					for (size_t j = 0; j < _channels.size(); j++) {
+						if (_channels[j]->getClientByName(getClientByFd(poll_fds[i].fd)->getNickName()))
+							_channels[j]->removeClient(this, getClientByFd(poll_fds[i].fd));
 					}
 				}
 			}
 		}
 	}
-
 	return 0;
 }
 
@@ -241,5 +225,14 @@ Client *Server::getClientByName(std::string clientName) {
 			return client[i];
 	}
 
+	return NULL;
+}
+
+Client *Server::getClientByFd(int fd)
+{
+	for (size_t i = 0; i < _clients.size(); i++) {
+		if (_clients[i]->getClientFd() == fd)
+			return _clients[i];
+	}
 	return NULL;
 }

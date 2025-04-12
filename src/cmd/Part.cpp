@@ -31,9 +31,9 @@ void	partCommand(Server *server, Client *client, std::vector<std::string> comman
 		else {
 			channel->broadcastChannel(":" + client->getNickName() + " PART " + channel->getChannelName() + "\r\n", NULL);
 
-			channel->removeClient(client);
-			if (channel->getClients().size() == 0)
-				server->removeChannel(channel);
+			channel->removeClient(server, client);
+			// if (channel->getClients().size() == 0)
+			// 	server->removeChannel(channel);
 		}
 	}
 }

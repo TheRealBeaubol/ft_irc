@@ -2,6 +2,7 @@
 
 #include "Includes.hpp"
 
+class Server;
 class Client;
 
 class Channel
@@ -39,15 +40,15 @@ class Channel
 		Client*		getClientByName(std::string name);
 		void		setClientParam(Client* client, bool isLogged, bool isOperator);
 		bool*		getClientParam(Client* client);
-		void		removeClient(Client* indClient);
+		void		removeClient(Server *server, Client* indClient);
 		
 		std::string	getChannelName() const;
 		std::map<Client *, bool *>	&getClients();
 
 		void		broadcastChannel(std::string message, Client *sender);
 
-		void setCreationTime(time_t time);
-		time_t getCreationTime() const;
+		void		setCreationTime(time_t time);
+		time_t		getCreationTime() const;
 
 	private:
 

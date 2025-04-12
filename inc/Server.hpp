@@ -34,6 +34,7 @@ class Server {
 		void removeClient(Client* client);
 		std::vector<Client *> getClients();
 		Client *getClientByName(std::string ClientName);
+		Client *getClientByFd(int fd);
 
 		std::string getPassword() const;
 

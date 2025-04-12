@@ -40,7 +40,7 @@ void	commandKick(Server *server, Client *client, std::vector<std::string> comman
 
 	channel->broadcastChannel(":" + client->getNickName() + " KICK " + channelName + " " + receiverName + " :" + comment + "\r\n", NULL);
 	
-	channel->removeClient(receiver);
-	if (channel->getClients().size() == 0)
-		server->removeChannel(channel);
+	channel->removeClient(server, receiver);
+	// if (channel->getClients().size() == 0)
+	// 	server->removeChannel(channel);
 }

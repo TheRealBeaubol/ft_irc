@@ -108,10 +108,16 @@ std::map<Client *, bool *>	&Channel::getClients() { return (_clients); }
 void Channel::setCreationTime(time_t time) { _creationTime = time; }
 time_t Channel::getCreationTime() const { return _creationTime; }
 
-void	Channel::removeClient(Client *indClient) {
+void	Channel::removeClient(Server *server, Client *indClient) {
 	std::map<Client *, bool *>::iterator it = _clients.find(indClient);
 	if (it != _clients.end()) {
 		delete[] it->second;
 		_clients.erase(it);
 	}
+
+	if (server->getChannelByName(_name)->getClients().size() == 0)
+		server->removeChannel(this);
+
+	// if (_channels[j]->getClients().size() == 0)
+	// 	removeChannel(_channels[j]);
 }
