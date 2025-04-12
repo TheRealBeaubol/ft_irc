@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 18:36:00 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 19:38:30 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:18:24 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,8 @@
 
 void	partCommand(Server *server, Client *client, std::vector<std::string> command) {
     
-    std::string serverName = std::string(SERVER_NAME);
-    
     if (command.size() < 2) {
-        SEND_MESSAGE_AND_RETURN(":" + serverName + " 461 " + client->getNickName() + " PART :Not enough parameters\r\n");
+        SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NEEDMOREPARAMS + " " + client->getNickName() + " PART :Not enough parameters\r\n");
     }
     
     std::vector<std::string> channelNames;
@@ -28,10 +26,10 @@ void	partCommand(Server *server, Client *client, std::vector<std::string> comman
         Channel *channel = server->getChannelByName(channelNames[i]);
 
         if (!channel) {
-            SEND_MESSAGE(":" + serverName + " 403 " + client->getNickName() + " " + channelNames[i] + " :No such channel\r\n");
+            SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHCHANNEL + " " + client->getNickName() + " " + channelNames[i] + " :No such channel\r\n");
         }    
         else if (channel->getClientByName(client->getNickName()) == NULL) {
-            SEND_MESSAGE(":" + serverName + " 442 " + client->getNickName() + " " + channelNames[i] + " :You're not on that channel\r\n");
+            SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_NOTONCHANNEL + " " + client->getNickName() + " " + channelNames[i] + " :You're not on that channel\r\n");
         }
         else {
             channel->broadcastChannel(":" + client->getNickName() + " PART " + channel->getChannelName() + "\r\n", NULL);

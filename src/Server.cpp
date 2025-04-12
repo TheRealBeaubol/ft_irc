@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 21:20:42 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 21:50:20 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ volatile sig_atomic_t server_status = SERVER_RUNNING;
 
 Server::~Server() {
 	for (size_t i = 0; i < _clients.size(); i++) {
-		close(_clients[i]->getClientSocket());
+		close(_clients[i]->getClientFd());
 		delete _clients[i];
 	}
 	for (size_t i = 0; i < _channels.size(); i++) {
@@ -81,7 +81,6 @@ Server::Server(int port, std::string password)
 	client->setIsLog(true);
 	_clients.push_back( client );
 	
-	_pollFds.push_back( ( struct pollfd ) {_serverFd, POLLIN, 0} );
 	std::cout << BOLD GREEN << "	Server created on port " << _port << RESET << std::endl << std::endl;
 }
 
@@ -150,7 +149,6 @@ int Server::run() {
 							
 						}
 						removeClient(client);
-						removePollFd(poll_fds[i]);
 					}
 				}
             }
@@ -170,8 +168,6 @@ int Server::handleNewConnexion() {
 	
 		if (setNonBlocking(client_fd) == 0)	{
 			_clients.push_back(new Client(client_fd));
-			struct pollfd poll_fd = {client_fd, POLLIN, 0};
-			_pollFds.push_back(poll_fd);
 		}
 		else {
 			close(client_fd);
@@ -181,6 +177,17 @@ int Server::handleNewConnexion() {
 	return 0;
 }
 
+std::vector<struct pollfd> Server::getPollFds()
+{
+	std::vector<struct pollfd> poll_fds;
+
+	poll_fds.push_back((struct pollfd){_serverFd, POLLIN, 0});
+	
+	for (size_t i = 1; i < _clients.size(); i++) {
+		poll_fds.push_back((struct pollfd){_clients[i]->getClientFd(), POLLIN, 0});
+	}
+	return poll_fds;
+}
 
 std::vector<Client *> Server::getClients() { return _clients; }
 
@@ -190,12 +197,11 @@ std::vector<Channel *> Server::getChannels() { return _channels; }
 
 std::string Server::getPassword() const { return _password; }
 
-std::vector<struct pollfd> Server::getPollFds() { return _pollFds; }
 
 void Server::removeClient(Client* client) {
 	for (size_t i = 0; i < _clients.size(); i++) {
 		if (_clients[i] == client) {
-			close(client->getClientSocket());
+			close(client->getClientFd());
 			_clients.erase(_clients.begin() + i);
 			delete client;
 			break;
@@ -209,16 +215,6 @@ void Server::removeChannel(Channel *channel) {
 		if (_channels[i] == channel) {
 			_channels.erase(_channels.begin() + i);
 			delete channel;
-			break;
-		}
-	}
-}
-void Server::removePollFd(struct pollfd poll_fd) {
-	
-	for (size_t i = 0; i < _pollFds.size(); i++) {
-		if ( (_pollFds[i].fd == poll_fd.fd) && (i < _pollFds.size()) )
-		{
-			_pollFds.erase(_pollFds.begin() + i);
 			break;
 		}
 	}

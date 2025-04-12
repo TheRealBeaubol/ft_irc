@@ -52,13 +52,13 @@ class Channel
 	private:
 
 		std::string	_name;
-		std::string _password;	// /MODE +k
+		std::string _password;
 		std::string	_topic;
 		std::string _topicAuthor;
-		bool _topicUserAccess;	// /MODE +t
-		bool _inviteOnly;		// /MODE +i
-		int _clientLimit;		///MODE +l
+		bool _topicUserAccess;
+		bool _inviteOnly;
+		int _clientLimit;
 		time_t _creationTime;
 
-		std::map<Client *,  bool*> _clients; //bool[2] = {logged, operator}
+		std::map<Client *,  bool*> _clients;
 };

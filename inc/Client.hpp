@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 19:35:04 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 21:40:27 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ class Channel;
 class Client {
 	public:
 		Client();
-		Client(int clientSocket);
+		Client(int clientFd);
 		~Client();
 
-		void setClientSocket(int clientSocket);
-		int getClientSocket() const;
+		void setClientFd(int clientFd);
+		int getClientFd() const;
 
 		void setNickName(std::string nick_name);
 		std::string getNickName() const;
@@ -38,7 +38,7 @@ class Client {
 		bool getIsAuth() const;
 
 	private:
-		int _clientSocket;
+		int _clientFd;
 		bool _isAuth;
 		bool _isLog;
 		std::string _nickName;
