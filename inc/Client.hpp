@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 21:40:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 23:07:22 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,15 @@ class Client {
 		void setIsAuth(bool isAuth);
 		bool getIsAuth() const;
 
+		std::string& getInputBuffer();
+		void appendToBuffer(const std::string& data);
+		void clearBuffer();
+
 	private:
 		int _clientFd;
 		bool _isAuth;
 		bool _isLog;
 		std::string _nickName;
 		std::string _userName;
+		std::string _inputBuffer;
 };

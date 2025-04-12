@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 21:40:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 23:18:27 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ Client::Client(int clientFd) {
 	_isLog = false;
 	_nickName = "";
 	_userName = "";
+	_inputBuffer = "";
 }
 
 void Client::setClientFd( int clientFd ) { _clientFd = clientFd; }
@@ -38,3 +39,7 @@ bool Client::getIsLog() const { return _isLog; }
 
 void Client::setIsAuth( bool isAuth ) { _isAuth = isAuth; }
 bool Client::getIsAuth() const { return _isAuth; }
+
+std::string& Client::getInputBuffer() { return _inputBuffer; }
+void Client::appendToBuffer(const std::string& data) { _inputBuffer += data; }
+void Client::clearBuffer() { _inputBuffer.clear(); }

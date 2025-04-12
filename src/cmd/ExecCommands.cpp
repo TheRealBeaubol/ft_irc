@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:26:02 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 23:27:35 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 	if (client->getIsAuth() == true) {
 
 		if (command[0] == "NICK")
-				commandNick(server, client, command);
+			commandNick(server, client, command);
 
 		else if (command[0] == "USER")
 			userCommand(client, command);
@@ -46,12 +46,15 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 			else
 				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_UNKNOWNCOMMAND + " " + client->getNickName() + " " + command[0] + " :Unknown command\r\n");
 		}
+		else
+			SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOTREGISTERED + " " + client->getNickName() + " :You have not registered\r\n");
 	}
 	else if (command[0] == "PASS")
 		passCommand(server, client, command);	
 	else if (command[0] != "CAP") {
+		SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_UNKNOWNCOMMAND + " " + client->getNickName() + " " + command[0] + " :Unknown command\r\n");
 		close(client->getClientFd());
 		server->removeClient(client);
-		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_UNKNOWNCOMMAND + " " + client->getNickName() + " " + command[0] + " :Unknown command\r\n");
+		return;
 	}
 }

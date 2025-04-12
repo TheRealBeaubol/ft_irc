@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 22:25:35 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:13:48 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:58:36 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 #define ERR_USERNOTINCHANNEL	"441"
 #define ERR_NOTONCHANNEL		"442"	// <chan>
 #define ERR_USERONCHANNEL		"443"	// <nick>
+#define ERR_NOTREGISTERED		"451"	// <>
 #define ERR_NEEDMOREPARAMS		"461"	// <commande>
 #define ERR_ALREADYREGISTRED	"462"	// <>
 #define ERR_PASSWDMISMATCH		"464"	// <>

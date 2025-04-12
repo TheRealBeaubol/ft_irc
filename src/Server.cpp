@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 21:50:20 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 23:36:07 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,12 +124,20 @@ int Server::run() {
 					Client *client = getClients()[i];
 
 					if (client) {
-						std::vector<std::vector<std::string> > commands = tokenize(std::string(buffer));
-						for (size_t i = 0; i < commands.size(); i++) {
-							if (isClientActive(client, this))
-								executeCommand(this, client, commands[i]);
-							else
-								break;
+						client->appendToBuffer(std::string(buffer, bytes_read));
+
+						size_t pos;
+						while ((pos = client->getInputBuffer().find("\r\n")) != std::string::npos) {
+							std::string line = client->getInputBuffer().substr(0, pos);
+							client->getInputBuffer().erase(0, pos + 2);
+
+							std::vector<std::vector<std::string> > commands = tokenize(line);
+							for (size_t j = 0; j < commands.size(); j++) {
+								if (isClientActive(client, this))
+									executeCommand(this, client, commands[j]);
+								else
+									break;
+							}
 						}
 					}
 				}
