@@ -18,7 +18,7 @@
 
 void	inviteCommand(Server *server, Client *client, std::vector<std::string> command);
 
-void    executeCommand(Server *server, Client *client, std::vector<std::string> command);
+void	executeCommand(Server *server, Client *client, std::vector<std::string> command);
 
 void	joinCommand(Server *server, Client *client, std::vector<std::string> commands);
 

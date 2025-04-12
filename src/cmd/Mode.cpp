@@ -58,7 +58,6 @@ void modeLCommand(Channel *channel, int sign, int newClientLimit) {
 		channel->setClientLimit(newClientLimit);
 		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +l " + itoa(newClientLimit) + "\r\n", NULL);
 	}
-
 }
 
 void modeOCommand(Server *server, Channel *channel, Client *client, int sign, std::string clientNameToMode) {

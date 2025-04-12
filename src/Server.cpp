@@ -27,13 +27,13 @@ Server::~Server() {
 
 int setNonBlocking(int fd) {
 	
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1) { return -1; }
+	int flags = fcntl(fd, F_GETFL, 0);
+	if (flags == -1) { return -1; }
 	
-    flags |= O_NONBLOCK;
-    
+	flags |= O_NONBLOCK;
+		
 	if (fcntl(fd, F_SETFL, flags) == -1) { return -1; }
-    return 0;
+	return 0;
 }
 
 void	handleSigInt(int sig) {
@@ -63,7 +63,7 @@ Server::Server(int port, std::string password)
 		throw std::runtime_error("Error while setting socket options");
 	}
 	
-    sockaddr_in address = {AF_INET, htons( port ), {INADDR_ANY}, {0}};
+	sockaddr_in address = {AF_INET, htons( port ), {INADDR_ANY}, {0}};
 	if ( bind( _serverFd, ( struct sockaddr* )&address, sizeof( address ) ) == -1 ) {
 		throw std::runtime_error("Error while binding socket");
 	}
@@ -101,37 +101,37 @@ int Server::run() {
 	
 		std::vector<struct pollfd> poll_fds = getPollFds();
 
-        int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
+		int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
 		if (poll_count < 0) {
-            return -1;
-        }
+			return -1;
+		}
 
-        if (poll_fds[0].revents & POLLIN && handleNewConnexion() == -1)	{
+		if (poll_fds[0].revents & POLLIN && handleNewConnexion() == -1)	{
 			std::cerr << "handleNewConnexion failed" << ": " << strerror(errno) << std::endl;
-            continue;
-        }
+			continue;
+		}
 
-        for (size_t i = 1; i < poll_fds.size(); ++i) {
+		for (size_t i = 1; i < poll_fds.size(); ++i) {
 		
-            if (poll_fds[i].revents & POLLIN) {
+			if (poll_fds[i].revents & POLLIN) {
 			
-                char buffer[BUFFER_SIZE];
+				char buffer[BUFFER_SIZE];
 				memset(buffer, 0, BUFFER_SIZE);
-                int bytes_read = recv(poll_fds[i].fd, buffer, BUFFER_SIZE, 0);
+				int bytes_read = recv(poll_fds[i].fd, buffer, BUFFER_SIZE, 0);
 
-                if (bytes_read > 0) {
+				if (bytes_read > 0) {
 				
 					Client *client = getClients()[i];
 
-                    if (client) {
-                        std::vector<std::vector<std::string> > commands = tokenize(std::string(buffer));
-                        for (size_t i = 0; i < commands.size(); i++) {
+					if (client) {
+						std::vector<std::vector<std::string> > commands = tokenize(std::string(buffer));
+						for (size_t i = 0; i < commands.size(); i++) {
 							if (isClientActive(client, this))
 								executeCommand(this, client, commands[i]);
 							else
 								break;
-                        }
-                    }
+						}
+					}
 				}
 				else {
 					std::cout << ITALIC << "Client " << poll_fds[i].fd << " disconnected." << RESET << std::endl;
@@ -151,9 +151,9 @@ int Server::run() {
 						removeClient(client);
 					}
 				}
-            }
-        }
-    }
+			}
+		}
+	}
 
 	return 0;
 }
@@ -243,4 +243,3 @@ Client *Server::getClientByName(std::string clientName) {
 
 	return NULL;
 }
-

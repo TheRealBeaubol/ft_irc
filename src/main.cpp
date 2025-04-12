@@ -13,20 +13,20 @@
 #include "Includes.hpp"
 
 int main(int ac, char **av) {
-    
-    if (ac != 3 || atoi(av[1]) < 1024)
+
+	if (ac != 3 || atoi(av[1]) < 1024)
 	{
-        drawBoxErrorAndExit(50, "Usage: ./ircserv [port > 1024] [password]");
+		drawBoxErrorAndExit(50, "Usage: ./ircserv [port > 1024] [password]");
 		return (1);
 	}
-    
-    try {
-        Server server(atoi(av[1]), av[2]);	 
-        server.run();   
-    }
-    catch (std::exception &e) {
-        std::cerr << BOLD RED << "Error: " << e.what() << RESET << std::endl;
-        return 1;
-    }
-    return 0;
+		
+	try {
+		Server server(atoi(av[1]), av[2]);	 
+		server.run();
+	}
+	catch (std::exception &e) {
+		std::cerr << BOLD RED << "Error: " << e.what() << RESET << std::endl;
+		return 1;
+	}
+	return 0;
 }

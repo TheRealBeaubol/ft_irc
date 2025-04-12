@@ -26,31 +26,31 @@ bool	isNickNameAvailable(Server *server, std::vector<std::string> commands){
 bool checkNicknameFormat(const std::string &nickname) {
 	
 	if (nickname.empty())
-        return false;
+		return false;
 	if (nickname.size() > 16)
 		return false;
 
-    char c = nickname[0];
+	char c = nickname[0];
 
-    if (!(std::isalpha(c) || (c == '[' || c == ']' || c == '\\' || 
-                              c == '`' || c == '_' || c == '^' ||
-                              c == '{' || c == '|' || c == '}')))
-        return false;
+	if (!(std::isalpha(c) || (c == '[' || c == ']' || c == '\\' || 
+							  c == '`' || c == '_' || c == '^' ||
+							  c == '{' || c == '|' || c == '}')))
+		return false;
 
-    for (size_t i = 1; i < nickname.size(); i++)
+	for (size_t i = 1; i < nickname.size(); i++)
 	{
-        c = nickname[i];
-        if (!(std::isalpha(c) || std::isdigit(c) ||
-              (c == '[' || c == ']' || c == '\\' ||
-               c == '`' || c == '_' || c == '^' ||
-               c == '{' || c == '|' || c == '}') || c == '-'))
-            return false;
-    }
+		c = nickname[i];
+		if (!(std::isalpha(c) || std::isdigit(c) ||
+			  (c == '[' || c == ']' || c == '\\' ||
+			   c == '`' || c == '_' || c == '^' ||
+			   c == '{' || c == '|' || c == '}') || c == '-'))
+			return false;
+	}
 	
-    return true;
+	return true;
 }
 
-void    commandNick(Server *server, Client *client, std::vector<std::string> commands) {
+void	commandNick(Server *server, Client *client, std::vector<std::string> commands) {
 	
 	if (commands.size() < 2)
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NONICKNAMEGIVEN + " " + client->getNickName() + " :No nickname given\r\n");

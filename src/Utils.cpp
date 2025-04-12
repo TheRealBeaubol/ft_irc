@@ -33,30 +33,29 @@ std::vector<std::string> split(std::string str, char delimiter) {
 }
 
 std::string repeatChar(int n, const std::string& s) {
-    
-    std::string result;
 
-    result.reserve(n * s.size());
+	std::string result;
 
-    for (int i = 0; i < n; ++i)
-        result += s;
+	result.reserve(n * s.size());
 
-    return result;
+	for (int i = 0; i < n; ++i)
+		result += s;
+
+	return result;
 }
 
 void drawBoxErrorAndExit(int width, const std::string &title) {
-    
-    std::string errorText = "ERROR:";
-    int leftPadding = (width - errorText.size()) / 2;
-    int rightPadding = width - errorText.size() - leftPadding;
-    std::cout << BOLD RED << "╔" << repeatChar(width, "═") << "╗" << std::endl << VERTICAL << repeatChar(width, " ") << VERTICAL << std::endl;
-    std::cout << VERTICAL << repeatChar(leftPadding, " ") << errorText << repeatChar(rightPadding, " ") << VERTICAL << std::endl;
 
-    leftPadding = (width - title.size()) / 2;
-    rightPadding = width - title.size() - leftPadding;
-    std::cout << VERTICAL << repeatChar(leftPadding, " ") << title << repeatChar(rightPadding, " ") << VERTICAL << std::endl;
-    std::cout << VERTICAL << repeatChar(width, " ") << VERTICAL << std::endl;
-    std::cout << "╚" << repeatChar(width, "═") << "╝" << RESET << std::endl;
+	std::string errorText = "ERROR:";
+	int leftPadding = (width - errorText.size()) / 2;
+	int rightPadding = width - errorText.size() - leftPadding;
+	std::cout << BOLD RED << "╔" << repeatChar(width, "═") << "╗" << std::endl << VERTICAL << repeatChar(width, " ") << VERTICAL << std::endl;
+	std::cout << VERTICAL << repeatChar(leftPadding, " ") << errorText << repeatChar(rightPadding, " ") << VERTICAL << std::endl;
+
+	leftPadding = (width - title.size()) / 2;
+	rightPadding = width - title.size() - leftPadding;
+	std::cout << VERTICAL << repeatChar(leftPadding, " ") << title << repeatChar(rightPadding, " ") << VERTICAL << std::endl;
+	std::cout << VERTICAL << repeatChar(width, " ") << VERTICAL << std::endl;
+	std::cout << "╚" << repeatChar(width, "═") << "╝" << RESET << std::endl;
 	return ;
 }
-
