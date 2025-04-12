@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:17:24 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/11 23:58:05 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 20:43:28 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ Channel::~Channel() {
 	for (std::map<Client *, bool *>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
 		delete[] it->second;
 	}
+	_clients.clear();
 }
 
 void Channel::addClient(Client *newClient) {
@@ -104,10 +105,13 @@ std::string	Channel::getChannelName() const{ return(_name); }
 
 std::map<Client *, bool *>	&Channel::getClients() { return (_clients); }
 
-void	Channel::removeClient(Client *indClient) { 
-	delete[] _clients[indClient];
-	_clients.erase(indClient);
-}
-
 void Channel::setCreationTime(time_t time) { _creationTime = time; }
 time_t Channel::getCreationTime() const { return _creationTime; }
+
+void	Channel::removeClient(Client *indClient) {
+	std::map<Client *, bool *>::iterator it = _clients.find(indClient);
+	if (it != _clients.end()) {
+		delete[] it->second;
+		_clients.erase(it);
+	}
+}

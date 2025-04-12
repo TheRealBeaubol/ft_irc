@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/11 23:56:46 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 20:54:36 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,13 @@ volatile sig_atomic_t server_status = SERVER_RUNNING;
 Server::~Server() {
 	for (size_t i = 0; i < _clients.size(); i++) {
 		close(_clients[i]->getClientSocket());
+		delete _clients[i];
 	}
 	for (size_t i = 0; i < _channels.size(); i++) {
 		delete _channels[i];
 	}
-	for (size_t i = 0; i < _clients.size(); i++) {
-		delete _clients[i];
-	}
 	close(_serverFd);
+	std::cout << BOLD BLUE << "Server closed" << RESET << std::endl;
 }
 
 int setNonBlocking(int fd) {
@@ -50,7 +49,7 @@ Server::Server(int port, std::string password)
 
 	std::cout << std::endl << BOLD BLUE << "Creating default IRC Server on the "<< port << " port" << RESET << std::endl << std::endl;
 
-	std::cout << BOLD BLUE << "============ SERVER CREATION ============" << RESET << std::endl;
+	std::cout << BOLD BLUE << "============ SERVER CREATION ============" << RESET << std::endl << std::endl;
 	
 	_port = port;
 	_password = password;
@@ -59,7 +58,6 @@ Server::Server(int port, std::string password)
 	if ( _serverFd == -1 ) { 
 		throw std::runtime_error("Error while creating socket");
 	}
-   
 	int opt = 1;
 	if ( setsockopt( _serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof( opt ) ) == -1 ) {
 		throw std::runtime_error("Error while setting socket options");
@@ -73,6 +71,7 @@ Server::Server(int port, std::string password)
 	if ( listen( _serverFd, SOMAXCONN ) == -1 ) {
 		throw std::runtime_error("Error while listening on socket");
 	}
+
 	if ( setNonBlocking( _serverFd ) == -1 ) { 
 		throw std::runtime_error("Error while setting socket to non-blocking");
 	}
@@ -81,11 +80,9 @@ Server::Server(int port, std::string password)
 	client->setIsAuth(true);
 	client->setIsLog(true);
 	_clients.push_back( client );
-	std::cout << std::endl << RESET ;
 	
 	_pollFds.push_back( ( struct pollfd ) {_serverFd, POLLIN, 0} );
-
-	std::cout << BOLD BLUE << "=========================================" << std::endl << std::endl << RESET;
+	std::cout << BOLD GREEN << "	Server created on port " << _port << RESET << std::endl << std::endl;
 }
 
 bool isClientActive(Client *client, Server *server) {
@@ -97,6 +94,7 @@ bool isClientActive(Client *client, Server *server) {
 	}
 	return false;
 }
+
 int Server::run() {
 
 	signal(SIGINT, handleSigInt);
@@ -137,8 +135,23 @@ int Server::run() {
                     }
 				}
 				else {
-					std::cout << "Client " << poll_fds[i].fd << " disconnected." << std::endl;
-					removeClient(getClients()[i]);
+					std::cout << ITALIC << "Client " << poll_fds[i].fd << " disconnected." << RESET << std::endl;
+					Client *client = getClients()[i];
+					size_t channelSize = _channels.size();
+					if (client) {
+						for (size_t j = 0; j < channelSize; j++) {
+							Channel *channel = _channels[j];
+							if (channel->getClientByName(client->getNickName()) != NULL) {
+								channel->removeClient(client);
+								if (channel->getClients().size() == 0) {
+									removeChannel(channel);
+								}
+							}
+							
+						}
+						removeClient(client);
+						removePollFd(poll_fds[i]);
+					}
 				}
             }
         }
@@ -149,8 +162,6 @@ int Server::run() {
 
 int Server::handleNewConnexion() {
 
-	std::cout << BOLD BLUE << "------------- NEW CONNEXION -------------" << RESET << std::endl;
-
 	struct sockaddr_in client_addr;
 	socklen_t client_len = sizeof(client_addr);
 	int client_fd = accept(_serverFd, (struct sockaddr*)&client_addr, &client_len);
@@ -158,40 +169,22 @@ int Server::handleNewConnexion() {
 	if (client_fd >= 0)	{
 	
 		if (setNonBlocking(client_fd) == 0)	{
-			Client *client = new Client(client_fd);
-			_clients.push_back(client);
+			_clients.push_back(new Client(client_fd));
 			struct pollfd poll_fd = {client_fd, POLLIN, 0};
 			_pollFds.push_back(poll_fd);
 		}
 		else {
 			close(client_fd);
-			std::cout << BOLD BLUE << "-----------------------------------------" << std::endl << std::endl << RESET;
 			return -1;
 		}
 	}
-	std::cout << BOLD BLUE << "-----------------------------------------" << std::endl << std::endl << RESET;
 	return 0;
 }
 
-void Server::removeClient(Client* client) {	
-	for (size_t i = 0; i < _clients.size(); i++) {
-		if (_clients[i] == client) {
-			delete _clients[i];
-			_clients.erase(_clients.begin() + i);
-			close(getPollFds()[i].fd);
-			removePollFd(getPollFds()[i]);
-			break;
-		}
-	}
-}
+
 std::vector<Client *> Server::getClients() { return _clients; }
 
 void Server::addChannel(Channel *channel) { _channels.push_back(channel); }
-void Server::removeChannel(Channel *channel) {
-	
-	delete channel;
-	_channels.erase(std::remove(_channels.begin(), _channels.end(), channel), _channels.end());
-}
 
 std::vector<Channel *> Server::getChannels() { return _channels; }
 
@@ -199,13 +192,34 @@ std::string Server::getPassword() const { return _password; }
 
 std::vector<struct pollfd> Server::getPollFds() { return _pollFds; }
 
+void Server::removeClient(Client* client) {
+	for (size_t i = 0; i < _clients.size(); i++) {
+		if (_clients[i] == client) {
+			close(client->getClientSocket());
+			_clients.erase(_clients.begin() + i);
+			delete client;
+			break;
+		}
+	}
+}
+
+void Server::removeChannel(Channel *channel) {
+	
+	for (size_t i = 0; i < _channels.size(); i++) {
+		if (_channels[i] == channel) {
+			_channels.erase(_channels.begin() + i);
+			delete channel;
+			break;
+		}
+	}
+}
 void Server::removePollFd(struct pollfd poll_fd) {
 	
 	for (size_t i = 0; i < _pollFds.size(); i++) {
 		if ( (_pollFds[i].fd == poll_fd.fd) && (i < _pollFds.size()) )
 		{
-			std::cout << "Removing " << poll_fd.fd << " from Server.poll_fds " << std::endl;
 			_pollFds.erase(_pollFds.begin() + i);
+			break;
 		}
 	}
 }

@@ -6,14 +6,13 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:01:29 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 20:04:05 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
 
 Client::Client(){}
-
 Client::~Client(){}
 
 Client::Client(int clientSocket) {
@@ -21,8 +20,8 @@ Client::Client(int clientSocket) {
 	_clientSocket = clientSocket;
 	_isAuth = false;
 	_isLog = false;
-	setNickName("");
-	setUserName("");
+	_nickName = "";
+	_userName = "";
 }
 
 void Client::setClientSocket( int clientSocket ) { _clientSocket = clientSocket; }
@@ -39,7 +38,3 @@ bool Client::getIsLog() const { return _isLog; }
 
 void Client::setIsAuth( bool isAuth ) { _isAuth = isAuth; }
 bool Client::getIsAuth() const { return _isAuth; }
-
-void Client::addChannel( Channel *channel ) { _channels.push_back(channel); }
-void Client::removeChannel( Channel *channel ) { _channels.erase(std::remove(_channels.begin(), _channels.end(), channel), _channels.end()); }
-std::vector<Channel *> Client::getChannels() const { return _channels; }

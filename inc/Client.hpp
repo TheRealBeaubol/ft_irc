@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 20:33:11 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 19:35:04 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,10 @@ class Client {
 		void setIsAuth(bool isAuth);
 		bool getIsAuth() const;
 
-		void addChannel(Channel *channel);
-		void removeChannel(Channel *channel);
-		std::vector<Channel *> getChannels() const;
-	
 	private:
 		int _clientSocket;
 		bool _isAuth;
 		bool _isLog;
 		std::string _nickName;
 		std::string _userName;
-
-		std::vector<Channel *>_channels;
 };

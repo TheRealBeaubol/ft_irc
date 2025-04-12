@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:45:39 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/11 19:49:02 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 20:41:20 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 
 	std::string serverName = std::string(SERVER_NAME);
 	std::string msg;
-
+	
+	std::cout << BOLD UNDERLINE LIGHTMAGENTA << "Client " << client->getNickName() << " sent" << RESET BOLD LIGHTMAGENTA << " : " << RESET;
 	for (size_t i = 0; i < command.size(); i++)
 		std::cout << CYAN << command[i] << " ";
-
-	std::cout << std::endl << RESET << std::endl << BOLD BLUE << "_____________ " << command[0] << " COMMAND _____________" << RESET << std::endl << std::endl;
+	std::cout << RESET << std::endl << std::endl;
 
 	if (client->getIsAuth() == true) {
 
@@ -59,6 +59,4 @@ void executeCommand(Server *server, Client *client, std::vector<std::string> com
 		server->removeClient(client);
 		SEND_MESSAGE_AND_RETURN(":" + serverName + " 421 " + client->getNickName() + " " + command[0] + " :Unknown command\r\n");
 	}
-	
-	std::cout << BOLD BLUE << "_________________________________________" << std::endl << std::endl << std::endl << RESET;
 }

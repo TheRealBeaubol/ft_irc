@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:23 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 22:35:38 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 20:09:48 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ void	createChannel(Server *server, Client *client, std::pair<std::string, std::s
 		newChannel->setPassword(channelPassword);
 
 	newChannel->addClient(client);
-	client->addChannel(newChannel);
 	
 	newChannel->setClientParam(client, true, true);
 	
@@ -91,7 +90,6 @@ void	joinChannel(Channel *channel, Client *client, std::pair<std::string, std::s
 		if (channel->getClientByName(clientName) == NULL) {
 		
 			channel->addClient(client);
-			client->addChannel(channel);
 			channel->setClientParam(client, true, false);
 		}
 		else

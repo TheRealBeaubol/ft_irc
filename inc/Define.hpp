@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 18:59:49 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 23:34:46 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 20:50:37 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,12 @@
 #define SEND_MESSAGE_AND_RETURN(msg) {                              \
     const std::string _msg = msg;                                   \
     send(client->getClientSocket(), _msg.c_str(), _msg.size(), 0);  \
-    std::cout << BOLD RED << _msg << RESET;                         \
+    std::cout << LIGHTBLUE << _msg << RESET << std::endl;           \
     return;                                                         \
 }
 
 #define SEND_MESSAGE(msg) {                                         \
     const std::string _msg = msg;                                   \
     send(client->getClientSocket(), _msg.c_str(), _msg.size(), 0);  \
-    std::cout << RED << _msg << RESET;                         \
+    std::cout << LIGHTBLUE << _msg << RESET << std::endl;           \
 }

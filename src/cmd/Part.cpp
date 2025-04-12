@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 18:36:00 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 22:19:04 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 19:38:30 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ void	partCommand(Server *server, Client *client, std::vector<std::string> comman
         else {
             channel->broadcastChannel(":" + client->getNickName() + " PART " + channel->getChannelName() + "\r\n", NULL);
 
-            client->removeChannel(channel);
             channel->removeClient(client);
             if (channel->getClients().size() == 0)
                 server->removeChannel(channel);

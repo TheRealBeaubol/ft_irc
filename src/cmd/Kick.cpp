@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 22:07:19 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 19:38:26 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	commandKick(Server *server, Client *client, std::vector<std::string> comman
 	msg = ":" + client->getNickName() + " KICK " + channelName + " " + receiverName + " :" + comment + "\r\n";
 	channel->broadcastChannel(msg, NULL);
 	
-	receiver->removeChannel(channel);
 	channel->removeClient(receiver);
 	if (channel->getClients().size() == 0)
 		server->removeChannel(channel);

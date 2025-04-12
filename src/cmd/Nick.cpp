@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:27 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/10 21:44:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 19:37:47 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,11 +76,14 @@ void    commandNick(Server *server, Client *client, std::vector<std::string> com
 	} 
 	else {
 		msg = ":" + oldNickname + "!" + client->getUserName() + "@localhost NICK :" + client->getNickName() + "\r\n";
-		
-		if (client->getChannels().empty())
-			send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-		else
-			for (size_t i = 0; i < client->getChannels().size(); i++)
-				client->getChannels()[i]->broadcastChannel(msg, NULL);
+		int isOnChannel = 0;
+		for (size_t i = 0; i < server->getChannels().size(); i++) {
+			if (server->getChannels()[i]->getClientByName(oldNickname) != NULL) {
+				server->getChannels()[i]->broadcastChannel(msg, client);
+				isOnChannel = 1;
+			}
+		}
+		if (isOnChannel == 0)
+			SEND_MESSAGE(msg);
 	}
 }
