@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 20:35:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/13 00:41:29 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 00:57:09 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,9 @@ int Server::run() {
 									executeCommand(this, client, commands[j]);
 								else
 									break;
+							}
+							if (!isClientActive(client, this)) {
+								break;
 							}
 						}
 					}
