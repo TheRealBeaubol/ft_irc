@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:25:41 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 17:59:15 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	commandKick(Server *server, Client *client, std::vector<std::string> comman
 
 	if (!channel)
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHCHANNEL + " " + client->getNickName() + " " + channelName + " :No such channel\r\n");
-	if (channel->getClientByName(client->getNickName()) == NULL)
+	if (channel->getClientByName(client->getNickName()) == NULL || channel->getClientParam(client)[LOGGED] == false)
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOTONCHANNEL + " " + client->getNickName() + " " + channelName + " :You're not on that channel\r\n");
 	if (channel->getClientParam(client)[OPERATOR] == false)
 		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_CHANOPRIVSNEEDED + " " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n");	

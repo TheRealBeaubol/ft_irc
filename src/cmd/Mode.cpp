@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:30 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/12 22:29:17 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 17:52:41 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,17 @@ void modeKCommand(Channel *channel, int sign, std::string newPassword) {
 	}
 }
 
-void modeLCommand(Channel *channel, int sign, int newClientLimit) {
+void modeLCommand(Channel *channel, Client *client, int sign, int newClientLimit) {
 
 	int clientLimit = channel->getClientLimit();
 
 	if (sign == -1 && clientLimit != 0)	{
 		channel->setClientLimit(0);
 		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -l\r\n", NULL);
+	}
+	else if (sign == 1 && newClientLimit == 0) {
+		std::string msg = ":" + std::string(SERVER_NAME) + " 696 " + channel->getName() + " l :Invalid mode parameter\r\n";
+		send(client->getClientFd(), msg.c_str(), msg.size(), 0);
 	}
 	else if (sign == 1 && newClientLimit > 0 && newClientLimit != clientLimit)	{
 		channel->setClientLimit(newClientLimit);
@@ -134,11 +138,11 @@ void execModeCmd(Server *server, Channel *channel, Client *client, std::vector<s
 		{
 			if (isThereArgv(channel, client, *argv_counter, commandSize, 'l') == 0)
 				return ;
-			modeLCommand(channel, last_sign, std::atoi(command[*argv_counter].c_str()));
+			modeLCommand(channel, client, last_sign, std::atoi(command[*argv_counter].c_str()));
 			*argv_counter += 1;
 		}
 		else
-			modeLCommand(channel, last_sign, 0);
+			modeLCommand(channel, client, last_sign, 0);
 	}
 
 	else if (modeFlags[modeCharIndex] == 'o')
