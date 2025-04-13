@@ -135,6 +135,7 @@ int Server::run() {
 						if (_channels[j]->getClientByName(getClientByFd(poll_fds[i].fd)->getNickName()))
 							_channels[j]->removeClient(this, getClientByFd(poll_fds[i].fd));
 					}
+					// this->removeClient(getClientByFd(poll_fds[i].fd));
 				}
 			}
 		}
