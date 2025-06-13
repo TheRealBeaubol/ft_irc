@@ -6,52 +6,41 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:14:18 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 17:59:15 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-bool	verifPriv(Client *client, Channel *channel){
-	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
-
-		if (it->first->getClientSocket() == client->getClientSocket())
-		{
-			if (it->second[2] != 1)
-				return (0);
-			return (1);
-		}
-	}
-	return (0);
-}
-
 void	commandKick(Server *server, Client *client, std::vector<std::string> command){
 	
-	if (command.size() < 3){
-
-		std::cout << "KICK error: need at least 2 param for KICK" << std::endl;
-		return ;
-	}
+	if (command.size() < 3)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NEEDMOREPARAMS + " " + client->getNickName() + " KICK :Not enough parameters\r\n");
 	
-	Channel *tmpChannel = server->findChannel(command[1]);
-	if (!tmpChannel){
+	std::string channelName = command[1];
+	std::string receiverName = command[2];
+	Channel *channel = server->getChannelByName(channelName);
 
-		std::cout << "KICK error: channel doesn't exist!" << std::endl;
-		return ;
-	}
-	//if (!server->findClients)
-	if (!verifPriv(client, tmpChannel)){
+	if (!channel)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHCHANNEL + " " + client->getNickName() + " " + channelName + " :No such channel\r\n");
+	if (channel->getClientByName(client->getNickName()) == NULL || channel->getClientParam(client)[LOGGED] == false)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOTONCHANNEL + " " + client->getNickName() + " " + channelName + " :You're not on that channel\r\n");
+	if (channel->getClientParam(client)[OPERATOR] == false)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_CHANOPRIVSNEEDED + " " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n");	
 
-		std::cout << client->getNickName() << "is not an operator he can't use KICK!" << std::endl;
-		return ;
-	}
+	Client *receiver = server->getClientByName(receiverName);
+	
+	if (!receiver)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHNICK + " " + client->getNickName() + " " + receiverName + " :No such nick/channel\r\n");
+	
+	if (channel->getClientByName(receiver->getNickName()) == NULL)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_USERNOTINCHANNEL + " " + client->getNickName() + " " + receiver->getNickName() + " " + channelName + " :They aren't on that channel\r\n");
+	
+	std::string comment = (command.size() > 3) ? command[3] : client->getNickName();
 
-	command[2].erase(std::remove(command[2].begin(), command[2].end(), ':'), command[2].end());
-	tmpChannel->eraseClient(server->findClient(command[2]));
-	std::string msg = ":" + client->getNickName() + " KICK " + command[1] + " " + command[2];	
-	//if (command[3][0])
-	//	msg += " :" + command[3];
-	msg += "\r\n";
-	std::cout << "message que je send: " << msg << std::endl << "nombre total client: " << server->getClients().size() <<std::endl;
-	tmpChannel->broadcastChannel(msg, NULL);
+	channel->broadcastChannel(":" + client->getNickName() + " KICK " + channelName + " " + receiverName + " :" + comment + "\r\n", NULL);
+	
+	channel->removeClient(receiver);
+	if (channel->getClients().size() == 0)
+		server->removeChannel(channel);
 }

@@ -6,69 +6,77 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:39:27 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:14:52 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:29:29 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
-#include <string>
-//#include "includes.hpp"
 
-bool	verifyNickname(Server *server, std::vector<std::string> commands){
+bool	isNickNameAvailable(Server *server, std::vector<std::string> commands){
 	
 	std::vector<Client *>	clients = server->getClients();
-	for (size_t i = 0; i < clients.size(); ++i){
-		
+
+	for (size_t i = 0; i < clients.size(); ++i)
 		if (clients[i]->getNickName() == commands[1])
 			return (0);
-	}
+			
 	return (1);
 }
 
-void    commandNick(Server *server, Client *client, std::vector<std::string> commands)
-{
+bool checkNicknameFormat(const std::string &nickname) {
+	
+	if (nickname.empty())
+		return false;
+	if (nickname.size() > 16)
+		return false;
 
+	char c = nickname[0];
+
+	if (!(std::isalpha(c) || (c == '[' || c == ']' || c == '\\' || 
+							  c == '`' || c == '_' || c == '^' ||
+							  c == '{' || c == '|' || c == '}')))
+		return false;
+
+	for (size_t i = 1; i < nickname.size(); i++)
+	{
+		c = nickname[i];
+		if (!(std::isalpha(c) || std::isdigit(c) ||
+			  (c == '[' || c == ']' || c == '\\' ||
+			   c == '`' || c == '_' || c == '^' ||
+			   c == '{' || c == '|' || c == '}') || c == '-'))
+			return false;
+	}
+	
+	return true;
+}
+
+void	commandNick(Server *server, Client *client, std::vector<std::string> commands) {
+	
+	if (commands.size() < 2)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NONICKNAMEGIVEN + " " + client->getNickName() + " :No nickname given\r\n");
+	std::string newNickname = commands[1];
+
+	if (!checkNicknameFormat(newNickname))
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_ERRONEUSNICKNAME + " " + client->getNickName() + " " + newNickname + " :Erroneous nickname\r\n");
+	if (!isNickNameAvailable(server, commands))
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NICKNAMEINUSE + " " + client->getNickName() + " " + newNickname + " :Nickname is already in use\r\n");
+	
 	std::string	oldNickname = client->getNickName();
-	std::string serverName = std::string(SERVER_NAME);
-	std::string msg;
-	
-	if (commands.size() < 2){
-		msg = ":" + serverName + " 431 " + client->getNickName() + " :No nickname given\r\n";
-		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-		std::cout << BOLD RED << msg << RESET;
-		return ;
-	}
-	// if (!checkNicknameFormat(server, client, commands)) {
-		// msg = ":" + serverName + " 432 " + client->getNickName() + " :Erroneous nickname\r\n";
-		// send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-		// std::cout << BOLD RED << msg << RESET;
-		// return ;
-	// }
-	if (!verifyNickname(server, commands)) {
-		msg = ":" + serverName + " 433 " + client->getNickName() + " " + commands[1] + " :Nickname is already in use\r\n";
-		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-		std::cout << BOLD RED << msg << RESET;
-		return ;	
-	}
-	
-	client->setNickName(commands[1]);
+	client->setNickName(newNickname);
 
-	if (client->getIsLog() == false && client->getUserName().empty() == false)
-	{
+	if (client->getIsLog() == false && client->getUserName().empty() == false) {
 		client->setIsLog(true);
-		msg = ":" + serverName + " 001 " + client->getNickName() + " :Welcome to the Internet Relay Chat Network " + client->getNickName() + "!" + client->getUserName() + "@" + SERVER_NAME + "\r\n";
-		send(client->getClientSocket(), msg.c_str(), msg.size(), 0);
-		std::cout << BOLD GREEN << msg << RESET;
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + RPL_WELCOME + " " + client->getNickName() + " :Welcome to the Internet Relay Chat Network " + client->getNickName() + "!" + client->getUserName() + "@" + std::string(SERVER_NAME) + "\r\n");
 	} 
-	else
-	{
-		msg = ":" + oldNickname + "!" + client->getUserName() + "@localhost NICK " + client->getNickName() + "\r\n";
-		for (size_t i = 0; i < client->getChannels().size(); i++) {
-			std::cout << "Broadcasting to channel " << client->getChannels()[i]->getChannelName() << std::endl;
-			std::cout << " i: " << i << std::endl;
-			client->getChannels()[i]->broadcastChannel(msg, NULL);
+	else {
+		int isOnChannel = 0;
+		for (size_t i = 0; i < server->getChannels().size(); i++) {
+			if (server->getChannels()[i]->getClientByName(oldNickname) != NULL) {
+				server->getChannels()[i]->broadcastChannel(":" + oldNickname + "!" + client->getUserName() + "@localhost NICK :" + client->getNickName() + "\r\n", client);
+				isOnChannel = 1;
+			}
 		}
-		
-		std::cout << BOLD GREEN << "Nickname changed to " << client->getNickName() << RESET << std::endl;
+		if (isOnChannel == 0)
+			SEND_MESSAGE(":" + oldNickname + "!" + client->getUserName() + "@localhost NICK :" + client->getNickName() + "\r\n");
 	}
 }

@@ -6,25 +6,24 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 23:18:37 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:00:21 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 23:07:22 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Includes.hpp"
-#include "Channel.hpp"
 
 class Channel;
 
 class Client {
 	public:
 		Client();
-		Client(int clientSocket);
+		Client(int clientFd);
 		~Client();
 
-		void setClientSocket(int clientSocket);
-		int getClientSocket() const;
+		void setClientFd(int clientFd);
+		int getClientFd() const;
 
 		void setNickName(std::string nick_name);
 		std::string getNickName() const;
@@ -38,15 +37,15 @@ class Client {
 		void setIsAuth(bool isAuth);
 		bool getIsAuth() const;
 
-		void addChannel(Channel *channel);
-		void removeChannel(Channel *channel);
-		std::vector<Channel *> getChannels() const;
-	private:
-		int _clientSocket;
-		std::vector<Channel *>_channels;
+		std::string& getInputBuffer();
+		void appendToBuffer(const std::string& data);
+		void clearBuffer();
 
+	private:
+		int _clientFd;
 		bool _isAuth;
 		bool _isLog;
 		std::string _nickName;
 		std::string _userName;
+		std::string _inputBuffer;
 };

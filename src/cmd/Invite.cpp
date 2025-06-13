@@ -6,70 +6,41 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:32 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:10:00 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:26:32 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-bool	checkSenter(Channel *channel, Client *client){
-
-	for (std::map<Client *, bool *>::iterator it = channel->getClients().begin(); it != channel->getClients().end(); ++it){
-
-		if (it->first->getClientSocket() == client->getClientSocket()){
-
-			if (it->second[2] != 1)
-				return (0);
-			return (1);
-		}
-	}
-	return (0);
-}
-
-bool	checkInviteUser(Server *server, std::string nickname){
-
-	for (size_t i = 0; i < server->getClients().size(); ++i){
-
-		if (server->getClients()[i]->getNickName() == nickname)
-			return (1);
-	}		
-	return (0);
-}
-
 void	inviteCommand(Server *server, Client *client, std::vector<std::string> command)
 {
-	Channel	*tmpChannel = server->findChannel(command[2]);
-	if (!checkSenter(tmpChannel, client)){
-		
-		std::cout << "client not in channel or dont have permission for this!" << std::endl;
-		return ;
-	}
+	if (command.size() < 3)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NEEDMOREPARAMS + " " + client->getNickName() + " INVITE :Not enough parameters\r\n");
 
-	if (tmpChannel->getClientByName(command[1]))
-	{
-		std::cout << "The user u want to invite is already in the Channel!" << std::endl;
-		return ;
-	}
+	std::string channelName = command[2];
+	std::string receiverName = command[1];
+	Channel	*channel = server->getChannelByName(channelName);
 
-	/*if (verif connection via getAut)
-	{
-		std::cout << "the user isn't connected" << std::endl;
-		return ;
-	}*/
+	if (!channel)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHCHANNEL + " " + client->getNickName() + " " + channelName + " :No such channel\r\n");
+	if (channel->getClientByName(client->getNickName()) == NULL)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOTONCHANNEL + " " + client->getNickName() + " " + channelName + " :You're not on that channel\r\n");
+	if (channel->getClientParam(client)[OPERATOR] == false)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_CHANOPRIVSNEEDED + " " + client->getNickName() + " " + channelName + " :You're not channel operator\r\n");
 	
-	if (!checkInviteUser(server, command[1])){
+	Client *receiver = server->getClientByName(command[1]);
 
-		std::cout << "The user you want to invite do not exist!" << std::endl;
-		return ;
-	}
+	if (!receiver)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHNICK + " " + client->getNickName() + " " + command[1] + " :No such nick/channel\r\n");
+	if (channel->getClientByName(receiver->getNickName()) != NULL)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_USERONCHANNEL + " " + client->getNickName() + " " + command[1] + " " + channelName + " :is already on channel\r\n");
 
-	if (/*!tmpChannel->invite_mod*/ 1 == 0){
+	channel->addClient(receiver);
+	std::string	msg;
 	
-		std::cout << "The channel is not in 'invite-only'(+i) mode!" << std::endl;
-		return ;
-		}
+	msg = ":" + std::string(SERVER_NAME) + " " + RPL_INVITING + " " + client->getNickName() + " " + command[1] + " " + channelName + "\r\n";
+	send(client->getClientFd(), msg.c_str(), msg.length(), 0);
 	
-	Client *tmpUser = server->findClient(command[1]);
-	std::string	msg = "You have been invited to join " + tmpChannel->getChannelName() + " by " + client->getNickName() + "\n";
-	send(tmpUser->getClientSocket(), msg.c_str(), msg.length(), 0);
+	msg = ":" + client->getNickName() + " INVITE " + command[1] + " " + channelName + "\r\n";
+	send(receiver->getClientFd(), msg.c_str(), msg.length(), 0);
 }

@@ -6,29 +6,27 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:50 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 22:06:52 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/12 23:18:27 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Includes.hpp"
 
 Client::Client(){}
-
 Client::~Client(){}
 
-Client::Client(int clientSocket) {
+Client::Client(int clientFd) {
 
-	std::cout << BOLD YELLOW << "Client has been created with " << clientSocket << " as clientSocket" << std::endl;
-	_clientSocket = clientSocket;
+	_clientFd = clientFd;
 	_isAuth = false;
 	_isLog = false;
-	setNickName("");
-	setUserName("");
-	_channels = std::vector<Channel *>();
+	_nickName = "";
+	_userName = "";
+	_inputBuffer = "";
 }
 
-void Client::setClientSocket( int clientSocket ) { _clientSocket = clientSocket; }
-int Client::getClientSocket() const { return _clientSocket; }
+void Client::setClientFd( int clientFd ) { _clientFd = clientFd; }
+int Client::getClientFd() const { return _clientFd; }
 
 void Client::setNickName( std::string nick_name ) { _nickName = nick_name; }
 std::string Client::getNickName() const { return _nickName; }
@@ -42,6 +40,6 @@ bool Client::getIsLog() const { return _isLog; }
 void Client::setIsAuth( bool isAuth ) { _isAuth = isAuth; }
 bool Client::getIsAuth() const { return _isAuth; }
 
-void Client::addChannel( Channel *channel ) { _channels.push_back(channel); }
-void Client::removeChannel( Channel *channel ) { _channels.erase(std::remove(_channels.begin(), _channels.end(), channel), _channels.end()); }
-std::vector<Channel *> Client::getChannels() const { return _channels; }
+std::string& Client::getInputBuffer() { return _inputBuffer; }
+void Client::appendToBuffer(const std::string& data) { _inputBuffer += data; }
+void Client::clearBuffer() { _inputBuffer.clear(); }

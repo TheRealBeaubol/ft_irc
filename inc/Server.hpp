@@ -6,14 +6,15 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 21:48:03 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/02 15:29:48 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 00:41:56 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Channel.hpp"
 #include "Includes.hpp"
+
+class Channel;
 
 class Server {
 	public:
@@ -21,30 +22,29 @@ class Server {
 		~Server();
 
 		int handleNewConnexion();
-		void sendMessage(int clientSocket, const char *msg);
+		int run();
 		
-		void removePollFd(struct pollfd poll_fd);
 		std::vector<struct pollfd> getPollFds();
+		
+		void removeChannel(Channel *channel);
+		void addChannel(Channel *channel);
+		std::vector<Channel *> getChannels();
+		Channel *getChannelByName(std::string channelName);
 		
 		void removeClient(Client* client);
 		std::vector<Client *> getClients();
-
-		void addChannel(Channel *channel);
-		void removeChannel(Channel *channel);
-		std::vector<Channel *> getChannel();
-
-		Channel *findChannel(std::string channelName);
-		Client *findClient(std::string ClientName);
+		Client *getClientByName(std::string ClientName);
 
 		std::string getPassword() const;
+		
+		Client *getClientByFd(int fd);
 
 	private:
 		int _serverFd;
 		int _port;
 		std::string _password;
 		
-		std::vector<struct pollfd> _pollFds;
 		std::vector<Client *> _clients;
-
 		std::vector<Channel *> _channels;
+
 };

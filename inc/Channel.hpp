@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Client.hpp"
-#include <map>
-#include <string>
+#include "Includes.hpp"
+
+class Client;
 
 class Channel
 {
@@ -30,30 +30,35 @@ class Channel
 		void		setInviteOnly(bool inviteOnly);
 		bool		getInviteOnly() const;
 
+		void		setOperator(Client *client, bool isOperator);
+
 		void		setClientLimit(int clientLimit);
 		int			getClientLimit() const;
 
 		void		addClient(Client* newClient);
 		Client*		getClientByName(std::string name);
-		void		setClientParam(Client* client, bool *param);
+		void		setClientParam(Client* client, bool isLogged, bool isOperator);
 		bool*		getClientParam(Client* client);
-		void		eraseClient(Client* indClient);
-		void		showClient();
+		void		removeClient(Client* indClient);
 		
 		std::string	getChannelName() const;
-		std::map<Client *, bool *>	getClients() const;
+		std::map<Client *, bool *>	&getClients();
 
 		void		broadcastChannel(std::string message, Client *sender);
+
+		void setCreationTime(time_t time);
+		time_t getCreationTime() const;
 
 	private:
 
 		std::string	_name;
-		std::string _password;	// /MODE +k
+		std::string _password;
 		std::string	_topic;
 		std::string _topicAuthor;
-		bool _topicUserAccess;	// /MODE +t
-		bool _inviteOnly;		// /MODE +i
-		int _clientLimit;		///MODE +l
+		bool _topicUserAccess;
+		bool _inviteOnly;
+		int _clientLimit;
+		time_t _creationTime;
 
-		std::map<Client *,  bool*> _clients; //bool[3] = {invited, logged, operator}
+		std::map<Client *,  bool*> _clients;
 };

@@ -6,182 +6,238 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:37:30 by lboiteux          #+#    #+#             */
-/*   Updated: 2025/04/01 00:40:27 by lboiteux         ###   ########.fr       */
+/*   Updated: 2025/04/13 17:52:41 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Commands.hpp"
 
-void modeICommand(Channel *channel, char sign)
-{
+void modeICommand(Channel *channel, int sign) {
+
 	bool inviteOnly = channel->getInviteOnly();
 
-	if (sign == '-' && inviteOnly == true)
-	{
+	if (sign == -1 && inviteOnly == true) {
 		channel->setInviteOnly(false);
-		std::cout << "Succes, now cannal is 100%% accessible" << std::endl;
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -i\r\n", NULL);		
 	}
-	else if (sign == '+' && inviteOnly == false)
-	{
+	else if (sign == 1 && inviteOnly == false) {
 		channel->setInviteOnly(true);
-		std::cout << "Succes, nnow canal is on invite only mode" << std::endl;
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +i\r\n", NULL);
 	}
-	else
-		std::cout << "Nothing to do ???" << std::endl;
+	
 }
 
-void modeTCommand(Channel *channel, char sign)
-{
-	bool topicUserAccess = channel->getTopicUserAccess();
+void modeKCommand(Channel *channel, int sign, std::string newPassword) {
 
-	if (sign == '-' && topicUserAccess == true)
-	{
-		channel->setTopicUserAccess(false);
-		std::cout << "Succes, now topic is no more modifiable by users" << std::endl;
-	}
-	else if (sign == '+' && topicUserAccess == false)
-	{
-		channel->setTopicUserAccess(true);
-		std::cout << "Succes, now topic is modifiable by user" << std::endl;
-	}
-	else
-		std::cout << "Nothing to do ???" << std::endl;
-}
-
-void modeOCommand(Channel *channel, char sign, std::string clientNameToMode)
-{
-	std::cout << "Mode O command" << std::endl;
-
-	Client *clientToMode = channel->getClientByName(clientNameToMode);
-	if (clientToMode == NULL)
-	{
-		std::cout << "Error : There is no user named " << clientNameToMode << std::endl;
-		return ;
-	}
-
-	bool* client_param;
-	client_param = channel->getClientParam(clientToMode);
-
-	if (client_param == NULL)
-		std::cout << "NULLLLLLL" << std::endl;
-
-	if (sign == '-' && client_param[2] == true)
-	{
-		// client_param[2] = false;
-		bool new_param[3] = {NULL, NULL, false};
-		channel->setClientParam(clientToMode, new_param);
-		std::cout << "Succes, operator been retrograded (need to send confirmation to client who sended mode command)" << std::endl;
-	}
-	else if (sign == '+' && client_param[2] == false)
-	{
-		// client_param[2] = true;
-		bool new_param[3] = {NULL, NULL, true};
-		channel->setClientParam(clientToMode, new_param);
-		std::cout << "Succes, operator been promoted (need to send confirmation to client who sended mode command)" << std::endl;
-	}
-	else
-		std::cout << "Nothing to do ???" << std::endl;
-}
-
-void modeKCommand(Channel *channel, char sign, std::string newPassword)
-{
 	std::string password = channel->getPassword();
-	if (sign == '-' && password != "")
-	{
+
+	if (sign == -1 && password != "") {
 		channel->setPassword("");
-		std::cout << "Succes, password removed" << std::endl;
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -k\r\n", NULL);
 	}
-	else if (sign == '+' && newPassword != password)
+	else if (sign == 1)
 	{
-		channel->setPassword(newPassword);
-		std::cout << "Succes, password setted to : " << newPassword << std::endl;
+		if (password == "")	{
+			channel->setPassword(newPassword);
+			channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +k " + newPassword + "\r\n", NULL);
+		}
+		else
+			channel->broadcastChannel(":" + std::string(SERVER_NAME) + " " + ERR_KEYSET + " " + channel->getName() + " :Channel key already set\r\n", NULL);
 	}
-	else
-		std::cout << "Nothing to do ???" << std::endl;
 }
 
-void modeLCommand(Channel *channel, char sign, int newClientLimit)
-{
+void modeLCommand(Channel *channel, Client *client, int sign, int newClientLimit) {
+
 	int clientLimit = channel->getClientLimit();
 
-	if (sign == '-' && clientLimit != 0)
-	{
+	if (sign == -1 && clientLimit != 0)	{
 		channel->setClientLimit(0);
-		std::cout << "Succes, ClientLimit removed" << std::endl;
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -l\r\n", NULL);
 	}
-	else if (sign == '+' && newClientLimit >= 0 && newClientLimit != clientLimit)
-	{
+	else if (sign == 1 && newClientLimit == 0) {
+		std::string msg = ":" + std::string(SERVER_NAME) + " 696 " + channel->getName() + " l :Invalid mode parameter\r\n";
+		send(client->getClientFd(), msg.c_str(), msg.size(), 0);
+	}
+	else if (sign == 1 && newClientLimit > 0 && newClientLimit != clientLimit)	{
 		channel->setClientLimit(newClientLimit);
-		std::cout << "Succes, ClientLimit setted to : " << newClientLimit << std::endl;
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +l " + itoa(newClientLimit) + "\r\n", NULL);
 	}
-	else
-		std::cout << "Nothing to do ???" << std::endl;
+}
+
+void modeOCommand(Server *server, Channel *channel, Client *client, int sign, std::string clientNameToMode) {
+
+	Client *clientOnServer = server->getClientByName(clientNameToMode);
+
+	if (clientOnServer == NULL)
+		SEND_MESSAGE_AND_RETURN("" + std::string(SERVER_NAME) + " " + ERR_NOSUCHNICK + " " + client->getNickName() + " " + clientNameToMode + " :No such nick/channel\r\n");
+	
+	Client *clientOnChannel = channel->getClientByName(clientNameToMode);
+	if (clientOnChannel == NULL || channel->getClientParam(clientOnChannel)[LOGGED] == false)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_USERNOTINCHANNEL + " " + client->getNickName() + " " + clientNameToMode + " :They aren't on that channel\r\n");
+
+	bool* client_param;
+	client_param = channel->getClientParam(clientOnChannel);
+
+	if (sign == -1 && client_param[OPERATOR] == true) {
+		channel->setOperator(clientOnChannel, false);
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -o " + clientOnChannel->getNickName() + "\r\n", NULL);
+	}
+	else if (sign == 1 && client_param[OPERATOR] == false) {
+		channel->setOperator(clientOnChannel, true);
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +o " + clientOnChannel->getNickName() + "\r\n", NULL);
+	}
+}
+
+void modeTCommand(Channel *channel, int sign) {
+
+	bool topicUserAccess = channel->getTopicUserAccess();
+
+	if (sign == -1 && topicUserAccess == true) {
+		channel->setTopicUserAccess(false);
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " -t\r\n", NULL);
+	}
+	else if (sign == 1 && topicUserAccess == false)	{
+		channel->setTopicUserAccess(true);
+		channel->broadcastChannel(":" + std::string(SERVER_NAME) + " MODE " + channel->getName() + " +t\r\n", NULL);
+	}
+}
+
+int isThereArgv(Channel *channel, Client *client, int argv_counter, int commandSize, char flag) {
+
+	if (argv_counter >= commandSize) {
+		SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_NEEDMOREPARAMS + " " + client->getNickName() + " " + channel->getChannelName() + " : mode +" + flag + " requires a parameter\r\n");
+		return 0;
+	}
+
+	return 1;
+}
+
+void execModeCmd(Server *server, Channel *channel, Client *client, std::vector<std::string> command, int commandSize, int modeCharIndex, int last_sign, int *argv_counter) {
+
+	std::string modeFlags = command[2];
+
+	if (modeFlags[modeCharIndex] == 'i')
+		modeICommand(channel, last_sign);
+
+	else if (modeFlags[modeCharIndex] == 'k')
+	{
+		if (last_sign == 1)
+		{
+			if (isThereArgv(channel, client, *argv_counter, commandSize, 'k') == 0) 
+				return ;
+			modeKCommand(channel, last_sign, command[*argv_counter]);
+			*argv_counter += 1;
+		}
+		else
+			modeKCommand(channel, last_sign, "");
+	}
+
+	else if (modeFlags[modeCharIndex] == 'l')
+	{
+		if (last_sign == 1)
+		{
+			if (isThereArgv(channel, client, *argv_counter, commandSize, 'l') == 0)
+				return ;
+			modeLCommand(channel, client, last_sign, std::atoi(command[*argv_counter].c_str()));
+			*argv_counter += 1;
+		}
+		else
+			modeLCommand(channel, client, last_sign, 0);
+	}
+
+	else if (modeFlags[modeCharIndex] == 'o')
+	{
+		if (isThereArgv(channel, client, *argv_counter, commandSize, 'o') == 0)
+			return ;
+		modeOCommand(server, channel, client, last_sign, command[*argv_counter]);
+		*argv_counter += 1;
+	}
+
+	else if (modeFlags[modeCharIndex] == 't')
+		modeTCommand(channel, last_sign);
+
+	return ;
 }
 
 void modeCommand(Server *server, Client *client, std::vector<std::string> command)
 {
-	std::cout << "MODE command" << std::endl;
-
+	int last_sign = 0;
+	int argv_counter = 3;
 	size_t commandSize = command.size();
-	for (size_t i = 0; i < commandSize; i++) {
-		std::cout << "command " << i << " = " << CYAN << command[i] << RESET << std::endl;
-	}
+
+	if (commandSize <= 1)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NEEDMOREPARAMS + " " + client->getNickName() + " " + command[0] + " :Not enough parameters\r\n");
 	
-	if (commandSize <= 2)
+	if (commandSize == 2)
 	{
-		std::cout << "voiding that one..." << std::endl; // probably need to send error too
-		return;
-	}
-
-	Channel *channel = server->findChannel(command[1]);
-	if (channel == NULL)
-	{
-		std::cout << "Error : There is no channel with that name... (need to send error...)" << std::endl;
-		return;
-	}
-	else if (channel->getClientParam(client)[2] == 0)
-	{
-		std::cout << "You're not operator, you can't use /MODE command... (need to send error...)" << std::endl;
-		return;
-	}
-	else if ((command[2][0] == '+' || command[2][0] == '-') && (command[2][1] == '+' || command[2][1] == '-')) // check si commence par un + ou un - (si pas de +/- ou plus de un, return error)
-	{
-		std::cout << "Error : require only on sign, need to send: : irc.exemple.com 472 MonPseudo #canal :Unknown channel mode" << std::endl;
-		return;
-	}
-		
-	// on itère sur chaque char jusqua la fin de command[1] et on éxécute chaque char "existant", si il y en a un inconnu on le skip et on enverra une erreur (globale, une seul meme si plusieur inconnu) (:irc.exemple.com 472 MonPseudo #canal :Unknown channel mode(s))
-	int err = 0;
-	for ( std::size_t i = 1 ; i < command[2].size() ; i++)
-	{
-		std::cout << "Im on " << command[2][i] << std::endl;
-		if (command[2][i] == 'i')
-			modeICommand(channel, command[2][0]);
-		else if (command[2][i] == 't')
-			modeTCommand(channel, command[2][0]);
-		else if (command[2][i] == 'o')
-			modeOCommand(channel, command[2][0], command[3]);
-		else if (command[2][i] == 'k')
+		if (command[1][0] == '#')
 		{
-			// modeKCommand(channel, command[2][0], command[3].empty() ? NULL : command[3]);
+			std::string channelMode;
+			Channel *channel = server->getChannelByName(command[1]);
+			std::vector<std::string> argv;
 
-			if (commandSize >= 4)
-				modeKCommand(channel, command[2][0], command[3]);
-			else
-				modeKCommand(channel, command[2][0], "");
-		}
-		else if (command[2][i] == 'l')
-		{
-			// modeLCommand(channel, command[2][0], std::atoi(command[3].c_str()));
-			
-			if (commandSize >= 4)
-				modeLCommand(channel, command[2][0], std::atoi(command[3].c_str()));
-			else
-				modeLCommand(channel, command[2][0], 0);
+			if (channel == NULL)
+				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHCHANNEL + " " + client->getNickName() + " " + command[1] + " :No such channel\r\n");
+			else {
+
+				if (channel->getInviteOnly() == true)
+					channelMode += "i";
+				if (channel->getPassword() != "")
+					channelMode += "k";
+				if (channel->getClientLimit() != 0)
+				{
+					channelMode += "l";
+					argv.push_back(itoa(channel->getClientLimit()));
+				}
+				if (channel->getTopicUserAccess() == true)
+					channelMode += "t";
+
+				std::string msg;
+				msg = ":" + std::string(SERVER_NAME) + " " + RPL_CHANNELMODEIS + " " + client->getNickName() + " " + channel->getChannelName() + " +" + channelMode;
+				for (size_t i = 0; i < argv.size(); i++)
+					msg += " " + argv[i];
+				msg += "\r\n";
+				SEND_MESSAGE(msg);
+
+				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + RPL_CREATIONTIME + " " + client->getNickName() + " " + channel->getChannelName() + " " + itoa(channel->getCreationTime()) + "\r\n");
+			}
 		}
 		else
-			err++;
+		{
+			if (command[1] == client->getNickName())
+				SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + RPL_UMODEIS + " " + client->getNickName() + " " + command[1] + " :is now known as " + client->getNickName() + "\r\n");
+			SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_USERSDONTMATCH + " " + client->getNickName() + " :Cannot change mode for other users\r\n");
+		}
+		return ;
 	}
-	if (err > 0)
-		std::cout << "There was an invalid char, need to send : irc.exemple.com 472 MonPseudo #canal :Unknown channel mode" << std::endl;
+	
+	Channel *channel = server->getChannelByName(command[1]);
+	if (channel == NULL)
+		SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOSUCHCHANNEL + " " + client->getNickName() + " " + command[1] + " :No such channel\r\n");
+	else {
+	
+		Client *clientOnChannel = channel->getClientByName(client->getNickName());
+	
+		if (clientOnChannel == NULL || channel->getClientParam(clientOnChannel)[LOGGED] == false)
+			SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_NOTONCHANNEL + " " + client->getNickName() + " " + command[1] + " :You're not on that channel\r\n");
+		else if (channel->getClientParam(clientOnChannel)[OPERATOR] == false)
+			SEND_MESSAGE_AND_RETURN(":" + std::string(SERVER_NAME) + " " + ERR_CHANOPRIVSNEEDED + " " + client->getNickName() + " " + command[1] + " :You're not channel operator\r\n");
+	}
+
+	int i = 0;
+	while (command[2][i])
+	{
+		if (command[2][i] == '+' || command[2][i] == '-')
+		{
+			last_sign = (command[2][i] == '-') ? -1 : 1;
+			i++;
+			continue ;
+		}
+		else if (std::string("iklot").find(command[2][i]) != std::string::npos && last_sign != 0) {
+			execModeCmd(server, channel, client, command, commandSize, i, last_sign, &argv_counter);
+		}
+		else
+			SEND_MESSAGE(":" + std::string(SERVER_NAME) + " " + ERR_UNKNOWNMODE + " " + client->getNickName() + " " + channel->getChannelName() + " :Unknown mode flag " + command[2][i] + "\r\n");
+		i++;
+	}
 }
