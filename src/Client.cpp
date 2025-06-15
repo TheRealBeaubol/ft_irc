@@ -14,9 +14,21 @@
 
 Client::Client(){}
 
-Client::Client(int clientFd) {
-	
+Client::Client(int clientFd)
+{
 	_clientFd = clientFd;
+	_clientPollFd = ( struct pollfd ) {-1, -1, -1};
+	_isAuth = false;
+	_isLog = false;
+	_nickName = "";
+	_userName = "";
+	_inputBuffer = "";
+}
+
+Client::Client(int clientFd, struct pollfd clientPollFd)
+{
+	_clientFd = clientFd;
+	_clientPollFd = clientPollFd;
 	_isAuth = false;
 	_isLog = false;
 	_nickName = "";
@@ -28,6 +40,9 @@ Client::~Client(){}
 
 void Client::setClientFd( int clientFd ) { _clientFd = clientFd; }
 int Client::getClientFd() const { return _clientFd; }
+
+void Client::setClientPollFd(struct pollfd clientPollFd) { _clientPollFd = clientPollFd; }
+struct pollfd Client::getClientPollFd() const { return _clientPollFd; }
 
 void Client::setNickName( std::string nick_name ) { _nickName = nick_name; }
 std::string Client::getNickName() const { return _nickName; }

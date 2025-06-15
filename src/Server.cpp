@@ -69,7 +69,7 @@ Server::Server(int port, std::string password)
 		throw std::runtime_error("Error while setting socket to non-blocking");
 	}
 
-	Client *client = new Client( _serverFd );
+	Client *client = new Client( _serverFd, (struct pollfd){_serverFd, POLLIN, 0} );
 	client->setIsAuth(true);
 	client->setIsLog(true);
 	_clients.push_back( client );
@@ -107,14 +107,10 @@ std::string Server::getPassword() const { return _password; }
 
 /*------- Client's function -------*/
 
-bool isClientActive(Client *client, Server *server) {
-	std::vector<Client *> clients = server->getClients();
-	for (size_t i = 0; i < clients.size(); i++) {
-		if (clients[i] == client) {
-			return true;
-		}
-	}
-	return false;
+void Server::addClient(Client* client)
+{
+	std::cout << "Adding " << client->getClientFd() << " to server.clients " << std::endl;
+	_clients.push_back(client);
 }
 
 void Server::removeClient(Client* client) {
@@ -148,6 +144,17 @@ Client *Server::getClientByFd(int fd) {
 			return _clients[i];
 	}
 	return NULL;
+}
+
+bool Server::isClientActive(Client *client)
+{
+	std::vector<Client *> clients = getClients();
+	for (size_t i = 0; i < clients.size(); i++)
+	{
+		if (clients[i] == client)
+			return true;
+	}
+	return false;
 }
 
 /*------- Channel's function -------*/
@@ -188,17 +195,21 @@ int Server::handleNewConnexion()
 	socklen_t client_len = sizeof(client_addr);
 	int client_fd = accept(_serverFd, (struct sockaddr*)&client_addr, &client_len);
 
-	if (_clients.size() >= MAX_CLIENTS) {
+	if (_clients.size() >= MAX_CLIENTS)
+	{
 		std::cerr << "Max clients reached" << std::endl;
 		close(client_fd);
 		return -2;
 	}
-	if (client_fd >= 0)	{
+	if (client_fd >= 0)
+	{
 	
-		if (setNonBlocking(client_fd) == 0)	{
-			_clients.push_back(new Client(client_fd));
+		if (setNonBlocking(client_fd) == 0)
+		{
+			_clients.push_back(new Client(client_fd, (struct pollfd){client_fd, POLLIN, 0}));
 		}
-		else {
+		else
+		{
 			close(client_fd);
 			std::cerr << "handleNewConnexion failed" << ": " << strerror(errno) << std::endl;
 		}
@@ -206,9 +217,47 @@ int Server::handleNewConnexion()
 	return 0;
 }
 
-int Server::handleMessage(Client *client, char buffer[], int bytes_read)
+void Server::handleMessage(Client *client)
 {
-	client->appendToBuffer(std::string(buffer, bytes_read));
+	Client *realClient = NULL;
+	
+	// extract nickname from buffer to find the client or create a new one if it doesn't exist and execute the command as if it was sent by a "real" client
+	if (client->getNickName() == "myBot" && client->getIsAuth() == true && client->getIsLog() == true)
+	{
+		std::vector<Client *> clients = getClients();
+		std::vector<struct pollfd> poll_fds = getPollFds();
+
+		std::string nickname;
+		std::string buffer = client->getInputBuffer();
+		if (!buffer.empty() && buffer[0] == ':')
+		{
+			std::string::size_type spacePos = buffer.find(' ');
+			if (spacePos != std::string::npos)
+			{
+				nickname = buffer.substr(1, spacePos - 1);  // sans le ':'
+				buffer = buffer.substr(spacePos + 1); // on enlève aussi l'espace
+
+				std::cout << "Nickname: " << nickname << std::endl;
+				std::cout << "Buffer restant: " << std::endl << buffer << std::endl;
+			}
+		}
+
+		for (size_t i = 0; i < getClients().size(); i++)
+		{
+			if (poll_fds[i].fd == -1 && clients[i]->getNickName() == nickname)
+				realClient = clients[i];
+		}
+
+		if (realClient == NULL)
+		{
+			std::cout << "Client not found, creating new client with the same socket as the website" << std::endl;
+			realClient = new Client(client->getClientFd(), (struct pollfd){-1, 0, 0}); // On crée un nouveau client avec le socket du site web
+			this->addClient(realClient);
+		}
+	}
+
+	if (realClient == NULL)
+		realClient = client; // Si le client n'a pas été trouvé, on utilise le client passé en paramètre
 
 	size_t pos;
 	while ((pos = client->getInputBuffer().find("\r\n")) != std::string::npos)
@@ -219,19 +268,18 @@ int Server::handleMessage(Client *client, char buffer[], int bytes_read)
 		std::vector<std::vector<std::string> > commands = tokenize(line);
 		for (size_t j = 0; j < commands.size(); j++)
 		{
-			if (isClientActive(client, this))
+			if (isClientActive(client))
 				executeCommand(this, client, commands[j]);
 			else
 				break;
 		}
-		if (!isClientActive(client, this))
-		{
+		if (!isClientActive(client))
 			break;
-		}
 	}
 }
 
-int Server::run() {
+int Server::run()
+{
 
 	signal(SIGINT, handleSigInt);
 	while (server_status == SERVER_RUNNING)
@@ -256,21 +304,26 @@ int Server::run() {
 				{
 					Client *client = getClientByFd(poll_fds[i].fd);
 					if (client)
-						handleMessage(client, buffer, bytes_read);
+					{
+						client->appendToBuffer(std::string(buffer, bytes_read));
+						handleMessage(client);
+					}
 				}
 				else
 				{
 					std::cout << ITALIC << "Client " << poll_fds[i].fd << " disconnected." << RESET << std::endl;
 					Client *client = getClientByFd(poll_fds[i].fd);
 					size_t channelSize = _channels.size();
-					if (client) {
-						for (size_t j = 0; j < channelSize; j++) {
+					if (client)
+					{
+						for (size_t j = 0; j < channelSize; j++)
+						{
 							Channel *channel = _channels[j];
-							if (channel->getClientByName(client->getNickName()) != NULL) {
+							if (channel->getClientByName(client->getNickName()) != NULL)
+							{
 								channel->removeClient(client);
-								if (channel->getClients().size() == 0) {
+								if (channel->getClients().size() == 0)
 									removeChannel(channel);
-								}
 							}
 							
 						}
@@ -283,4 +336,3 @@ int Server::run() {
 
 	return 0;
 }
-

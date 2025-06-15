@@ -22,10 +22,14 @@ class Client
 
 		Client();
 		Client(int clientFd);
+		Client(int clientFd, struct pollfd clientPollFd);
 		~Client();
 
 		void setClientFd(int clientFd);
 		int getClientFd() const;
+
+		void setClientPollFd(struct pollfd clientPollFd);
+		struct pollfd getClientPollFd() const;
 
 		void setNickName(std::string nick_name);
 		std::string getNickName() const;
@@ -46,6 +50,7 @@ class Client
 	private:
 
 		int _clientFd;
+		struct pollfd _clientPollFd;
 		bool _isAuth;
 		bool _isLog;
 		std::string _nickName;

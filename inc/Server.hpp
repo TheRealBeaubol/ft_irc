@@ -26,19 +26,20 @@ class Server
 		std::string getPassword() const;
 		std::vector<struct pollfd> getPollFds();
 		
+		void addClient(Client* client);
 		void removeClient(Client* client);
 		std::vector<Client *> getClients();
 		Client *getClientByName(std::string ClientName);
 		Client *getClientByFd(int fd);
+		bool isClientActive(Client *client);
 		
-		void removeChannel(Channel *channel);
 		void addChannel(Channel *channel);
+		void removeChannel(Channel *channel);
 		std::vector<Channel *> getChannels();
 		Channel *getChannelByName(std::string channelName);
 		
 		int handleNewConnexion();
-		// int handleMessage();
-		int handleMessage(Client *client, char buffer[], int bytes_read);
+		void handleMessage(Client *client);
 		int run();
 
 	private:
