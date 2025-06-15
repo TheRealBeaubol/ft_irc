@@ -13,10 +13,9 @@
 #include "Includes.hpp"
 
 Client::Client(){}
-Client::~Client(){}
 
 Client::Client(int clientFd) {
-
+	
 	_clientFd = clientFd;
 	_isAuth = false;
 	_isLog = false;
@@ -24,6 +23,8 @@ Client::Client(int clientFd) {
 	_userName = "";
 	_inputBuffer = "";
 }
+
+Client::~Client(){}
 
 void Client::setClientFd( int clientFd ) { _clientFd = clientFd; }
 int Client::getClientFd() const { return _clientFd; }

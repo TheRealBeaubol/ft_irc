@@ -40,9 +40,9 @@ class Channel
 		void		setClientParam(Client* client, bool isLogged, bool isOperator);
 		bool*		getClientParam(Client* client);
 		void		removeClient(Client* indClient);
+		std::map<Client *, bool *>	&getClients();
 		
 		std::string	getChannelName() const;
-		std::map<Client *, bool *>	&getClients();
 
 		void		broadcastChannel(std::string message, Client *sender);
 

@@ -16,33 +16,34 @@
 
 class Channel;
 
-class Server {
+class Server
+{
 	public:
+
 		Server(int port, std::string password);
 		~Server();
 
-		int handleNewConnexion();
-		int run();
-		
+		std::string getPassword() const;
 		std::vector<struct pollfd> getPollFds();
+		
+		void removeClient(Client* client);
+		std::vector<Client *> getClients();
+		Client *getClientByName(std::string ClientName);
+		Client *getClientByFd(int fd);
 		
 		void removeChannel(Channel *channel);
 		void addChannel(Channel *channel);
 		std::vector<Channel *> getChannels();
 		Channel *getChannelByName(std::string channelName);
 		
-		void removeClient(Client* client);
-		std::vector<Client *> getClients();
-		Client *getClientByName(std::string ClientName);
-
-		std::string getPassword() const;
-		
-		Client *getClientByFd(int fd);
+		int handleNewConnexion();
+		int run();
 
 	private:
-		int _serverFd;
+
 		int _port;
 		std::string _password;
+		int _serverFd;
 		
 		std::vector<Client *> _clients;
 		std::vector<Channel *> _channels;

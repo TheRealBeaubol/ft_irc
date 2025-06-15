@@ -11,19 +11,10 @@
 /* ************************************************************************** */
 
 #include "Includes.hpp"
+
 volatile sig_atomic_t server_status = SERVER_RUNNING;
 
-Server::~Server() {
-	for (size_t i = 0; i < _clients.size(); i++) {
-		close(_clients[i]->getClientFd());
-		delete _clients[i];
-	}
-	for (size_t i = 0; i < _channels.size(); i++) {
-		delete _channels[i];
-	}
-	close(_serverFd);
-	std::cout << BOLD BLUE << "Server closed" << RESET << std::endl;
-}
+/*------- Usefull -------*/
 
 int setNonBlocking(int fd) {
 	
@@ -43,6 +34,8 @@ void	handleSigInt(int sig) {
 		server_status = SERVER_STOPPED;
 	}
 }
+
+/*------- Constructor & Destructor -------*/
 
 Server::Server(int port, std::string password)
 {
@@ -84,6 +77,36 @@ Server::Server(int port, std::string password)
 	std::cout << BOLD GREEN << "	Server created on port " << _port << RESET << std::endl << std::endl;
 }
 
+Server::~Server() {
+	for (size_t i = 0; i < _clients.size(); i++) {
+		close(_clients[i]->getClientFd());
+		delete _clients[i];
+	}
+	for (size_t i = 0; i < _channels.size(); i++) {
+		delete _channels[i];
+	}
+	close(_serverFd);
+	std::cout << BOLD BLUE << "Server closed" << RESET << std::endl;
+}
+
+/*------- Server's getters -------*/
+
+std::vector<struct pollfd> Server::getPollFds()
+{
+	std::vector<struct pollfd> poll_fds;
+
+	poll_fds.push_back((struct pollfd){_serverFd, POLLIN, 0});
+	
+	for (size_t i = 1; i < _clients.size(); i++) {
+		poll_fds.push_back((struct pollfd){_clients[i]->getClientFd(), POLLIN, 0});
+	}
+	return poll_fds;
+}
+
+std::string Server::getPassword() const { return _password; }
+
+/*------- Client's function -------*/
+
 bool isClientActive(Client *client, Server *server) {
 	std::vector<Client *> clients = server->getClients();
 	for (size_t i = 0; i < clients.size(); i++) {
@@ -94,12 +117,106 @@ bool isClientActive(Client *client, Server *server) {
 	return false;
 }
 
+void Server::removeClient(Client* client) {
+	for (size_t i = 0; i < _clients.size(); i++) {
+		if (_clients[i] == client) {
+			close(client->getClientFd());
+			_clients.erase(_clients.begin() + i);
+			delete client;
+			break;
+		}
+	}
+}
+
+std::vector<Client *> Server::getClients() { return _clients; }
+
+Client *Server::getClientByName(std::string clientName) {
+
+	std::vector<Client *> client = getClients();
+
+	for (size_t i = 0; i < client.size(); i++) {
+		if (client[i]->getNickName() == clientName)
+			return client[i];
+	}
+
+	return NULL;
+}
+
 Client *Server::getClientByFd(int fd) {
 	for (size_t i = 0; i < _clients.size(); i++) {
 		if (_clients[i]->getClientFd() == fd)
 			return _clients[i];
 	}
 	return NULL;
+}
+
+/*------- Channel's function -------*/
+
+
+void Server::removeChannel(Channel *channel) {
+	
+	for (size_t i = 0; i < _channels.size(); i++) {
+		if (_channels[i] == channel) {
+			_channels.erase(_channels.begin() + i);
+			delete channel;
+			break;
+		}
+	}
+}
+
+void Server::addChannel(Channel *channel) { _channels.push_back(channel); }
+
+std::vector<Channel *> Server::getChannels() { return _channels; }
+
+Channel *Server::getChannelByName(std::string channelName) {
+
+	std::vector<Channel *> channel = getChannels();
+
+	for (size_t i = 0; i < channel.size(); i++) {
+		if (channel[i]->getName() == channelName)
+			return channel[i];
+	}
+
+	return NULL;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*------- Server's function -------*/
+
+int Server::handleNewConnexion() {
+
+	struct sockaddr_in client_addr;
+	socklen_t client_len = sizeof(client_addr);
+	int client_fd = accept(_serverFd, (struct sockaddr*)&client_addr, &client_len);
+
+	if (_clients.size() >= MAX_CLIENTS) {
+		std::cerr << "Max clients reached" << std::endl;
+		close(client_fd);
+		return -2;
+	}
+	if (client_fd >= 0)	{
+	
+		if (setNonBlocking(client_fd) == 0)	{
+			_clients.push_back(new Client(client_fd));
+		}
+		else {
+			close(client_fd);
+			std::cerr << "handleNewConnexion failed" << ": " << strerror(errno) << std::endl;
+		}
+	}
+	return 0;
 }
 
 int Server::run() {
@@ -174,95 +291,4 @@ int Server::run() {
 	}
 
 	return 0;
-}
-
-int Server::handleNewConnexion() {
-
-	struct sockaddr_in client_addr;
-	socklen_t client_len = sizeof(client_addr);
-	int client_fd = accept(_serverFd, (struct sockaddr*)&client_addr, &client_len);
-
-	if (_clients.size() >= MAX_CLIENTS) {
-		std::cerr << "Max clients reached" << std::endl;
-		close(client_fd);
-		return -2;
-	}
-	if (client_fd >= 0)	{
-	
-		if (setNonBlocking(client_fd) == 0)	{
-			_clients.push_back(new Client(client_fd));
-		}
-		else {
-			close(client_fd);
-			std::cerr << "handleNewConnexion failed" << ": " << strerror(errno) << std::endl;
-		}
-	}
-	return 0;
-}
-
-std::vector<struct pollfd> Server::getPollFds()
-{
-	std::vector<struct pollfd> poll_fds;
-
-	poll_fds.push_back((struct pollfd){_serverFd, POLLIN, 0});
-	
-	for (size_t i = 1; i < _clients.size(); i++) {
-		poll_fds.push_back((struct pollfd){_clients[i]->getClientFd(), POLLIN, 0});
-	}
-	return poll_fds;
-}
-
-std::vector<Client *> Server::getClients() { return _clients; }
-
-void Server::addChannel(Channel *channel) { _channels.push_back(channel); }
-
-std::vector<Channel *> Server::getChannels() { return _channels; }
-
-std::string Server::getPassword() const { return _password; }
-
-
-void Server::removeClient(Client* client) {
-	for (size_t i = 0; i < _clients.size(); i++) {
-		if (_clients[i] == client) {
-			close(client->getClientFd());
-			_clients.erase(_clients.begin() + i);
-			delete client;
-			break;
-		}
-	}
-}
-
-void Server::removeChannel(Channel *channel) {
-	
-	for (size_t i = 0; i < _channels.size(); i++) {
-		if (_channels[i] == channel) {
-			_channels.erase(_channels.begin() + i);
-			delete channel;
-			break;
-		}
-	}
-}
-
-Channel *Server::getChannelByName(std::string channelName) {
-
-	std::vector<Channel *> channel = getChannels();
-
-	for (size_t i = 0; i < channel.size(); i++) {
-		if (channel[i]->getName() == channelName)
-			return channel[i];
-	}
-
-	return NULL;
-}
-
-Client *Server::getClientByName(std::string clientName) {
-
-	std::vector<Client *> client = getClients();
-
-	for (size_t i = 0; i < client.size(); i++) {
-		if (client[i]->getNickName() == clientName)
-			return client[i];
-	}
-
-	return NULL;
 }

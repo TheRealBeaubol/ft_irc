@@ -16,8 +16,10 @@
 
 class Channel;
 
-class Client {
+class Client
+{
 	public:
+
 		Client();
 		Client(int clientFd);
 		~Client();
@@ -42,6 +44,7 @@ class Client {
 		void clearBuffer();
 
 	private:
+
 		int _clientFd;
 		bool _isAuth;
 		bool _isLog;
