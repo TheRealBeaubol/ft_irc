@@ -152,7 +152,6 @@ Client *Server::getClientByFd(int fd) {
 
 /*------- Channel's function -------*/
 
-
 void Server::removeChannel(Channel *channel) {
 	
 	for (size_t i = 0; i < _channels.size(); i++) {
@@ -180,22 +179,10 @@ Channel *Server::getChannelByName(std::string channelName) {
 	return NULL;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*------- Server's function -------*/
 
-int Server::handleNewConnexion() {
+int Server::handleNewConnexion()
+{
 
 	struct sockaddr_in client_addr;
 	socklen_t client_len = sizeof(client_addr);
@@ -219,56 +206,60 @@ int Server::handleNewConnexion() {
 	return 0;
 }
 
+int Server::handleMessage(Client *client, char buffer[], int bytes_read)
+{
+	client->appendToBuffer(std::string(buffer, bytes_read));
+
+	size_t pos;
+	while ((pos = client->getInputBuffer().find("\r\n")) != std::string::npos)
+	{
+		std::string line = client->getInputBuffer().substr(0, pos);
+		client->getInputBuffer().erase(0, pos + 2);
+
+		std::vector<std::vector<std::string> > commands = tokenize(line);
+		for (size_t j = 0; j < commands.size(); j++)
+		{
+			if (isClientActive(client, this))
+				executeCommand(this, client, commands[j]);
+			else
+				break;
+		}
+		if (!isClientActive(client, this))
+		{
+			break;
+		}
+	}
+}
+
 int Server::run() {
 
 	signal(SIGINT, handleSigInt);
-	while (server_status == SERVER_RUNNING) {
-	
+	while (server_status == SERVER_RUNNING)
+	{
 		std::vector<struct pollfd> poll_fds = getPollFds();
 
-		int poll_count = poll(&poll_fds[0], poll_fds.size(), -1);
-		if (poll_count < 0) {
+		if (poll(&poll_fds[0], poll_fds.size(), -1) < 0)
 			return -1;
-		}
 
-		if (poll_fds[0].revents & POLLIN && handleNewConnexion() == -1)	{
+		if (poll_fds[0].revents & POLLIN && handleNewConnexion() == -1)
 			continue;
-		}
 
 		for (size_t i = 1; i < poll_fds.size(); ++i) {
 		
-			if (poll_fds[i].revents & POLLIN) {
-			
+			if (poll_fds[i].revents & POLLIN)
+			{
 				char buffer[BUFFER_SIZE];
 				memset(buffer, 0, BUFFER_SIZE);
 				int bytes_read = recv(poll_fds[i].fd, buffer, BUFFER_SIZE, 0);
 
-				if (bytes_read > 0) {
-				
+				if (bytes_read > 0)
+				{
 					Client *client = getClientByFd(poll_fds[i].fd);
-
-					if (client) {
-						client->appendToBuffer(std::string(buffer, bytes_read));
-
-						size_t pos;
-						while ((pos = client->getInputBuffer().find("\r\n")) != std::string::npos) {
-							std::string line = client->getInputBuffer().substr(0, pos);
-							client->getInputBuffer().erase(0, pos + 2);
-
-							std::vector<std::vector<std::string> > commands = tokenize(line);
-							for (size_t j = 0; j < commands.size(); j++) {
-								if (isClientActive(client, this))
-									executeCommand(this, client, commands[j]);
-								else
-									break;
-							}
-							if (!isClientActive(client, this)) {
-								break;
-							}
-						}
-					}
+					if (client)
+						handleMessage(client, buffer, bytes_read);
 				}
-				else {
+				else
+				{
 					std::cout << ITALIC << "Client " << poll_fds[i].fd << " disconnected." << RESET << std::endl;
 					Client *client = getClientByFd(poll_fds[i].fd);
 					size_t channelSize = _channels.size();
@@ -292,3 +283,4 @@ int Server::run() {
 
 	return 0;
 }
+

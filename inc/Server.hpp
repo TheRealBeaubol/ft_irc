@@ -37,6 +37,8 @@ class Server
 		Channel *getChannelByName(std::string channelName);
 		
 		int handleNewConnexion();
+		// int handleMessage();
+		int handleMessage(Client *client, char buffer[], int bytes_read);
 		int run();
 
 	private:
